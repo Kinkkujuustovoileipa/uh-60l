@@ -1,0 +1,10 @@
+inherit = "HelicopterEngine"
+wave = "Effects/acpower.wav"
+position = {3.2,0.2,-0.9} 
+inner_radius = 1
+outer_radius = 10
+cone_inner_angle = 100
+cone_outer_angle = 180
+cone_outer_gain = 0.9
+direction = {-1, 0, 0}
+gain = 0.02

@@ -1,0 +1,3 @@
+inherit = "HelicopterFan"
+wave = "Effects/Aircrafts/Engines/UH-60L/intEngStarterCont"
+gain = 0.5

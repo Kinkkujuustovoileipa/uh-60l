@@ -1,0 +1,104 @@
+--[[ example Source DEFinition file
+
+-- INCLUDE:
+inherit = ""
+-- name of .sdef to get settings from
+
+
+-- SAMPLE:
+wave = "default"
+-- the sound sample file to use
+-- relative to $ROOT/Sounds/ directory
+-- if no .ext given, .wav and .ogg are tried
+-- 1-2 channels, any pcm format (loaded as 16-bit)
+--
+-- RANDOM SAMPLE SELECTION:
+-- If you provide a list of samples, in this way:
+wave = {"sample0", "sample1", "sample2"}
+-- on each playback a random sample from the list will be used.
+
+
+-- VOLUME:
+gain = 1.0
+-- gain multiplier (linear)
+
+
+-- FREQUENCY:
+pitch = 1.0
+-- source frequency multiplier
+
+
+-- FILTERING:
+lowpass = 24000.0
+-- source lowpass filter cutoff frequency
+
+
+-- POSITION:
+position = {0, 0, 0}
+-- position relative to the host in meters {forward, up, right}
+
+
+-- RADIUS:
+
+inner_radius = 1
+-- inside this radius the gain is at maximum (as given in gain field)
+-- is also called 'reference distance', i.e. distance where source has nominal gain
+
+outer_radius = 1000
+-- outside this radius the source is not heard
+
+-- if ONLY one of the radiuses is set, the other one is calculated automatically
+-- outer_radius = inner_radius / silence_threshold
+-- silence_threshold is set to 0.001 (-60dB)
+
+
+-- CONE:
+
+direction = {0, 0, 0}
+-- the direction relative to the host {forward, up, right}
+
+cone_inner_angle = 0
+-- inside this cone (given as halfangle in degrees 0-180) the gain is at maximum (as set in gain field)
+
+cone_outer_angle = 0
+-- outside this cone (given as halfangle in degrees 0-180) the gain is at cone_outer_gain
+
+-- to set up an inverse cone (symmetrical around a plane with direction as a normal)
+-- set cone_inner_angle > cone_outer_angle AND both <= 90
+-- useful for rotors
+-- example:
+-- cone_inner_angle = 80
+-- cone_outer_angle = 60
+-- will set up an inverse cone with +-10 degree inner angle and +-30 degree outer angle
+
+cone_outer_gain = 1
+-- the gain outside cone_outer_angle
+
+cone_outer_lowpass = 24000
+-- the cutoff frequency outside cone_outer_angle
+
+
+-- PLAYMODE:
+detached = false
+-- set to true if the sound should always play the whole sample (explosions, gunshots etc.)
+
+streaming = false
+-- if set to true, the samples will be streamed from the disk
+-- false (the default) value means the samples are kept in the memory (uncompressed!)
+-- implies detached=false
+
+listmode = RANDOM
+-- play one random sample from the playlist
+-- other values:
+-- SEQUENCE  - sequentially play all samples from the playlist
+-- ASR  - (Attack, SustainRelease) - plays the first sample on start only, loops everything else
+
+-- ATTACK TIME:
+attack = 0.0
+-- the time it takes for the initial rise of volume from 0 to peak when the sample starts
+
+-- RELEASE TIME:
+release = 0.0
+-- the time it takes for the volume to decay to zero when the sample stops
+
+]]

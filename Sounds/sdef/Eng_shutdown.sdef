@@ -1,0 +1,10 @@
+wave = "Effects/Temp/inshut"
+inner_radius = 100
+outer_radius = 1000
+cone_inner_angle = 100
+cone_outer_angle = 180
+cone_outer_gain = 0.9
+direction = {-1, 0, 0}
+gain = 1.0
+
+

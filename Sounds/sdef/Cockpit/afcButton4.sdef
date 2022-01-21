@@ -1,0 +1,11 @@
+wave = {
+    "Effects/Cockpit/afcButton4.wav"
+    }
+
+gain = 3
+inner_radius = 1
+outer_radius = 4
+
+detached = true
+
+listmode = RANDOM
