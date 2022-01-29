@@ -4,7 +4,7 @@ A free UH-60L Black Hawk mod for Digital Combat Simulator
 Download the latest version from the [releases page](https://github.com/Kinkkujuustovoileipa/uh-60l/releases)
 ## Guide
 - [Link](https://docs.google.com/presentation/d/1kCJf5Nk-fU_21eO7W1ozYfb9FKt488ax65IbeuIGVtA/edit?usp=sharing)
-Manual is also available in-game
+- Manual is also available in-game
 ## Installation
 - Extract the ‘Mods’ folder from the zip file into C:\Users\###\Saved Games\DCS\ folder (Steam) or C:\Users\###\Saved Games\DCS.OpenBeta\ (Standalone if Open Beta installed)
 - You may require the latest [C++ redistributables](https://docs.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170) for this mod to work properly
