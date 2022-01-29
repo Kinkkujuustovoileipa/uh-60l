@@ -17,6 +17,7 @@ devices["ARC186"]		= counter()
 devices["VHF_RADIO"]		= counter()
 devices["ARC201_FM2"]            = counter()
 devices["FM2_RADIO"]		= counter()
+devices["BASERADIO"]		= counter()
 
 
 devices["ELECTRIC_SYSTEM"]	= counter()

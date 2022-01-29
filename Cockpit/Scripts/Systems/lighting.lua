@@ -61,6 +61,8 @@ local searchLightPitch = 0
 local searchLightYaw = 0
 local searchLightBrightness = 1
 
+local paramSearchLightAdvisory = get_param_handle("CAP_SEARCHLIGHTON")
+
 local fuelProbeState = 0
 local fuelProbeSwitchState = 0
 local fuelProbeSpeed = 0.3
@@ -204,11 +206,11 @@ function SetCommand(command,value)
 			searchLightPitch = searchLightPitch - (30/105 * update_time_step)
 		end
 	elseif command == Keys.searchLightLeft then
-		searchLightYaw = searchLightYaw + (10/105 * update_time_step)
+		searchLightYaw = searchLightYaw + (30/105 * update_time_step)
 		if searchLightYaw > 1 then searchLightYaw = searchLightYaw - 1 end
 		if searchLightYaw < 0 then searchLightYaw = searchLightYaw + 1 end
 	elseif command == Keys.searchLightRight then
-		searchLightYaw = searchLightYaw - (10/105 * update_time_step)
+		searchLightYaw = searchLightYaw - (30/105 * update_time_step)
 		if searchLightYaw > 1 then searchLightYaw = searchLightYaw - 1 end
 		if searchLightYaw < 0 then searchLightYaw = searchLightYaw + 1 end
 	elseif command == Keys.searchLightBrighten then
@@ -264,9 +266,9 @@ function update()
 
 	-- Cabin Dome Lights
 	local cabinDomeLtsPwr = paramCB_LTSCABINDOME:get()
-	if (cabinLightMode == -1) then
+	if (cabinLightMode == 1) then
 		set_aircraft_draw_argument_value(605, cabinDomeLtsPwr)
-	elseif (cabinLightMode == 1) then
+	elseif (cabinLightMode == -1) then
 		set_aircraft_draw_argument_value(606, cabinDomeLtsPwr)
 	else
 		set_aircraft_draw_argument_value(605, 0)
@@ -274,7 +276,7 @@ function update()
 	end
 
 	-- Cockpit Dome Lights
-	local cockpitDomeLtsPwr = paramCB_LTSCABINDOME:get()
+	local cockpitDomeLtsPwr = paramCB_LIGHTSSECPNL:get()
 	if (cockpitLightMode == 1) then
 		set_aircraft_draw_argument_value(251, cockpitDomeLtsPwr)
 		paramightsDomeBlue:set(cockpitDomeLtsPwr)
@@ -340,28 +342,28 @@ function update()
 	-- Anticollision Lights
 	local antiCollLtsPwr = paramCB_EXTLTSANTICOLL:get()
 	-- white lower
-	if (antiLightMode == -1 and antiLightGrp <= 0 and math.sin(2.5 * get_absolute_model_time()) > 0.95) then
+	if (antiLightMode == -1 and antiLightGrp >= 0 and math.sin(2.5 * get_absolute_model_time()) > 0.95) then
 		set_aircraft_draw_argument_value(600, antiCollLtsPwr) 
 	else
 		set_aircraft_draw_argument_value(600, 0) 
 	end
 	
 	-- white upper
-	if (antiLightMode == -1 and antiLightGrp >= 0 and math.sin(2.5 * (get_absolute_model_time() - 1)) > 0.95) then
+	if (antiLightMode == -1 and antiLightGrp <= 0 and math.sin(2.5 * (get_absolute_model_time() - 1)) > 0.95) then
 		set_aircraft_draw_argument_value(601, antiCollLtsPwr) 
 	else
 		set_aircraft_draw_argument_value(601, 0) 
 	end
 	
 	-- red lower
-	if (antiLightMode == 1 and antiLightGrp <= 0 and math.sin(2.5 * get_absolute_model_time()) > 0.95) then
+	if (antiLightMode == 1 and antiLightGrp >= 0 and math.sin(2.5 * get_absolute_model_time()) > 0.95) then
 		set_aircraft_draw_argument_value(602, antiCollLtsPwr) 
 	else
 		set_aircraft_draw_argument_value(602, 0) 
 	end
 	
 	-- red upper
-	if (antiLightMode == 1 and antiLightGrp >= 0 and math.sin(2.5 * (get_absolute_model_time() - 1)) > 0.95) then
+	if (antiLightMode == 1 and antiLightGrp <= 0 and math.sin(2.5 * (get_absolute_model_time() - 1)) > 0.95) then
 		set_aircraft_draw_argument_value(603, antiCollLtsPwr) 
 	else
 		set_aircraft_draw_argument_value(603, 0) 
@@ -376,15 +378,17 @@ function update()
 		set_aircraft_draw_argument_value(argNumLandingLightToggle, 0)
 		paramLandingLightAdvisory:set(0)
 	end
-
+	
 	-- Formation Lights
 	set_aircraft_draw_argument_value(614, formationBrightness * posLtsPwr)
 	
 	-- Search Light
 	if searchLtOn then
-		set_aircraft_draw_argument_value(argNumSearchLightToggle, searchLightBrightness)
+		set_aircraft_draw_argument_value(argNumSearchLightToggle, searchLightBrightness * ldgLtPwr)
+		paramSearchLightAdvisory:set(ldgLtPwr)
 	else
 		set_aircraft_draw_argument_value(argNumSearchLightToggle, 0)
+		paramSearchLightAdvisory:set(0)
 	end
 	set_aircraft_draw_argument_value(argNumSearchLightPitch, searchLightPitch)
 	set_aircraft_draw_argument_value(argNumSearchLightYaw, searchLightYaw)

@@ -73,7 +73,7 @@ stick_position.controllers    = {{"move_left_right_using_parameter",1, size},
 								 {"move_up_down_using_parameter",0, size}}
 stick_position.parent_element = base.name
 AddElement(stick_position)
-
+--[[
 local trim_index_sz           = 0.09 * size
 trim_position					= CreateElement "ceTexPoly"
 trim_position.name             = "trim_position"
@@ -119,7 +119,7 @@ rafc_position.element_params  = {"ROLL_AFC"}
 rafc_position.controllers    = {{"move_left_right_using_parameter",0, size / 30}}
 rafc_position.parent_element = base.name
 AddElement(rafc_position)
-
+]]
 
 rudder_scale                = Copy(roll_scale)
 rudder_scale.init_pos       = {0,-(size + rud_shift)}

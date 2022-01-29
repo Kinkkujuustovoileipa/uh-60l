@@ -39,7 +39,7 @@ wheel_side_friction_factor_COMMON 			= 1--0.6
 wheel_roll_friction_factor_COMMON 			= 0.04
 wheel_glide_friction_factor_COMMON 			= 0.15 --this needs to be low to go from standstill to moving smoothly
 
-brake_moment_main 							= 1e12 --5500.0
+brake_moment_main 							= 5e12--1e12 --5500.0
 
 wheel_radius_factor 						= 1.0
 
@@ -79,7 +79,7 @@ suspension =
 		moment_of_inertia 						= {10.0,0.5,10.0},--leg
 		wheel_axle_offset 						= 0.1,
 		self_attitude 							= true,
-		yaw_limit 								= math.rad(90.0), --so apparently this must be set to half the animation angle for some reason
+		yaw_limit 								= math.rad(180.0), --so apparently this must be set to half the animation angle for some reason
 		
 		amortizer_min_length 					= nose_amortizer_min_length,
 		amortizer_max_length 					= nose_amortizer_max_length,

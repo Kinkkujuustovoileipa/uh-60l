@@ -74,6 +74,8 @@ Keys =
 
 	-- AAR Probe
 	toggleProbe = counter(),
+
+	radioPTT = counter(),
 }
 
 count = 3200
@@ -430,4 +432,6 @@ EFM_commands = 	-- commands for use in EFM (make sure to copy to inputs.h)
 
 	startServer = 5016,
 	connectServer = 5017,
+
+	useUnsprungCyclic = 5018,
 }

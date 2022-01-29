@@ -32,18 +32,18 @@ function post_initialize()
         Sound_Player(sndhost_cockpit, "a-4e_CockpitRattle", "SND_ALWS_COCKPIT_RATTLE", SOUND_ALWAYS, nil, nil, 1.0, 2.0 / device_timer_dt ),
         
         -- APU & Electrics
-        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/APUInStart", "SND_INST_APU_START", SOUND_ONCE),
-        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/APUInShutdown", "SND_INST_APU_SHUTOFF", SOUND_ONCE),
-        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/APUIn", "SND_CONT_APU", SOUND_CONTINUOUS),
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorAPUStartUp", "SND_INST_APU_START", SOUND_ONCE),
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorAPUShutoff", "SND_INST_APU_SHUTOFF", SOUND_ONCE),
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorAPU", "SND_CONT_APU", SOUND_CONTINUOUS),
         Sound_Player(sndhost_cockpit, "DC_power", "SND_CONT_DC", SOUND_CONTINUOUS),
         Sound_Player(sndhost_cockpit, "AC_power", "SND_CONT_AC", SOUND_CONTINUOUS),
         
         -- Engine & XMSN
-        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/IntEngStarter", "SND_INST_ENG_STARTER", SOUND_ONCE),
-        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/IntEngCombustion", "SND_INST_ENG_COMBUST", SOUND_ONCE),
-        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/IntEngStarterCont", "SND_CONT_ENG_STARTER_IDLE", SOUND_CONTINUOUS, nil, nil, 1.0, 2.0 / device_timer_dt),
-        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/IntTransmissionIdle", "SND_CONT_XMSN_IDLE", SOUND_CONTINUOUS),
-        Sound_Player(sndhost_aircraft, "Aircrafts/Engines/UH-60L/BladeSlap", "SND_ALWS_BLADE_SLAP", SOUND_ALWAYS, 0, nil, 1.0, 2.0 / device_timer_dt, "RRPM" ),
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorEngineStarter", "SND_INST_ENG_STARTER", SOUND_ONCE),
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorEngineCombustion", "SND_INST_ENG_COMBUST", SOUND_ONCE),
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorEngineStarterCont", "SND_CONT_ENG_STARTER_IDLE", SOUND_CONTINUOUS, nil, nil, 1.0, 2.0 / device_timer_dt),
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorRotorIdle", "SND_CONT_XMSN_IDLE", SOUND_CONTINUOUS),
+        Sound_Player(sndhost_aircraft, "Aircrafts/Engines/UH-60L/uh60l_BladeSlap", "SND_ALWS_BLADE_SLAP", SOUND_ALWAYS, 0, nil, 1.0, 2.0 / device_timer_dt, "RRPM" ),
 
         -- APR-39
         Sound_Player(sndhost_cockpit, "APR39/acquisition", "SND_INST_APR39_ACQUISITION", SOUND_ONCE),

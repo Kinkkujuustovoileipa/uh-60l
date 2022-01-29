@@ -91,9 +91,9 @@ function update()
         elseif freqSelectIndex == 1 then
             frequency = 121.5e6
             -- TODO AM Modulation
-        elseif freqSelectIndex == 2 then
-            frequency = freq10MHz * 10e6 + freq1MHz * 1e6 + freq100KHz * 100e3 + freq25KHz * 25e3
         elseif freqSelectIndex == 3 then
+            frequency = freq10MHz * 10e6 + freq1MHz * 1e6 + freq100KHz * 100e3 + freq25KHz * 25e3
+        elseif freqSelectIndex == 4 then
             if presets[presetIndex] then
                 frequency = presets[presetIndex] * 1e6
             else
@@ -103,10 +103,10 @@ function update()
     else
         frequency = 0
     end
-    --print_message_to_user(frequency)
-
+    
     if frequency ~= oldFreq then
         radioDevice:set_frequency(frequency)
+        --print_message_to_user(frequency)
         oldFreq = frequency
     end
 end

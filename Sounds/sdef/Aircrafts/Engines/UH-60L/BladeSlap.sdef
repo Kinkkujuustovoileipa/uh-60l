@@ -1,8 +1,0 @@
-wave = "Effects/Aircrafts/Engines/UH-60L/bladeslap"
-inner_radius = 100
-outer_radius = 1500
-gain = 1
---attack = 0.1
---release = 0.25
---lowpass = 24000.0
-

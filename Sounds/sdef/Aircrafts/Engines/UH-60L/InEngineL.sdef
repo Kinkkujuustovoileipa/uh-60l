@@ -1,4 +1,0 @@
-wave = "Effects/temp/silent"
-inner_radius = 100
-position = {0.0, 0.0, 0.0} 
-gain = 0.25

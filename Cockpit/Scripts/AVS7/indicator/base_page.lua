@@ -62,7 +62,7 @@ RdrAltText.init_pos		    = {0.32, -0.15, 0} -- L/R, D/U, F/B
 RdrAltText.stringdefs      = stringdefs
 RdrAltText.formats         = {"%03.0f"}
 RdrAltText.element_params  = {"AVS7_BRIGHTNESS", "AVS7_RDR_ALT", "AVS7_RDR_ALT_DIGITVIS"}
-RdrAltText.controllers     = {{"opacity_using_parameter",0}, {"text_using_parameter",1,0}, {"parameter_in_range",2,0.9,1.1}}
+RdrAltText.controllers     = {{"opacity_using_parameter",2}, {"text_using_parameter",1,0}}
 RdrAltText.h_clip_relation  = h_clip_relations.compare
 RdrAltText.level			= 6
 RdrAltText.parent_element  = base.name
@@ -345,7 +345,7 @@ for i=-90,500,10 do
     line.element_params  = {"AVS7_BRIGHTNESS", "AVS7_HEADING"}
     line.controllers     = {{"opacity_using_parameter",0}, {"move_left_right_using_parameter",1,-0.005},{"parameter_in_range",1,i-130,i+10}}
 
-    if i == 0 then
+    if i == 0 or i == 360 then
         local text = addText(i / 300, 0.48 + horizonOffset, "N")
         text.element_params  = {"AVS7_BRIGHTNESS", "AVS7_HEADING"}
         text.controllers     = {{"opacity_using_parameter",0}, {"move_left_right_using_parameter",1,-0.0033},{"parameter_in_range",1,i-70,i+70}}
@@ -508,7 +508,7 @@ vsInd = addChevron(0.51, -0.171 + horizonOffset + vsScaleY, 0.04, 0.05, 0)
 vsInd.element_params  = {"AVS7_BRIGHTNESS", "AVS7_VS"}
 vsInd.controllers     = {{"opacity_using_parameter",0}, {"move_up_down_using_parameter",1,0.00015}}
 
-function addWPInd(x,y,w,h,t)
+function addWPToInd(x,y,w,h,t)
     local test 			 = CreateElement "ceStringPoly"
     test.name 			 = create_guid_string()
     test.vertices 		 = {{x, y}, {x + w, y}, {(x + w) / 2 + t / 2, y + h}, {x + t, y}, {x + w + t, y}, {(x + w) / 2 + t / 2, y + h - (t * 1.2)}}
@@ -526,10 +526,39 @@ function addWPInd(x,y,w,h,t)
     return test
 end
 
+function addWPFromInd(x,y,w,h,t)
+    local test 			 = CreateElement "ceStringPoly"
+    test.name 			 = create_guid_string()
+    test.vertices 		 = {{x, y}, {x + w, y}, {(x + w) / 2 + t / 2, y - h}, {x + t, y}, {x + w + t, y}, {(x + w) / 2 + t / 2, y - h + (t * 1.2)}}
+    test.indices 		 = {0,2,3, 2,3,5, 2,1,5, 2,1,4}
+    test.init_pos		 = center
+    test.init_rot		 = {0}
+    test.material		 = hudMaterial
+    test.h_clip_relation = h_clip_relations.compare
+    test.level			 = 6
+    test.parent_element  = base.name
+    test.collimated = true
+    test.element_params  = {"AVS7_BRIGHTNESS"}
+    test.controllers     = {{"opacity_using_parameter", 0}}
+    Add(test)
+    return test
+end
 
-wpInd = addWPInd(0, 0.34, 0.038, 0.03, 0.006)
-wpInd.element_params  = {"AVS7_BRIGHTNESS", "AVS7_WPIND"}
-wpInd.controllers     = {{"opacity_using_parameter",0}, {"move_left_right_using_parameter",1, 0.35, -0.35}}
+local x = 0
+local y = 0.34
+local w = 0.038
+local h = 0.03
+local t = 0.006
+
+wpToInd = addWPToInd(x, y, w, h, t)
+wpToInd.init_pos		 = {0 - (w / 2),0, 1.5}
+wpToInd.element_params  = {"AVS7_WPIND", "AVS7_WPTO_DISPLAY"}
+wpToInd.controllers     = {{"move_left_right_using_parameter",0, 0.35, -0.35}, {"opacity_using_parameter",1}}
+
+wpFromInd = addWPFromInd(x, y + h, w, h, t)
+wpFromInd.init_pos		 = {0 - (w / 2),0, 1.5}
+wpFromInd.element_params  = {"AVS7_WPIND", "AVS7_WPFROM_DISPLAY"}
+wpFromInd.controllers     = {{"move_left_right_using_parameter",0, 0.35, -0.35}, {"opacity_using_parameter",1}}
 
 -- SLIP Ind
 local slipYAdjust = 0.1

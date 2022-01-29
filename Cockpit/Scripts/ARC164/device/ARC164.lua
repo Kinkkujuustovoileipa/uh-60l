@@ -1,7 +1,7 @@
 dofile(LockOn_Options.script_path.."devices.lua")
 dofile(LockOn_Options.script_path.."command_defs.lua")
 dofile(LockOn_Options.script_path.."utils.lua")
-dofile(LockOn_Options.script_path.."EFM_Data_Bus.lua")
+--dofile(LockOn_Options.script_path.."EFM_Data_Bus.lua")
 dofile(LockOn_Options.script_path.."Systems/circuitBreakerHandles.lua")
 
 
@@ -11,7 +11,7 @@ make_default_activity(update_time_step)
 
 --dev:listen_command(Keys.radio_ptt)
 
-efm_data_bus = get_efm_data_bus()
+--efm_data_bus = get_efm_data_bus()
 
 --Current Radio Values
 local mode = 0
@@ -138,9 +138,9 @@ function update()
         --print_message_to_user("ARC-164: "..uhf_radio_device:get_frequency())
     end
     if mode > 0 then
-        efm_data_bus.fm_setRadioPower(1.0) 
+        --efm_data_bus.fm_setRadioPower(1.0) 
     else
-        efm_data_bus.fm_setRadioPower(0.0)
+        --efm_data_bus.fm_setRadioPower(0.0)
     end
 
     paramMode:set(mode)

@@ -3,8 +3,8 @@ draw_pilot					 = true
 
 seat_points = 
 {
-	[1] = {point = {3.0 - 2.971, -0.35 + 0.519,  0.666045}},
-	[2] = {point = {3.0 - 2.971, -0.35 + 0.519,  -0.666045}},
+	[1] = {point = {3.0 - 2.971, -0.35 + 0.55,  0.666045},},
+	[2] = {point = {3.0 - 2.971, -0.35 + 0.55,  -0.666045},},
 	[3] = {point = {1.85, -0.45, -0.626045, absolute_position = true }, vAngle = 0, hAngle = 90,},
 	[4] = {point = {1.85, -0.45, 0.626045, absolute_position = true }, vAngle = 0, hAngle = -90,},
 }
@@ -300,8 +300,8 @@ copilotHSIDistFlag.parameter_name	= "COPILOT_HSI_DISTFLAG"
 -- PILOT AN/APN-209 RADAR ALTIMETER
 apn209PilotAltNeedle					= CreateGauge("parameter")
 apn209PilotAltNeedle.arg_number		    = 173
-apn209PilotAltNeedle.input			    = {0, 100, 200, 500, 1000, 1500}
-apn209PilotAltNeedle.output			    = {0, 0.25, 0.5, 0.65, 0.8, 1}
+apn209PilotAltNeedle.input			    = {0, 100, 200, 500, 1000, 1500, 1510}
+apn209PilotAltNeedle.output			    = {0, 0.25, 0.5, 0.65, 0.8, 0.95, 1}
 apn209PilotAltNeedle.parameter_name	    = "PILOT_APN209_NEEDLE"
 
 apn209PilotAltDigit1					= CreateGauge("parameter")
@@ -361,8 +361,8 @@ apn209PilotFlag.parameter_name	= "PILOT_APN209_FLAG"
 -- COPILOT AN/APN-209 RADAR ALTIMETER
 apn209CopilotAltNeedle					= CreateGauge("parameter")
 apn209CopilotAltNeedle.arg_number		= 186
-apn209CopilotAltNeedle.input			= {0, 100, 200, 500, 1000, 1500}
-apn209CopilotAltNeedle.output			= {0, 0.25, 0.5, 0.65, 0.8, 1}
+apn209CopilotAltNeedle.input			= {0, 100, 200, 500, 1000, 1500, 1510}
+apn209CopilotAltNeedle.output			= {0, 0.25, 0.5, 0.65, 0.8, 0.95, 1}
 apn209CopilotAltNeedle.parameter_name	= "COPILOT_APN209_NEEDLE"
 
 apn209CopilotAltDigit1					= CreateGauge("parameter")

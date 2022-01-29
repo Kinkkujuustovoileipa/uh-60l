@@ -32,6 +32,8 @@ local btnTrimState = 0
 local btnFPSState = 0
 local btnStabAutoState = 0
 
+local stabPwrState = 0
+
 local boostOn = 0
 local sas1On = 0
 local sas2On = 0
@@ -43,6 +45,7 @@ local manSlewDir = 0
 
 function post_initialize()
 	local dev = GetSelf()
+	stabPwrState = paramCB_STABCONTR1:get() * paramCB_STABCONTR2:get()
     local birth = LockOn_Options.init_conditions.birth_place	
     if birth=="GROUND_HOT" or birth=="AIR_HOT" then
 		dev:performClickableAction(device_commands.afcsStabAuto,1,true)			  
@@ -50,11 +53,11 @@ function post_initialize()
 		dev:performClickableAction(device_commands.afcsSAS1,1,true)			  
 		dev:performClickableAction(device_commands.afcsSAS2,1,true)			  
 		dev:performClickableAction(device_commands.afcsTrim,1,true)
-		-- I believe new players unaware of FPS will have trouble with it so leaving it off by default
-		--dev:performClickableAction(device_commands.afcsFPS,1,true)
+		dev:performClickableAction(device_commands.afcsFPS,1,true)
 		update()	  
     elseif birth=="GROUND_COLD" then
     end
+
 end
 
 dev:listen_command(device_commands.afcsStabAuto)
@@ -82,13 +85,11 @@ function SetCommand(command,value)
 	elseif command == device_commands.afcsFPS then
 		btnFPSState = 1 - btnFPSState
 	elseif command == device_commands.slewStabUp then
-		if stabAutoOn == 0 then
-			manSlewDir = value
-		end
+		btnStabAutoState = 0
+		manSlewDir = value
 	elseif command == device_commands.slewStabDown then
-		if stabAutoOn == 0 then
-			manSlewDir = value
-		end
+		btnStabAutoState = 0
+		manSlewDir = value
 	elseif command == Keys.slewStabDown then -- I don't know why but this only works if it's ass backward...
 		if value > 11.3 then
 			dev:performClickableAction(device_commands.slewStabUp,-1,true)
@@ -115,7 +116,14 @@ function update()
 	sas2On = btnSas2State * paramCB_COMP:get()
 	trimOn = btnTrimState * paramCB_COMP:get()
 	fpsOn = btnFPSState * paramCB_COMP:get()
-	stabAutoOn = btnStabAutoState * paramCB_STABCONTR1:get() * paramCB_STABCONTR2:get()
+	
+	-- Stab Auto turns on automatically when power first applied
+	if stabPwrState == 0 and (paramCB_STABCONTR1:get() * paramCB_STABCONTR2:get()) == 1 then
+		dev:performClickableAction(device_commands.afcsStabAuto,1,true)			  
+		stabPwrState = 1
+	end
+	
+	stabAutoOn = btnStabAutoState * stabPwrState
 
 	paramBoostLight:set(boostOn)
 	paramSAS1Light:set(sas1On)

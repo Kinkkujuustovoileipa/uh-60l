@@ -1,9 +1,15 @@
+local CheckBoxSkin = {
+	["params"] = {
+		["name"] = "checkBoxSkin_options",
+	},
+}
+
 dialog = {
 	["children"] = {
 		["containerPlugin"] = {
 			["children"] = {
-				------------ AVS7 VR check box ---------------------
-				["avs7VRCheckbox"] = {
+				------------ Unsprung cyclic check box ---------------------
+				["unsprungCyclicCheckbox"] = {
 					["params"] = {
 						["bounds"] = {
 							["h"] = 18,
@@ -13,6 +19,27 @@ dialog = {
 						},
 						["enabled"] = true,
 						["state"] = true,
+						["tabOrder"] = 0,
+						["text"] = "$UNSPRUNGCYCLICCHKBOX",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = CheckBoxSkin,
+					["type"] = "CheckBox",
+				},
+--[[
+				------------ AVS7 VR check box ---------------------
+				["avs7VRCheckbox"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = 18,
+							["w"] = 300,
+							["x"] = 56,
+							["y"] = 90,
+						},
+						["enabled"] = true,
+						["state"] = false,
 						["tabOrder"] = 0,
 						["text"] = "$AVS7VRCHKBOX",
 						["tooltip"] = "",
@@ -25,7 +52,8 @@ dialog = {
 											},
 								},
 					["type"] = "CheckBox",
-				},		
+				},	
+]]	
 				------------ plane title ------------------------ 
 				["nameLabel"] = {
 					["params"] = {

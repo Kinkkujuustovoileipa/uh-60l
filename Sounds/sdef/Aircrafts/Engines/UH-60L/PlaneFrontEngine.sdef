@@ -1,3 +1,0 @@
-inherit = "Aircrafts/Engines/PlaneFrontEngine"
-wave = "Effects/temp/exterior/silent"
-gain = 1.0

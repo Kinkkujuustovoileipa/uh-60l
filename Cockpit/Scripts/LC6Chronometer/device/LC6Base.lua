@@ -76,20 +76,21 @@ function updateUTC()
     end
     -- TODO Normandy + Channel Islands (0 should be fine anyway)
 
-    local utcTime = time + utcOffset
-    local hours, mins = math.modf(utcTime/3600)
+    local days, utcTime = math.modf((time + utcOffset) / 86400)
+    local hours, mins = math.modf(utcTime * 24)
     local foo, secs = math.modf(mins * 60)
     mins = math.floor(mins * 60)
     secs = math.floor(secs * 60)
-
+    
     handleUTCHrs:set(hours)
     handleUTCMins:set(formatPrecedingZeros(mins,2))
     handleUTCSecs:set(secs)
 end
 
 function updateLT()
-    local time = get_absolute_model_time()
-    local hours, mins = math.modf(time/3600)
+    local localTime = get_absolute_model_time()
+    local days, time = math.modf(localTime / 86400)
+    local hours, mins = math.modf(time * 24)
     local foo, secs = math.modf(mins * 60)
     mins = math.floor(mins * 60)
     secs = math.floor(secs * 60)

@@ -34,6 +34,7 @@ paramCB_EXTLTSANTICOLL  = get_param_handle("CB_LIGHTS_ANTI_COLL")
 paramCB_EXTLTSRETRLDGCONT = get_param_handle("CB_LIGHTS_RETR_LDG_CONT")
 paramCB_EXTLTSRETRLDGPWR  = get_param_handle("CB_LIGHTS_RETR_LDG_PWR")
 paramCB_APR39           = get_param_handle("CB_APR39") -- partially documented, not sure where it is
+paramCB_LIGHTSSECPNL    = get_param_handle("CB_LIGHTS_SEC_PNL")
 
 paramCB_SASBOOST        = get_param_handle("CB_SAS_BOOST")
 paramCB_SASAMPL         = get_param_handle("CB_SAS_AMPL")

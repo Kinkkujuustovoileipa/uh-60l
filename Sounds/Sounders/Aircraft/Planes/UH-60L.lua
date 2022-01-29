@@ -1,9 +1,9 @@
-dofile("Aircraft/Planes/Plane.lua")
+dofile("Aircraft/Planes/uh60l_Plane.lua")
 
 UH60L = plane:new()
 
-dofile("Aircraft/Engines/Engine.lua")
-dofile("Aircraft/Engines/APUs/BasicAPU.lua")
+dofile("Aircraft/Engines/uh60l_Engine.lua")
+--dofile("Aircraft/Engines/APUs/BasicAPU.lua")
 
 function UH60L:createEngines()
 

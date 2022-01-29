@@ -240,6 +240,8 @@ UH60L =
 	{
 	},
 
+	stores_number = 4,
+
 	Pylons =
 	{
 		pylon(1, 0, 0.797, -1.244, 2.844,
@@ -424,56 +426,64 @@ UH60L =
 		9, --collective
 		11, -- stick roll
 		15, --stick pitch
-		38, -- doors
 		37,-- main rotor spin
 		14, -- stab
 		900, -- rotor blur
 		22, -- probe
 		122, -- probe extension
 		123, -- esss
-		600, -- lights
-		601,
-		602,
-		603,
-		604,
-		605,
-		606,
-		607,
-		608,
-		612,
+		-- LIGHTS
+		600, -- lower white ac
+		601, -- upper white ac
+		602, -- lower red ac
+		603, -- upper red ac
+		604, -- pos l/r non esss
+		605, -- cabin blue
+		606, -- cabin white
+		607, -- ll extend/retract
+		608, -- ll toggle
+		609, -- pos l/r esss
+		610, -- pos tail
+		611, -- sl extend/retract
+		612, -- sl swivel
+		613, -- sl toggle
+		614, -- formation lights
 		250, -- glareshield
 		251, -- dome light
-		400,
-		401,
-		402,
-		403,
-		404,
-		501, -- pedal brakes
+		-- DOORS
+		38, -- plt door
+		400, -- cplt door
+		401, -- l cargo door
+		402, -- r cargo door
+		403, -- l gunner hatch
+		404, -- r gunner hatch
+		-- AND THAT'S ALL FOLKS! 32
+		--501, -- pedal brakes
 	},
 
 	--sound_name = "Rotor", -- rotor sound from Sounds/sdef
 
 	engine_data =
 	{  -- most of these are unknown right now, but they are only for AI
-			power_take_off	=	473,
-			power_max	=	473,
-			power_WEP	=	473,
-			power_TH_k =
-			{
-				[1] = 	{0,	-230.8,	2245.6},
-				[2] = 	{0,	-230.8,	2245.6},
-				[3] = 	{0,	-325.4,	2628.9},
-				[4] = 	{0,	-235.6,	1931.9},
-			},
-			SFC_k = 	{2.045e-007,	-0.0006328,	0.803},
-			power_RPM_k = 	{-0.08639,	0.24277,	0.84175},
-			power_RPM_min	=	9.1384,
-			--sound_name	= "EngineTV3117", -- engine sound from Sounds/sdef
+		power_take_off	=	473,
+		power_max	=	473,
+		power_WEP	=	473,
+		power_TH_k =
+		{
+			[1] = 	{0,	-230.8,	2245.6},
+			[2] = 	{0,	-230.8,	2245.6},
+			[3] = 	{0,	-325.4,	2628.9},
+			[4] = 	{0,	-235.6,	1931.9},
+		},
+		SFC_k = 	{2.045e-007,	-0.0006328,	0.803},
+		power_RPM_k = 	{-0.08639,	0.24277,	0.84175},
+		power_RPM_min	=	9.1384,
+		--sound_name	= "EngineTV3117", -- engine sound from Sounds/sdef
 	},
 
 	HumanRadio =
 	{
-        frequency     = 305.0,
+        frequency     = 124.0,
         editable     = true,
         minFrequency     = 30.000,
         maxFrequency     = 399.975,

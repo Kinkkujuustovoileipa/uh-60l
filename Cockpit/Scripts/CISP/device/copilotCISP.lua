@@ -211,9 +211,9 @@ function SetCommand(command,value)
         end
     end
     if command == device_commands.copilotHSIHdgSet then
-        cpltHeading = formatCompassDir(cpltHeading + round(value * 100))
+        cpltHeading = formatCompassDir(cpltHeading + sign(value))
     elseif command == device_commands.copilotHSICrsSet then
-        cpltCourse = formatCompassDir(cpltCourse + round(value * 100))
+        cpltCourse = formatCompassDir(cpltCourse + sign(value))
     end
 end
 

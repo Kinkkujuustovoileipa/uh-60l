@@ -19,6 +19,8 @@ newDashOffsetX = 0 -- L/R
 newDashOffsetY = -0.012 -- U/D
 newDashOffsetZ = 0.04673 -- F/B
 
+lastTime = 0
+
 function startup_print(...)
     print(...)
 end
@@ -850,4 +852,11 @@ function updateNetworkArgs(dev)
       --print_message_to_user("nil arg: "..networkArgString)
     end
 	end
+end
+
+function printsec(str)
+  if get_absolute_model_time() - lastTime > 1 then
+    print_message_to_user(str)
+    lastTime = get_absolute_model_time()
+  end
 end

@@ -242,7 +242,7 @@ function updateFuel()
 			paramCDUFuelR_Hi:set(1490)
 		else
 			if canUpdateDigits then
-				paramCDUFuelDigits:set(paramFuelTotal:get())
+				paramCDUFuelDigits:set(math.floor(paramFuelTotal:get() / 10) * 10)
 			end
 
 			paramCDUFuelL_Low:set(paramFuelL:get())
@@ -434,8 +434,8 @@ end
 function updatePilotPDU()
 	if pduPowerState > 0 then
 		if pilotPduTestState > 0 then
-			paramPltPDU_e1Trq_digits:set(111)
-			paramPltPDU_e2Trq_digits:set(111)
+			paramPltPDU_e1Trq_digits:set(188)
+			paramPltPDU_e2Trq_digits:set(188)
 
 			PDU_PLT_E1NP_LOW:set(95)
 			PDU_PLT_E1NP_HI:set(129)
@@ -466,8 +466,8 @@ end
 function updateCopilotPDU()
 	if cpduPowerState > 0 then
 		if copilotPduTestState > 0 then
-			paramCpltPDU_e1Trq_digits:set(111)
-			paramCpltPDU_e2Trq_digits:set(111)
+			paramCpltPDU_e1Trq_digits:set(188)
+			paramCpltPDU_e2Trq_digits:set(188)
 
 			paramCpltPDU_e1np_low:set(95)
 			paramCpltPDU_e1np_hi:set(129)

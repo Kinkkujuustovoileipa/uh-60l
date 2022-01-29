@@ -53,6 +53,10 @@ function post_initialize()
 	optionFuelProbe = get_aircraft_property("FuelProbeEnabled")
 	dispatch_action(nil, EFM_commands.setRefuelProbeState, optionFuelProbe)
 	set_aircraft_draw_argument_value(22, optionFuelProbe)
+
+	local optionUnsprungCyclic = get_plugin_option_value("UH-60L", "UNSPRUNG_CYCLIC", "local")
+	dispatch_action(nil, EFM_commands.useUnsprungCyclic, optionUnsprungCyclic)
+	--print_message_to_user(tostring(optionUnsprungCyclic))
 end
 
 dev:listen_command(Keys.BattSwitch)

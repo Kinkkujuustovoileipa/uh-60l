@@ -42,15 +42,17 @@ creators[devices.AFMS]                      = {"avSimpleWeaponSystem", LockOn_Op
 
 -- Radios
 creators[devices.PLT_ICP]       = {"avLuaDevice",   LockOn_Options.script_path.."ICPs/device/PilotICP.lua"}
-creators[devices.INTERCOM]      = {"avIntercom",    LockOn_Options.script_path.."dummy_radio.lua", {devices.UHF_RADIO}}
+creators[devices.INTERCOM]      = {"avIntercom",    LockOn_Options.script_path.."dummy_radio.lua", {devices.FM1_RADIO, devices.UHF_RADIO, devices.VHF_RADIO, devices.FM2_RADIO, devices.ELECTRIC_SYSTEM}}
 creators[devices.ARC164]        = {"avLuaDevice",   LockOn_Options.script_path.."ARC164/device/ARC164.lua"}
-creators[devices.UHF_RADIO]     = {"avUHF_ARC_164", LockOn_Options.script_path.."ARC164/device/radio.lua", {devices.INTERCOM,devices.ELECTRIC_SYSTEM}}
+creators[devices.UHF_RADIO]     = {"avUHF_ARC_164", LockOn_Options.script_path.."ARC164/device/radio.lua", {devices.ELECTRIC_SYSTEM}}
 creators[devices.ARC201_FM1]    = {"avLuaDevice",   LockOn_Options.script_path.."ARC201/device/ARC201_FM1.lua"}
-creators[devices.FM1_RADIO]     = {"avUHF_ARC_164", LockOn_Options.script_path.."ARC201/device/radioFM1.lua", {devices.INTERCOM,devices.ELECTRIC_SYSTEM}}
+creators[devices.FM1_RADIO]     = {"avUHF_ARC_164", LockOn_Options.script_path.."ARC201/device/radioFM1.lua", {devices.ELECTRIC_SYSTEM}}
 creators[devices.ARC186]        = {"avLuaDevice",   LockOn_Options.script_path.."ARC186/device/ARC186.lua"}
-creators[devices.VHF_RADIO]     = {"avUHF_ARC_164", LockOn_Options.script_path.."ARC186/device/radio.lua", {devices.INTERCOM,devices.ELECTRIC_SYSTEM}}
+creators[devices.VHF_RADIO]     = {"avUHF_ARC_164", LockOn_Options.script_path.."ARC186/device/radio.lua", {devices.ELECTRIC_SYSTEM}}
 creators[devices.ARC201_FM2]    = {"avLuaDevice",   LockOn_Options.script_path.."ARC201/device/ARC201_FM2.lua"}
-creators[devices.FM2_RADIO]     = {"avUHF_ARC_164", LockOn_Options.script_path.."ARC201/device/radioFM2.lua", {devices.INTERCOM,devices.ELECTRIC_SYSTEM}}
+creators[devices.FM2_RADIO]     = {"avUHF_ARC_164", LockOn_Options.script_path.."ARC201/device/radioFM2.lua", {devices.ELECTRIC_SYSTEM}}
+creators[devices.BASERADIO]     = {"avLuaDevice",   LockOn_Options.script_path.."Systems/baseRadio.lua"}
+
 
 indicators = {}
 indicators[#indicators + 1] = {"ccIndicator", LockOn_Options.script_path.."VIDS/indicator/CDU/init.lua",nil}

@@ -1,0 +1,9 @@
+
+wave = "Effects/Aircrafts/Engines/UH-60L/uh60l_ExteriorRotor"
+gain = 4
+cone_outer_gain = 4
+inner_radius = 100
+outer_radius = 1500
+direction = {0, 1, 0}
+cone_inner_angle = 60
+cone_outer_angle = 30

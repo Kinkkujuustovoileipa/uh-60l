@@ -214,9 +214,9 @@ function SetCommand(command,value)
     
     -- These functions are mechanical
     if command == device_commands.pilotHSIHdgSet then
-        pltHeading = formatCompassDir(pltHeading + round(value * 100))
+        pltHeading = formatCompassDir(pltHeading + sign(value))
     elseif command == device_commands.pilotHSICrsSet then
-        pltCourse = formatCompassDir(pltCourse + round(value * 100))
+        pltCourse = formatCompassDir(pltCourse + sign(value))
     end
 end
 

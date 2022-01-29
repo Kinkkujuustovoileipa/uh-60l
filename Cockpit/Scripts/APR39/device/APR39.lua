@@ -17,8 +17,6 @@ local radian_to_degree = 57.2957795
 local apr39PowerSwitchOn = false
 rwrPower = get_param_handle("APR39_POWER")
 rwrBrightness = get_param_handle("APR39_BRIGHTNESS")
-rwrPower:set(0)
-rwrBrightness:set(1)
 volume = 1
 
 annunciatorBusy = false
@@ -42,15 +40,17 @@ dofile(LockOn_Options.script_path..'APR39/device/tables.lua')
 
 function post_initialize()
 	--GetDevice(devices.RWR):set_power(true)	
+	GetDevice(devices.APR39):set_power(true) -- actives the RWR script internally 
 	dev:performClickableAction(device_commands.RWRBrightness,1,true)
 	dev:performClickableAction(device_commands.apr39Volume,1,true)
+	rwrBrightness:set(1)
 	local birth = LockOn_Options.init_conditions.birth_place	--"GROUND_COLD","GROUND_HOT","AIR_HOT"
     if birth=="GROUND_HOT" or birth=="AIR_HOT" then   
         dev:performClickableAction(device_commands.apr39Power,1,true) --true or false do action
-		GetDevice(devices.APR39):set_power(true) -- actives the RWR script internally 	
+		rwrPower:set(1)
     elseif birth=="GROUND_COLD" then
         dev:performClickableAction(device_commands.apr39Power,0,true)	
-		GetDevice(devices.APR39):set_power(false) -- actives the RWR script internally 	
+		rwrPower:set(0)
     end
 
 	--updateRWRTable()
@@ -314,6 +314,7 @@ function doVisual()
 			rwr[i].unit_type_sym:set("U")
 		end
 	end
+	--print_message_to_user(Dump(rwr[1].unit_type:get()))
 end
 
 function doAudio()
@@ -414,14 +415,17 @@ function update()
 	updateNetworkArgs(GetSelf())
 	--print_message_to_user(Dump(dev))
 	if paramCB_APR39:get() == 1 and apr39PowerSwitchOn then
-		GetDevice(devices.APR39):set_power(true) -- actives the RWR script internally 	
+		GetDevice(devices.APR39):set_power(true) -- actives the RWR script internally 
+
 		rwrPower:set(1) -- used for the indicator/display
 		doVisual()
 		doAudio()
 		speak()
+
+		--print_message_to_user(rwrPower:get().."; "..rwrBrightness:get())
 	else
 		rwrPower:set(0)
-		GetDevice(devices.APR39):set_power(false) -- actives the RWR script internally 	
+		--GetDevice(devices.APR39):set_power(false) -- actives the RWR script internally 	
 	end
 end
 

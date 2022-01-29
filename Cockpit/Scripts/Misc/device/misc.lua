@@ -8,7 +8,10 @@ local update_time_step = 0.01
 make_default_activity(update_time_step)
 
 local paramTailWheelLockLight = get_param_handle("LIGHTING_MISC_TAILWHEELLOCK")
-local tailWheelLocked = 0
+local tailWheelLockedState = 0 -- 0 = unlocked, 1 = locked, -1 = transition
+local tailWheelLockPwrState
+local tailWheelLockTarget
+local tailWheelLockTime
 
 local wiperMode = 1
 local wiperTargetVal = 0
@@ -47,7 +50,10 @@ dev:listen_command(Keys.toggleRightGunnerDoor)
 dev:listen_command(device_commands.wiperSelector)
 
 function post_initialize()
+    tailWheelLockedState = 0
+    tailWheelLocked = 0
 	local dev = GetSelf()
+    tailWheelLockPwrState = paramCB_TAILWHEELLOCK:get()
     local birth = LockOn_Options.init_conditions.birth_place	
     if birth=="GROUND_HOT" or birth=="AIR_HOT" then
 		dev:performClickableAction(device_commands.miscTailWheelLock, 1, true)
@@ -58,8 +64,7 @@ end
 function SetCommand(command,value)
     if command == device_commands.miscTailWheelLock then
         if paramCB_TAILWHEELLOCK:get() > 0 then
-            tailWheelLocked = 1 - tailWheelLocked
-            dispatch_action(nil, EFM_commands.lockTailWheel, tailWheelLocked)
+            tailWheelLockTarget = 1 - tailWheelLocked
         end
     elseif command == device_commands.wiperSelector then
 		wiperMode = round(value * 3)
@@ -105,8 +110,35 @@ function updateDoor(tgt, state)
 end
 
 function update()
-    paramTailWheelLockLight:set(tailWheelLocked * paramCB_LTSLWRCSL:get())
+    if paramCB_LTSLWRCSL:get() > 0 then
+        -- TWL turns on automatically when power first applied
+        if tailWheelLockPwrState == 0 and paramCB_LTSLWRCSL:get() == 1 then
+            --print_message_to_user("auto lock")
+            tailWheelLockPwrState = 1
+            tailWheelLockTarget = 1			  
+        end
+        
+        if tailWheelLockTarget ~= tailWheelLockedState and tailWheelLockedState > -1 then
+            --print_message_to_user("start transition")
+            tailWheelLockedState = -1
+            tailWheelLockTime = get_absolute_model_time()
+        end
+        
+        if tailWheelLockedState == -1 and get_absolute_model_time() - tailWheelLockTime > 2 then
+            --print_message_to_user("end transition")
+            tailWheelLockedState = tailWheelLockTarget
+            tailWheelLocked = tailWheelLockTarget
+        end
 
+        --print_message_to_user(tailWheelLockedState)
+        dispatch_action(nil, EFM_commands.lockTailWheel, tailWheelLocked)
+
+        if tailWheelLockedState >= 0 then
+            paramTailWheelLockLight:set(tailWheelLocked * tailWheelLockPwrState)
+        else
+            paramTailWheelLockLight:set(0.5)
+        end
+    end
     -- Wipers
 	local wiperBaseSpeed = 0.01
 	local wiperVal = get_aircraft_draw_argument_value(630)

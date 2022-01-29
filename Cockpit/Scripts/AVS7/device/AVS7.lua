@@ -47,10 +47,19 @@ local handleBrightness = get_param_handle("AVS7_BRIGHTNESS")
 local avs7Brightness = 1
 local avs7BrightnessChange = 0
 
+local avs7wpToHandle = get_param_handle("AVS7_WPTO")
+local avs7wpFromHandle = get_param_handle("AVS7_WPFROM")
+
+local avs7wpToDisplayHandle = get_param_handle("AVS7_WPTO_DISPLAY")
+local avs7wpFromDisplayHandle = get_param_handle("AVS7_WPFROM_DISPLAY")
+
 local curPosX = 0
 local curPosY = 0
 local lastPosX = 0
 local lastPosY = 0
+
+local rdrAltDigitVis = 0
+local rdrAltBarVis = 0
 
 local powerSwitchOn = false
 local powerSwitchState = 0
@@ -79,6 +88,7 @@ dev:listen_command(Keys.avs7Brighten)
 dev:listen_command(Keys.avs7Dim)
 
 function SetCommand(command,value)   
+    --print_message_to_user(value)
     if command == device_commands.setAVS7Power then
         if (value >= 0) then
             powerSwitchOn = true
@@ -95,11 +105,6 @@ function SetCommand(command,value)
         else
             dev:performClickableAction(device_commands.setAVS7Power,0,true)
         end
-    elseif command == Keys.avs7Brighten then
-        dev:performClickableAction(device_commands.decAVS7Brightness,1,true)
-    elseif command == Keys.avs7Dim then
-        --print_message_to_user(value)
-        dev:performClickableAction(device_commands.incAVS7Brightness,-1,true)
     end
 end
 
@@ -111,14 +116,14 @@ function update()
         -- TODO POWER UP AND BIT
         handlePower:set(1)
 
-        paramBaroAlt:set(sensor_data.getBarometricAltitude() * meters_to_feet)
+        paramBaroAlt:set(clamp(sensor_data.getBarometricAltitude() * meters_to_feet, -1000, 20000))
         paramHeading:set(360 - (sensor_data.getHeading() * radian_to_degree))
     
         -- TODO TRQ box
     
         -- Bank angle indicator should flash >30deg
         local bankAngle = sensor_data.getRoll() * radian_to_degree
-        paramBankAngle:set(clamp(-bankAngle, -30, 30) / radian_to_degree)
+        paramBankAngle:set(clamp(-bankAngle, -180, 180) / radian_to_degree)
         if bankAngle > 30 or bankAngle < -30 then
             paramBankAngleVis:set(math.sin(get_absolute_model_time() * 16))
         else
@@ -137,7 +142,7 @@ function update()
     
         -- IAS disappears below 32kts
         local ias = sensor_data.getIndicatedAirSpeed() * msToKts
-        paramIAS:set(sensor_data.getIndicatedAirSpeed() * msToKts)
+        paramIAS:set(clamp(sensor_data.getIndicatedAirSpeed() * msToKts, 0, 180))
         if ias < 32 then
             paramIASVis:set(0)
         else
@@ -149,18 +154,29 @@ function update()
         -- Digits disappear at 999ft
         -- TODO LO ALT box
         local rdrAlt = (sensor_data.getRadarAltitude() * meters_to_feet) - 8
-        handleRdrAlt:set(clamp(rdrAlt, 0, 1500))
+        local rdrAltDigits = rdrAlt
+
+        if rdrAlt > 200 then
+            rdrAltDigits = round(rdrAlt / 10) * 10
+        end
+
+        handleRdrAlt:set(clamp(rdrAltDigits, 0, 1500))
         handleRdrAltLine:set(rdrAlt / 250)
-        if rdrAlt >= 250 then
+
+        if rdrAlt > 250 and rdrAltBarVis == 1 then
             handleRdrAltVis:set(0)
-        else
+            rdrAltBarVis = 0
+        elseif rdrAlt <= 230 then
             handleRdrAltVis:set(avs7Brightness)
+            rdrAltBarVis = 1
         end
     
-        if rdrAlt >= 1000 then
+        if rdrAlt >= 999 and rdrAltDigitVis == 1 then
             handleRdrAltDigitVis:set(0)
-        else
-            handleRdrAltDigitVis:set(1)
+            rdrAltDigitVis = 0
+        elseif rdrAlt <= 950 then
+            handleRdrAltDigitVis:set(avs7Brightness)
+            rdrAltDigitVis = 1
         end
     
         -- Vertical speed, shares same scale as radar alt
@@ -203,6 +219,9 @@ function update()
         end
 
         handleBrightness:set(avs7Brightness)
+
+        avs7wpToDisplayHandle:set(avs7wpToHandle:get() * avs7Brightness)
+        avs7wpFromDisplayHandle:set(avs7wpFromHandle:get() * avs7Brightness)
     
         -- Attitude ref and horizon line visibility
         local absPitchAngle = math.abs(pitchAngle)

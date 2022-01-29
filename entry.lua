@@ -4,7 +4,7 @@ declare_plugin(self_ID,
 	dirName			= current_mod_path,
 	displayName		= _("UH-60L Black Hawk"),
 	fileMenuName	= _("UH-60L"),
-	version 		= "1.0",
+	version 		= "1.1",
 	state			= "installed",
 	info			= _("The UH-60L Black Hawk is a utility helicopter used by the US Army and other forces around the world."),
 
@@ -68,11 +68,11 @@ local FM =
 {
 	[1] = self_ID,
 	[2] = "UH60L", -- name of dll
-	center_of_mass = {0,0,0},  -- center of mass position relative to object 3d model center for empty aircraft
+	center_of_mass = {-0.06,0,0},  -- center of mass position relative to object 3d model center for empty aircraft
 	moment_of_inertia = {7631.899, 54232.718, 50436.427, 79.315}, -- 5629.0, 40000.0, 37200.0, 58.5 in slug-ft^2 - moment of inertia of empty (Ixx,Iyy,Izz,Ixz)	in kgm^2
 	suspension = suspension
 }
 
 make_flyable('UH-60L',current_mod_path..'/Cockpit/Scripts/', FM, current_mod_path..'/comm.lua')
-
+set_manual_path('UH-60L', current_mod_path .. '/Doc/manual')
 plugin_done()

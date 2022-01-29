@@ -1,58 +1,40 @@
 dofile(LockOn_Options.common_script_path..'Radio.lua')
 dofile(LockOn_Options.common_script_path.."mission_prepare.lua")
-dofile(LockOn_Options.script_path.."EFM_Data_Bus.lua")
+
 dofile(LockOn_Options.script_path.."devices.lua")
 dofile(LockOn_Options.script_path.."command_defs.lua")
 dofile(LockOn_Options.script_path.."utils.lua")
 
 local dev 	    = GetSelf()
-local efm_data_bus = get_efm_data_bus()
 
-device_timer_dt = 0.2
+local update_time_step = 1
+device_timer_dt = update_time_step
 
-innerNoise 		    	= getInnerNoise(2.5E-6, 10.0)--V/m (dB S+N/N)
-frequency_accuracy 	= 0				--Hz
-band_width			    = 12E3				--Hz (6 dB selectivity)
-power 				      = 10.0				--Watts
+innerNoise = getInnerNoise(2.5E-6, 10.0)
+frequency_accuracy = 500.0
+band_width = 12E3
+power = 10.0
 goniometer = {isLagElement = true, T1 = 0.3, bias = {{valmin = math.rad(0), valmax = math.rad(360), bias = math.rad(1)}}}
 
 agr =
 {
-  input_signal_deviation		= rangeUtoDb(4E-6, 0.5), --Db
-  output_signal_deviation		= 5 - (-4),  --Db
-  input_signal_linear_zone 	= 10.0, --Db
-  regulation_time				    = 0.25, --sec
+  input_signal_deviation = rangeUtoDb(4E-6, 0.5),
+  output_signal_deviation = 5 - (-4),
+  input_signal_linear_zone = 10.0,
+  regulation_time = 0.25,
 }
 
 GUI =
 {
-  range = {min = 225E6, max = 399.975E6, step = 25E3}, --Hz
-  displayName = 'UHF Radio AN/ARC-164',
+  range = {min = 225E6, max = 399.975E6, step = 25E3},
+  displayName = "UHF Radio AN/ARC-164",
   AM = true,
-  FM = false,
+  FM = true,
 }
 
-local update_time_step = 0.1 --update will be called once per second
-device_timer_dt = update_time_step
-
 function post_initialize()
-  efm_data_bus.fm_setAvionicsAlive(1.0)
-  dev:set_frequency(256E6)
-  dev:set_modulation(MODULATION_AM) -- gives DCS.log INFO msg:  COCKPITBASE: avBaseRadio::ext_set_modulation not implemented, used direct set
-
-  str_ptr = string.sub(tostring(dev.link),10)
-  efm_data_bus.fm_setRadioPTR(str_ptr)
-
-  local intercom = GetDevice(devices.INTERCOM)
-  intercom:set_communicator(devices.UHF_RADIO)
-  intercom:make_setup_for_communicator()
-end
-
-function SetCommand()
-  dev:set_frequency(256E6) -- Sochi
+  dev:set_frequency(261E6)
   dev:set_modulation(MODULATION_AM)
-  local intercom = GetDevice(devices.INTERCOM)
-  intercom:set_communicator(devices.UHF_RADIO)
 end
 
-need_to_be_closed = false -- close lua state after initialization
+need_to_be_closed = false

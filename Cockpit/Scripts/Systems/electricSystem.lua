@@ -77,6 +77,34 @@ function CockpitEvent(event,val)
     end
 end
 
+function post_initialize()
+    str_ptr = string.sub(tostring(dev.link),10)
+    efm_data_bus.fm_setElecPTR(str_ptr)
+
+    local birth = LockOn_Options.init_conditions.birth_place
+    
+    if birth=="GROUND_HOT" or birth=="AIR_HOT" then
+        paramDCEssBusOn:set(1)
+        paramDCBus1On:set(1)
+        paramDCBus2On:set(1)
+        paramACEssBusOn:set(1)
+        paramACBus1On:set(1)
+        paramACBus2On:set(1)
+        paramGen1On:set(1)
+        paramGen2On:set(1)
+        paramAPUGenOn:set(0)
+        paramConverter1On:set(1)
+        paramConverter2On:set(1)
+        
+        update()
+    elseif birth=="GROUND_COLD" then
+    end
+end
+
+
+function SetCommand(command,value)
+end
+
 function update()
     -- Update bus states
     DCEssBusOn  = paramDCEssBusOn:get()
@@ -141,6 +169,7 @@ function update()
     paramCB_COMP:set(ACBus2On)
     paramCB_TAILWHEELLOCK:set(DCEssBusOn)
     paramCB_CHAFFDISP:set(DCBus1On)
+    paramCB_LIGHTSSECPNL:set(DCEssBusOn)
 
     -- Update associated cautions and advisories
     paramAdvisoryApuGenDisplay:set(APUGenOn)
@@ -156,36 +185,7 @@ function update()
     else
         paramCautionBattLow:set(0)
     end
-
     paramAdvisoryExtPwr:set(extPwrConnected:get())
-end
-
-function post_initialize()
-    str_ptr = string.sub(tostring(dev.link),10)
-    efm_data_bus.fm_setElecPTR(str_ptr)
-
-    local birth = LockOn_Options.init_conditions.birth_place
-    
-    if birth=="GROUND_HOT" or birth=="AIR_HOT" then
-        paramDCEssBusOn:set(1)
-        paramDCBus1On:set(1)
-        paramDCBus2On:set(1)
-        paramACEssBusOn:set(1)
-        paramACBus1On:set(1)
-        paramACBus2On:set(1)
-        paramGen1On:set(1)
-        paramGen2On:set(1)
-        paramAPUGenOn:set(0)
-        paramConverter1On:set(1)
-        paramConverter2On:set(1)
-        
-        update()
-    elseif birth=="GROUND_COLD" then
-    end
-end
-
-
-function SetCommand(command,value)
 end
 
 need_to_be_closed = false -- close lua state after initialization

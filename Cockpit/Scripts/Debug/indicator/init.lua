@@ -7,7 +7,7 @@ purposes 	   = {render_purpose.GENERAL,render_purpose.HUD_ONLY_VIEW}
 --subset ids
 BASE    = 1
 YAW    = 2
-PITCH    = 2
+PITCH    = 3
 
 page_subsets  =
 {

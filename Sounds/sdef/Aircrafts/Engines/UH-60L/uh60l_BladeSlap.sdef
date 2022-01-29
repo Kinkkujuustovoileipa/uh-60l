@@ -1,0 +1,8 @@
+wave = "Effects/Aircrafts/Engines/UH-60L/uh60l_BladeSlap"
+inner_radius = 100
+outer_radius = 1500
+gain = 3
+--attack = 0.3
+--release = 0.4
+--lowpass = 24000.0
+

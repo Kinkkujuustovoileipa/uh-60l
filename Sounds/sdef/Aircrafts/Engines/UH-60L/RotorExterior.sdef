@@ -1,4 +1,0 @@
-inherit = "HelicopterFan"
-wave = "Effects/temp/exterior/xrotor"
-gain = 1.00
-cone_outer_gain = 1.00

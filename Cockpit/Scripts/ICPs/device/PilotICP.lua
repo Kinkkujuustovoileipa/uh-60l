@@ -77,15 +77,15 @@ function post_initialize()
 	local dev = GetSelf()
     local birth = LockOn_Options.init_conditions.birth_place	
     if birth=="GROUND_HOT" or birth=="AIR_HOT" then 			  
-        dev:performClickableAction(device_commands.pilotICPSetVolume,1,true)
-        dev:performClickableAction(device_commands.pilotICPToggleFM1,1,true)
-        dev:performClickableAction(device_commands.pilotICPToggleUHF,1,true)
-        dev:performClickableAction(device_commands.pilotICPToggleVHF,1,true)
-        dev:performClickableAction(device_commands.pilotICPToggleFM2,1,true)
-        dev:performClickableAction(device_commands.pilotICPToggleHF,1,true)
-    elseif birth=="GROUND_COLD" then
-
+    elseif birth=="GROUND_COLD" then 
     end
+
+    dev:performClickableAction(device_commands.pilotICPSetVolume,1,true)
+    dev:performClickableAction(device_commands.pilotICPToggleFM1,1,true)
+    dev:performClickableAction(device_commands.pilotICPToggleUHF,1,true)
+    dev:performClickableAction(device_commands.pilotICPToggleVHF,1,true)
+    dev:performClickableAction(device_commands.pilotICPToggleFM2,1,true)
+    dev:performClickableAction(device_commands.pilotICPToggleHF,1,true)
 end
 
 function setXMITMode()

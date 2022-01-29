@@ -62,7 +62,7 @@ local function head_pos_default(tab)
     if not tab then
 	   tab = {}
 	end
-	tab.viewAngle = tab.viewAngle  or 75 -- FOV
+	tab.viewAngle = tab.viewAngle  or 90 -- FOV
 	tab.hAngle    = tab.hAngle     or  0
 	tab.vAngle    = tab.vAngle     or -8 -- angles down pilot view
 	tab.x_trans   = tab.x_trans    or  2.3 --moves pilot view forward .725
@@ -76,7 +76,7 @@ local function head_pos_default2(tab)
     if not tab then
 	   tab = {}
 	end
-	tab.viewAngle = tab.viewAngle  or 75 -- FOV
+	tab.viewAngle = tab.viewAngle  or 90 -- FOV
 	tab.hAngle    = tab.hAngle     or  0
 	tab.vAngle    = tab.vAngle     or -8 -- angles down pilot view
 	tab.x_trans   = tab.x_trans    or  2.3 --moves pilot view forward
@@ -114,17 +114,46 @@ local function head_pos_default4(tab)
 	return tab
 end
 
-SnapViews = {
-	[1] = {-- player slot 1 (pilot)
+SnapViews =
+{
+	[1] =
+	{-- player slot 1 (pilot)
 		[1]  = head_pos_default(),--Num 0
+		[2]  = head_pos_default(),--Num 1
+		[3]  = head_pos_default(),--Num 2
+		[4]  = head_pos_default(),--Num 3
+		[5]  = head_pos_default(),--Num 4
+		[6]  = head_pos_default(),--Num 5
+		[7]  = head_pos_default(),--Num 6
+		[8]  = head_pos_default(),--Num 7
+		[9]  = head_pos_default(),--Num 8
+		[10]  = head_pos_default(),--Num 9
+		[11]  = head_pos_default(),--left mirror
+		[12]  = head_pos_default(),--right mirror
+		[13]  = head_pos_default({viewAngle = 75, hAngle = 0, vAngle = -5, x_trans = 0, y_trans = 0, z_trans = 0, rollAngle = 0}),--default
 	},
-	[2] = {-- player slot 2 (copilot)
-		[1]  = head_pos_default2(),--Num 0
+	[2] =
+	{-- player slot 2 (copilot)
+		[1]  = head_pos_default(),--Num 0
+		[2]  = head_pos_default(),--Num 1
+		[3]  = head_pos_default(),--Num 2
+		[4]  = head_pos_default(),--Num 3
+		[5]  = head_pos_default(),--Num 4
+		[6]  = head_pos_default(),--Num 5
+		[7]  = head_pos_default(),--Num 6
+		[8]  = head_pos_default(),--Num 7
+		[9]  = head_pos_default(),--Num 8
+		[10]  = head_pos_default(),--Num 9
+		[11]  = head_pos_default(),--left mirror
+		[12]  = head_pos_default(),--right mirror
+		[13]  = head_pos_default({viewAngle = 75, hAngle = 0, vAngle = -5, x_trans = 0, y_trans = 0, z_trans = 0, rollAngle = 0}),--default
 	},
-	[3] = {-- player slot 2 (copilot)
+	[3] =
+	{-- player slot 2 (copilot)
 		[1]  = head_pos_default3(),--Num 0
 	},
-	[4] = {-- player slot 2 (copilot)
+	[4] =
+	{-- player slot 2 (copilot)
 		[1]  = head_pos_default4(),--Num 0
 	},
 }

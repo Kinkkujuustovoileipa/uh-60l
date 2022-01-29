@@ -65,8 +65,10 @@ local trackErrorHandle = get_param_handle("ASN128_TKE")
 
 -- GS/TK/NAV
 local groundSpeedHandle = get_param_handle("ASN128_GS")
+local paramGroundSpeed = get_param_handle("GROUND_SPEED")
 local trackAngleHandle = get_param_handle("ASN128_TK")
 local directTrackAngleHandle = get_param_handle("ASN128_DTK")
+local paramTrackAngle = get_param_handle("TRACK_ANGLE")
 
 -- PP
 local pPos1Handle = get_param_handle("ASN128_PPOS1")
@@ -94,6 +96,8 @@ local avs7wpBrgHandle = get_param_handle("AVS7_WP_BRG")
 local avs7wpDistHandle = get_param_handle("AVS7_WP_DIST")
 local avs7wpIndHandle = get_param_handle("AVS7_WPIND")
 local avs7GSHandle = get_param_handle("AVS7_GS")
+local avs7wpToHandle = get_param_handle("AVS7_WPTO")
+local avs7wpFromHandle = get_param_handle("AVS7_WPFROM")
 
 local moreStepEnabled = false
 local endStepEnabled = false
@@ -326,7 +330,8 @@ end
 -- long painful function because lua doesn't support fucking switch cases!
 function getKeyValue(command)
     local latHemiOnly = (modeIndex == 4 and pageIndex == 50 and kybdModeEnabled and kybdModeIndex == 2 and #inputArray == 0)
-    local longHemiOnly = (modeIndex == 4 and pageIndex == 50 and kybdModeEnabled and kybdModeIndex == 2 and #inputArray == 0)
+    local longHemiOnly = (modeIndex == 4 and pageIndex == 50 and kybdModeEnabled and kybdModeIndex == 3 and #inputArray == 0)
+    local long100Only = (modeIndex == 4 and pageIndex == 50 and kybdModeEnabled and kybdModeIndex == 3 and #inputArray == 1)
 
     if latHemiOnly then
         if command == device_commands.SelectBtn5 then
@@ -339,10 +344,20 @@ function getKeyValue(command)
     end
 
     if longHemiOnly then
-        if command == device_commands.SelectBtn3 then
+        if command == device_commands.SelectBtn2 then
             return "E"
         elseif command == device_commands.SelectBtn8 then
             return "W"
+        else
+            return ""
+        end
+    end
+
+    if long100Only then
+        if command == device_commands.SelectBtn1 then
+            return "1"
+        elseif command == device_commands.SelectBtn0 then
+            return "0"
         else
             return ""
         end
@@ -711,8 +726,11 @@ function updatePresentPosition()
         groundSpeedHandle:set("GS:"..formatPrecedingZeros(round(gs * msToKph), 3).."kph")
     end
 
-    trackAngle = round(formatCompassDir(360 - math.deg(sensor_data:getHeading()) + math.deg(math.atan2(gsZ, gsX))))
-    trackAngleHandle:set("TK:"..formatPrecedingZeros(trackAngle, 3).."°")
+    paramGroundSpeed:set(gs)
+
+    trackAngle = formatCompassDir(360 - math.deg(sensor_data:getHeading()) + math.deg(math.atan2(gsZ, gsX)))
+    paramTrackAngle:set(trackAngle)
+    trackAngleHandle:set("TK:"..formatPrecedingZeros(round(trackAngle), 3).."°")
 end
 
 function updateMagVar()
@@ -740,14 +758,14 @@ function updateWPInfo()
         rangeKm = math.sqrt((Xcoord - selfX)^2 + (Ycoord - selfZ)^2) / 1000
         rangeNm = rangeKm * kmToNm
 
-        local speedMS = math.max(sensor_data.getSelfVelocity(), 60 / msToKts)
+        local speedMS = math.max(paramGroundSpeed:get(), 60 / msToKts)
         local timeSecs = (rangeKm * 1000) / speedMS
         timeHour = formatPrecedingZeros(math.floor(timeSecs/3600),2)
         timeMin = formatPrecedingZeros(round((timeSecs/3600 - timeHour) * 60, 1), 4)
 
         -- Update the AN/AVS-7 with dist and brg info
         avs7wpBrgHandle:set(bearingToNextWP)
-        avs7wpDistHandle:set(math.sqrt((Xcoord - selfX)^2 + (Ycoord - selfZ)^2) / 1000)
+        avs7wpDistHandle:set(clamp(rangeKm, 0, 999.9))
         local relBearing = getShortestCompassPath(bearingToNextWP, (360 - (sensor_data.getHeading() * radian_to_degree)))
         local wpIndPos = clamp(relBearing / 60, -1, 1)
         --print_message_to_user("Bearing: "..relBearing..": IndPos: "..wpIndPos)
@@ -782,8 +800,8 @@ function updateWPInfo()
 
         directTrackAngleHandle:set("DTK:"..formatPrecedingZeros(directTrackAngle, 3).."°")
 
-        rangeNm = round(rangeNm)
-        rangeKm = round(rangeKm)
+        rangeNm = clamp(round(rangeNm, 1), 0, 999.9)
+        rangeKm = clamp(round(rangeKm, 1), 0, 999.9)
     else
         -- Update CISP that there is no WP info
         paramGPSAvail:set(0)
@@ -806,8 +824,14 @@ function updateCourseDisplay()
     local isTo = false
     local relBearing = getShortestCompassPath(bearingToNextWP, (360 - (sensor_data.getHeading() * radian_to_degree)))
     local toFrStr = "\\/"
+
     if relBearing < 90 and relBearing > -90 then
         toFrStr = "/\\"
+        avs7wpToHandle:set(1)
+        avs7wpFromHandle:set(0)
+    else
+        avs7wpToHandle:set(0)
+        avs7wpFromHandle:set(1)
     end
 
     local indPos = 8

@@ -1,0 +1,9 @@
+
+wave = "Effects/Aircrafts/Engines/UH-60L/uh60l_InteriorEngineStarter"
+gain = 0.5
+
+inner_radius = 100
+outer_radius = 1500
+direction = {0, 1, 0}
+cone_inner_angle = 60
+cone_outer_angle = 30

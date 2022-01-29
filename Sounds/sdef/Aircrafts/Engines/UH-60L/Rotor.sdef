@@ -1,5 +1,0 @@
-inherit = "HelicopterFan"
-wave = "Effects/temp/rotor.wav"
-inner_radius = 100
-position = {0.0, 0.0, 0.0}
-gain = 2

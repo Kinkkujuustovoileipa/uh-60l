@@ -20,6 +20,8 @@ paramCopilotHSICourse = get_param_handle("COPILOT_HSI_CRSBUG")
 
 local paramAHRUAligned = get_param_handle("AHRU_ALIGNED")
 
+local aircraftHeading
+
 -- For the VSI CISP logic
 pilotHeading = 0
 pilotCourse = 0
@@ -70,6 +72,8 @@ paramGPSTrackError = get_param_handle("CISP_GPS_TRACKERROR")
 
 paramPltRdrAltLo = get_param_handle("PILOT_APN209_LOBUG")
 paramCpltRdrAltLo = get_param_handle("COPILOT_APN209_LOBUG")
+
+paramTrackAngle = get_param_handle("TRACK_ANGLE")
 
 -- Lights
 paramCISPHDGLt = get_param_handle("LIGHTING_CIS_HDG_ON")
@@ -182,7 +186,7 @@ function updateVORILS()
                     gsBeaconAlt = gsBeacon.position[2]
 
                     -- Set track error
-                    vorILSTrackError = getShortestRadialPath(vorILSBearing, ilsDirection)
+                    vorILSTrackError = getShortestRadialPath(vorILSBearing, course)
                 else
                     validVOR = true
                     vorILSTrackError = getShortestRadialPath(vorILSBearing, course)
@@ -223,6 +227,8 @@ function updateCRSDeviationBar()
     local crsDeviationPos = 0
     if navModeOn and vorModeOn and validVOR then
         crsDeviationPos = clamp(vorILSTrackError / 10, -1, 1)
+    elseif navModeOn and ilsModeOn and validILS then
+        crsDeviationPos = clamp(vorILSTrackError / 2.5, -1, 1)
     elseif navModeOn and dplrGpsModeOn then
         crsDeviationPos = clamp(paramGPSTrackError:get() / 10, -1, 1)
     end
@@ -261,7 +267,7 @@ function interceptFollowRadial(courseDir, bearing, distanceToTarget)
         return
     end
 
-    --print_message_to_user("VOR Dist: "..vorILSDistance.."; crsDeviationDeg: "..crsDeviationDeg.."; distToIntercept: "..distanceToRadial)s
+    --print_message_to_user("VOR Dist: "..vorILSDistance.."; crsDeviationDeg: "..crsDeviationDeg.."; distToIntercept: "..distanceToRadial)
     local standardRateBankAngle = ((sensor_data:getIndicatedAirSpeed() * msToKts) / 10) + 7
     -- r = s^2/11.26*a
     -- a = (s^2/r)/11.26
@@ -271,13 +277,13 @@ function interceptFollowRadial(courseDir, bearing, distanceToTarget)
 
     --print_message_to_user(crsDeviationDeg)
     if crsDeviationDeg >= 2.5 then
-        local hdgOffset = getShortestRadialPath(interceptHeading, 360 - sensor_data:getHeading() * radian_to_degree)
+        local hdgOffset = getShortestRadialPath(interceptHeading, paramTrackAngle:get())
         commandRoll = calculateRollCmdPosUsingHdg(hdgOffset)
         --print_message_to_user("45 intercept. bank angle: "..requiredBankAngle.."; crsDeviationDeg"..crsDeviationDeg)
     else
         -- turn onto and follow the radials
         local hdg = courseDir - clamp(crsDeviationDeg * 5, -45, 45)
-        local hdgOffset = getShortestRadialPath(hdg, 360 - sensor_data:getHeading() * radian_to_degree)
+        local hdgOffset = getShortestRadialPath(hdg, paramTrackAngle:get())
         commandRoll = calculateRollCmdPosUsingHdg(hdgOffset)
         --print_message_to_user("course/ILS dir: "..courseDir.."; tgtHeading: "..hdg.."; distToRadial: "..distanceToRadial.."; crsDeviationDeg"..crsDeviationDeg)
     end
@@ -304,8 +310,8 @@ end
 
 function updateVSI()
     if ahruPower then
-        moveGauge(paramVSIPitch, sensor_data:getPitch() + paramAHRUPitchError:get(), 10 / radian_to_degree, update_time_step)
-        moveGauge(paramVSIRoll, sensor_data:getRoll() + paramAHRURollError:get(), 10 / radian_to_degree, update_time_step)
+        moveGauge(paramVSIPitch, sensor_data:getPitch() + paramAHRUPitchError:get(), 20 / radian_to_degree, update_time_step)
+        moveGauge(paramVSIRoll, sensor_data:getRoll() + paramAHRURollError:get(), 20 / radian_to_degree, update_time_step)
         --print_message_to_user(sensor_data:getPitch().."; "..paramAHRUPitchError:get().."; "..paramVSIPitch:get())
     end
 
@@ -314,7 +320,7 @@ function updateVSI()
 	if hdgModeOn then
         -- Standard Heading Mode, follow the heading bug. Also reused as a nav submode
 		-- Command a roll equating to 1 degree of roll for every 1 degree off heading
-        local hdgOffset = getShortestRadialPath(heading, 360 - sensor_data:getHeading() * radian_to_degree)
+        local hdgOffset = getShortestRadialPath(heading, aircraftHeading)
 		commandRoll = calculateRollCmdPosUsingHdg(hdgOffset)
     elseif navModeOn then
         -- Check for mode
@@ -330,11 +336,11 @@ function updateVSI()
             -- Submode logic
             if stationPassageSubModeOn then
                 -- Station Passage submode. Follow course bug. Automatically disengaged after 30s after passing over beacon/waypoint
-                local crsOffset = getShortestRadialPath(course, 360 - sensor_data:getHeading() * radian_to_degree)
+                local crsOffset = getShortestRadialPath(course, paramTrackAngle:get())
 		        commandRoll = calculateRollCmdPosUsingHdg(crsOffset)
             elseif hdgSubModeOn then
                 -- Heading submode. Follow heading bug. Automatically disengaged within 15deg of radial.
-                local hdgOffset = getShortestRadialPath(heading, 360 - sensor_data:getHeading() * radian_to_degree)
+                local hdgOffset = getShortestRadialPath(heading, aircraftHeading)
 		        commandRoll = calculateRollCmdPosUsingHdg(hdgOffset)
             else
                 -- Default VOR mode - intercept the radial at 45deg then follow
@@ -355,15 +361,15 @@ function updateVSI()
             -- Submode logic
             if stationPassageSubModeOn then
                 -- Station Passage submode. Follow course bug. Automatically disengaged after 30s after passing over beacon/waypoint
-                local crsOffset = getShortestRadialPath(course, 360 - sensor_data:getHeading() * radian_to_degree)
+                local crsOffset = getShortestRadialPath(course, paramTrackAngle:get())
 		        commandRoll = calculateRollCmdPosUsingHdg(crsOffset)
             elseif hdgSubModeOn then
                 -- Heading submode. Follow heading bug. Automatically disengaged within 2.5deg of radial.
-                local hdgOffset = getShortestRadialPath(heading, 360 - sensor_data:getHeading() * radian_to_degree)
+                local hdgOffset = getShortestRadialPath(heading, aircraftHeading)
 		        commandRoll = calculateRollCmdPosUsingHdg(hdgOffset)
             else
                 -- Default ILS mode - intercept the radial at 45deg then follow
-                commandRoll = interceptFollowRadial(ilsDirection, vorILSBearing, vorILSDistance)
+                commandRoll = interceptFollowRadial(course, vorILSBearing, vorILSDistance)
             end
         elseif dplrGpsModeOn then
             -- Check for submodes
@@ -382,11 +388,11 @@ function updateVSI()
             -- Submode logic
             if stationPassageSubModeOn then
                 -- Station Passage submode. Follow course bug. Automatically disengaged after 30s after passing over beacon/waypoint
-                local crsOffset = getShortestRadialPath(course, 360 - sensor_data:getHeading() * radian_to_degree)
+                local crsOffset = getShortestRadialPath(course, paramTrackAngle:get())
 		        commandRoll = calculateRollCmdPosUsingHdg(crsOffset)
             elseif hdgSubModeOn then
                 -- Heading submode. Follow heading bug. Automatically disengaged within 1000 to 200m of radial.
-                local hdgOffset = getShortestRadialPath(heading, 360 - sensor_data:getHeading() * radian_to_degree)
+                local hdgOffset = getShortestRadialPath(heading, aircraftHeading)
 		        commandRoll = calculateRollCmdPosUsingHdg(hdgOffset)
             else
                 -- Default DPLR GPS mode - intercept the waypoint course at 45deg then follow
@@ -419,7 +425,7 @@ function updateVSI()
         local targetAlt
         
         if altModeOn then
-            targetAlt = pilotAltHoldAltitude
+            targetAlt = pilotAltHoldAltitude * meters_to_feet
         elseif approachSubModeOn then
             local heliRdrAlt = sensor_data.getRadarAltitude() * meters_to_feet
 
@@ -438,10 +444,11 @@ function updateVSI()
             end
         end
         
-        local vs = sensor_data.getVerticalVelocity() * msToFpm
-        local relAlt = (heliAlt / 50) - (targetAlt / 50)
-        commandCollective =  clamp(((vs / 200) + relAlt) / 2, -0.5, 0.5)
-        --print_message_to_user("vs: "..vs.."; targetAlt: "..targetAlt.."; relAlt: "..relAlt)
+        local vs = clamp((sensor_data.getVerticalVelocity() * msToFpm) / 1000, -1, 1)
+        local relAlt = clamp((heliAlt / 100) - (targetAlt / 100), -1, 1)
+
+        commandCollective = clamp(relAlt + vs, -1, 1) / 2
+        --printsec("vs: "..vs.."; ra: "..relAlt.."cc: "..commandCollective)
     end
     
     moveGauge(paramVSICollectiveCmdBar, commandCollective, 1, update_time_step)
@@ -470,12 +477,12 @@ function updateVSI()
     local trackErrorIndPos = 0
     if navModeOn and (ilsModeOn and validILS) then
         local ilsDeviationDeg = getShortestRadialPath(ilsDirection, vorILSBearing)
-        trackErrorIndPos = clamp(ilsDeviationDeg / 2.5, -1, 1)
+        trackErrorIndPos = -clamp(ilsDeviationDeg / 2.5, -1, 1)
     elseif navModeOn and vorModeOn and validVOR then
         local vorDeviationDeg = getShortestRadialPath(course, vorILSBearing)
-        trackErrorIndPos = clamp(vorDeviationDeg / 10, -1, 1)
+        trackErrorIndPos = -clamp(vorDeviationDeg / 10, -1, 1)
     elseif navModeOn and dplrGpsModeOn then
-        trackErrorIndPos = clamp(paramGPSTrackError:get() / 10, -1, 1)
+        trackErrorIndPos = -clamp(paramGPSTrackError:get() / 10, -1, 1)
     end
     
     moveGauge(paramVSITrackErrorInd, trackErrorIndPos, 1, update_time_step)
@@ -500,7 +507,7 @@ function updateVORDirFlag()
 end
 
 function updateFlags()
-    if validVOR then
+    if validVOR or validILS then
         moveGauge(paramVSINAVFlag, 1, flagMoveSpeed, update_time_step)
         moveGauge(paramHSINavFlag, 0, flagMoveSpeed, update_time_step)
     else
@@ -605,7 +612,7 @@ end
 function updateCore()
     -- HSI Compass Dir
     if ahruPower then
-        local aircraftHeading = 360 - (sensor_data:getHeading() * radian_to_degree)
+        aircraftHeading = 360 - (sensor_data:getHeading() * radian_to_degree)
         --moveCompass(paramHSICompass, formatCompassDir(aircraftHeading + paramAHRUHeadingError:get()), 30, update_time_step)
         paramHSICompass:set(aircraftHeading + paramAHRUHeadingError:get())
     end

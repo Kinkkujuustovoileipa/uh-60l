@@ -240,7 +240,7 @@ elements["PNT-285"]	= default_button(_("Copilot's Chronometer START/STOP/ADVANCE
 
 -- PILOT ICS PANEL
 --multiposition_switch_relative(hint_,device_,command_,arg_,count_,delta_,inversed_,min_,animation_speed_,cycled_)
-elements["PNT-400"]	= multiposition_switch(_("Pilot ICP XMIT Selector"),            devices.PLT_ICP, device_commands.pilotICPXmitSelector, 400, 6,  1/5,  false, 0, 16, false)
+elements["PNT-400"]	= multiposition_switch(_("Pilot ICP XMIT Selector"),            devices.BASERADIO, device_commands.pilotICPXmitSelector, 400, 6,  1/5,  false, 0, 16, false)
 elements["PNT-401"]	= default_axis_limited(_("Pilot ICP RCV Volume"),               devices.PLT_ICP, device_commands.pilotICPSetVolume, 401, 0, 0.1, true, false, {0,1})
 elements["PNT-402"]	= default_2_position_tumb(_("Pilot ICP Hot Mike (Inop.)"),      devices.PLT_ICP, device_commands.foo, 402, 8)
 elements["PNT-403"]	= default_2_position_tumb(_("Pilot ICP RCV FM1"),               devices.PLT_ICP, device_commands.pilotICPToggleFM1, 403, 8)
@@ -369,4 +369,4 @@ elements["PNT-808"]	= default_2_position_tumb(_("Copilot ICP RCV VOR/LOC (Inop.)
 elements["PNT-809"]	= default_2_position_tumb(_("Copilot ICP RCV ADF (Inop.)"),               devices.CPLT_ICP, device_commands.copilotICPToggleADF, 809, 8)
 
 -- DEBUG
---elements["PNT-3000"]	= default_2_position_tumb(_("Debug Visualisation ON/OFF"), devices.DEBUG, device_commands.visualisationToggle, 3000, 8)
+elements["PNT-3000"]	= default_2_position_tumb(_("Debug Visualisation ON/OFF"), devices.DEBUG, device_commands.visualisationToggle, 3000, 8)

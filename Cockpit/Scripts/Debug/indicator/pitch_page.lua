@@ -93,6 +93,9 @@ addTextBlock({airspeedX, airspeedY - yDiff * 26,  0},  {"VRS Ground Effect: %f"}
 addTextBlock({airspeedX, airspeedY - yDiff * 27,  0},  {"CoG X: %f"},                {"paramDebugCoGX"})
 addTextBlock({airspeedX, airspeedY - yDiff * 28,  0},  {"CoG Y: %f"},                {"paramDebugCoGY"})
 addTextBlock({airspeedX, airspeedY - yDiff * 29,  0},  {"CoG Z: %f"},                {"paramDebugCoGZ"})
+addTextBlock({airspeedX, airspeedY - yDiff * 31,  0},  {"Body X: %f"},                {"paramDebugBodyX"})
+addTextBlock({airspeedX, airspeedY - yDiff * 32,  0},  {"Body Y: %f"},                {"paramDebugBodyY"})
+addTextBlock({airspeedX, airspeedY - yDiff * 33,  0},  {"Body Z: %f"},                {"paramDebugBodyZ"})
 
 --[[
 local debugPitchText           = CreateElement "ceStringPoly"
