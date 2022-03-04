@@ -48,13 +48,13 @@ function post_initialize()
 	stabPwrState = paramCB_STABCONTR1:get() * paramCB_STABCONTR2:get()
     local birth = LockOn_Options.init_conditions.birth_place	
     if birth=="GROUND_HOT" or birth=="AIR_HOT" then
-		dev:performClickableAction(device_commands.afcsStabAuto,1,true)			  
-		dev:performClickableAction(device_commands.afcsBoost,1,true)			  
-		dev:performClickableAction(device_commands.afcsSAS1,1,true)			  
-		dev:performClickableAction(device_commands.afcsSAS2,1,true)			  
+		dev:performClickableAction(device_commands.afcsStabAuto,1,true)
+		dev:performClickableAction(device_commands.afcsBoost,1,true)
+		dev:performClickableAction(device_commands.afcsSAS1,1,true)
+		dev:performClickableAction(device_commands.afcsSAS2,1,true)
 		dev:performClickableAction(device_commands.afcsTrim,1,true)
 		dev:performClickableAction(device_commands.afcsFPS,1,true)
-		update()	  
+		update()
     elseif birth=="GROUND_COLD" then
     end
 
@@ -70,6 +70,12 @@ dev:listen_command(device_commands.slewStabUp)
 dev:listen_command(device_commands.slewStabDown)
 dev:listen_command(Keys.slewStabUp)
 dev:listen_command(Keys.slewStabDown)
+dev:listen_command(Keys.afcsFPSToggle)
+dev:listen_command(Keys.afcsBoostToggle)
+dev:listen_command(Keys.afcsSAS1Toggle)
+dev:listen_command(Keys.afcsSAS2Toggle)
+dev:listen_command(Keys.afcsTrimToggle)
+dev:listen_command(Keys.afcsStabAutoToggle)
 
 function SetCommand(command,value)   
     if command == device_commands.afcsStabAuto then
@@ -106,6 +112,18 @@ function SetCommand(command,value)
 			dev:performClickableAction(device_commands.slewStabDown,0,true)
 			--dispatch_action(nil,device_commands.slewStabDown,0)
 		end
+	elseif command == Keys.afcsStabAutoToggle then
+		btnStabAutoState = 1 - btnStabAutoState
+	elseif command == Keys.afcsFPSToggle then
+		btnFPSState = 1 - btnFPSState
+	elseif command == Keys.afcsBoostToggle then
+		btnBoostState = 1 - btnBoostState
+	elseif command == Keys.afcsSAS1Toggle then
+		btnSas1State = 1 - btnSas1State
+	elseif command == Keys.afcsSAS2Toggle then
+		btnSas2State = 1 - btnSas2State
+	elseif command == Keys.afcsTrimToggle then
+		btnTrimState = 1 - btnTrimState
 	end
 end
 

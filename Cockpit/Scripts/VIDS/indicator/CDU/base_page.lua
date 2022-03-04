@@ -5,8 +5,8 @@ SetScale(METERS)
 local greenColor = {0,255,0,220}
 local yellowColor = {255,255,0,220}
 local redColor = {255,0,0,220}
-local font7segment = MakeFont({used_DXUnicodeFontData = "font7segment"}, greenColor)
-local center = calculateIndicatorCenterDash({-0.14,-0.582,2.553})  --- {L/R,U/D,forward/back}
+local h60_font_7seg = MakeFont({used_DXUnicodeFontData = "h60_font_7seg"}, greenColor)
+local center = calculateIndicatorCenterDash({-0.1,-0.6,2.607})  --- {L/R,U/D,forward/back} 2.607
 local rotation = {0, 0, dashRotation} -- main panel rotation roughly 22deg
 
 verts = {}
@@ -34,14 +34,16 @@ base.controllers     = {{"parameter_in_range",0,0.9,1.1}}
 Add(base)
 
 -- FUEL DIGITAL READOUT
-local posY = -0.1095
-local posZ = 0.0002
+local posY = -0.099
+local posZ = -0.0009
+
+--drawGrid(0,posY,posZ,100,100,base)
 
 local FuelAmount           = CreateElement "ceStringPoly"
 FuelAmount.name            = create_guid_string()
-FuelAmount.material        = font7segment
+FuelAmount.material        = h60_font_7seg
 FuelAmount.alignment       = "CenterCenter"
-FuelAmount.init_pos		   = {0.017, posY, posZ}
+FuelAmount.init_pos		   = {0.006, posY, posZ}
 FuelAmount.stringdefs      = {0.005,0.77*0.005, 0, 0} -- {size vertical, horizontal, 0, 0}
 FuelAmount.formats         = {"%4.0f"}
 FuelAmount.element_params  = {"CDU_FUEL_DIGITS"}
@@ -54,9 +56,9 @@ Add(FuelAmount)
 -- E1TGT
 local E1TGT           = CreateElement "ceStringPoly"
 E1TGT.name            = create_guid_string()
-E1TGT.material        = font7segment
+E1TGT.material        = h60_font_7seg
 E1TGT.alignment       = "CenterCenter"
-E1TGT.init_pos		   = {0.175, posY, posZ}
+E1TGT.init_pos		   = {0.149, posY, posZ}
 E1TGT.stringdefs      = {0.0045,0.75*0.005, 0, 0}  -- {size vertical, horizontal, 0, 0}
 E1TGT.formats         = {"%3.0f"}
 E1TGT.element_params  = {"CDU_TGT1_DIGITS"}
@@ -69,9 +71,9 @@ Add(E1TGT)
 -- E2TGT
 local E2TGT           = CreateElement "ceStringPoly"
 E2TGT.name            = create_guid_string()
-E2TGT.material        = font7segment
+E2TGT.material        = h60_font_7seg
 E2TGT.alignment       = "CenterCenter"
-E2TGT.init_pos		   = {0.194, posY, posZ}
+E2TGT.init_pos		   = {0.164, posY, posZ}
 E2TGT.stringdefs      = {0.0045,0.75*0.005, 0, 0}  -- {size vertical, horizontal, 0, 0}
 E2TGT.formats         = {"%3.0f"}
 E2TGT.element_params  = {"CDU_TGT2_DIGITS"}
@@ -84,9 +86,9 @@ Add(E2TGT)
 --N1_RPM1
 local E1NG           = CreateElement "ceStringPoly"
 E1NG.name            = create_guid_string()
-E1NG.material        = font7segment
+E1NG.material        = h60_font_7seg
 E1NG.alignment       = "CenterCenter"
-E1NG.init_pos		   = {0.22, posY, posZ}
+E1NG.init_pos		   = {0.190, posY, posZ}
 E1NG.stringdefs      = {0.0045,0.75*0.005, 0, 0}  -- {size vertical, horizontal, 0, 0}
 E1NG.formats         = {"%3.0f"}
 E1NG.element_params  = {"CDU_NG1_DIGITS"}
@@ -99,9 +101,9 @@ Add(E1NG)
 --N1_RPM2
 local E2NG           = CreateElement "ceStringPoly"
 E2NG.name            = create_guid_string()
-E2NG.material        = font7segment
+E2NG.material        = h60_font_7seg
 E2NG.alignment       = "CenterCenter"
-E2NG.init_pos		   = {0.237, posY, posZ}
+E2NG.init_pos		   = {0.204, posY, posZ}
 E2NG.stringdefs      = {0.0045,0.75*0.005, 0, 0}  -- {size vertical, horizontal, 0, 0}
 E2NG.formats         = {"%3.0f"}
 E2NG.element_params  = {"CDU_NG2_DIGITS"}
@@ -116,7 +118,7 @@ Add(E2NG)
 -----------------------------------------------------------------------------------------------------
 
 local Xsize = 0.002
-local Ysize = Xsize*0.58
+local Ysize = Xsize*0.51
 local numSegments = 30
 function addSegment(element, color)
 	element.vertices	   	= {{-Xsize , Ysize},
@@ -149,9 +151,9 @@ end
 --FUEL
 -----------------------------------------------------------------------------------------------------
 
-local _baseXPos = 0.01
-local _baseYPos = -0.0835
-local _ySpacing = 0.0016--0.035
+local _baseXPos = 0
+local _baseYPos = -0.076
+local _ySpacing = 0.0015--0.035
 
 local _x = 0
 for i = 0,190,1500/numSegments do
@@ -173,7 +175,7 @@ for i = 200,1500,1500/numSegments do
 	_x = _x + 1
 end
 
-local _baseXPos = 0.034
+local _baseXPos = 0.022
 local _x = 0
 for i = 0,190,1500/numSegments do
 	local fuelL1		   = CreateElement "ceMeshPoly"
@@ -197,7 +199,7 @@ end
 -----------------------------------------------------------------------------------------------------
 --XMSN TEMP
 -----------------------------------------------------------------------------------------------------
-local _baseXPos = 0.048
+local _baseXPos = 0.035
 local _x = 0
 for i = -50,35,10 do
 	local XMSNTEMP1bar		       = CreateElement "ceMeshPoly"
@@ -237,7 +239,7 @@ end
 -----------------------------------------------------------------------------------------------------
 --XMSN PRESSURE
 -----------------------------------------------------------------------------------------------------
-local _baseXPos = 0.0685
+local _baseXPos = 0.053
 local _x = 0
 for i = 0,27,5 do
 	local XMSNPRESS1bar		       = CreateElement "ceMeshPoly"
@@ -287,7 +289,7 @@ end
 -----------------------------------------------------------------------------------------------------
 --ENG1 OIL TEMP
 -----------------------------------------------------------------------------------------------------
-local _baseXPos = 0.090
+local _baseXPos = 0.072
 local _x = 0
 for i = -50,70,10 do
 	local E1OILTEMPbar		       = CreateElement "ceMeshPoly"
@@ -333,7 +335,7 @@ end
 -----------------------------------------------------------------------------------------------------
 --ENG2 OIL TEMP
 -----------------------------------------------------------------------------------------------------
-local _baseXPos = 0.1135
+local _baseXPos = 0.093
 local _x = 0
 for i = -50,70,10 do
 	local E2OILTEMPbar		       = CreateElement "ceMeshPoly"
@@ -379,7 +381,7 @@ end
 -----------------------------------------------------------------------------------------------------
 --ENG1 OIL PRESSURE
 -----------------------------------------------------------------------------------------------------
-local _baseXPos = 0.129
+local _baseXPos = 0.107
 local _x = 0
 for i = 10,39,5 do
 	local E1PRESS1bar		       = CreateElement "ceMeshPoly"
@@ -429,7 +431,7 @@ end
 -----------------------------------------------------------------------------------------------------
 --ENG2 OIL PRESSURE
 -----------------------------------------------------------------------------------------------------
-local _baseXPos = 0.152
+local _baseXPos = 0.128
 local _x = 0
 for i = 10,39,5 do
 	local E2PRESS1bar		       = CreateElement "ceMeshPoly"
@@ -479,7 +481,7 @@ end
 -----------------------------------------------------------------------------------------------------
 --ENG1 TGT TEMP
 -----------------------------------------------------------------------------------------------------
-local _baseXPos = 0.172
+local _baseXPos = 0.146
 local _x = 0
 
 for i = 0,350,50 do
@@ -522,7 +524,7 @@ end
 -----------------------------------------------------------------------------------------------------
 --ENG2 TGT TEMP
 -----------------------------------------------------------------------------------------------------
-local _baseXPos = 0.195
+local _baseXPos = 0.167
 local _x = 0
 
 for i = 0,350,50 do
@@ -565,7 +567,7 @@ end
 -----------------------------------------------------------------------------------------------------
 --ENG1 NG
 -----------------------------------------------------------------------------------------------------
-local _baseXPos = 0.2164
+local _baseXPos = 0.186
 local _x = 0
 
 for i = 0,35,10 do
@@ -617,7 +619,7 @@ end
 -----------------------------------------------------------------------------------------------------
 --ENG2 NG
 -----------------------------------------------------------------------------------------------------
-local _baseXPos = 0.2395
+local _baseXPos = 0.207
 local _x = 0
 
 for i = 0,35,10 do

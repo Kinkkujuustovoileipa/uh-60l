@@ -4,9 +4,9 @@ dofile(LockOn_Options.script_path.."utils.lua")
 SetScale(METERS)
 local advisoryColor = {0,255,0,255}
 local fontAdvisory = MakeFont({used_DXUnicodeFontData = "14segFont"}, advisoryColor)
-center = calculateIndicatorCenter({0.07,-0.928,2.425}) -- {L/R,U/D,forward/back}
+center = calculateIndicatorCenter({0.077,-0.908,2.498}) -- {L/R,U/D,forward/back}
 rotation = {0, 0, 80} -- main panel rotation roughly 22deg
-stringdefs = {0.01,0.01, -0.0035, 0}
+stringdefs = {0.01,0.009, -0.0035, 0}
 
 verts = {}
 dx=.0145

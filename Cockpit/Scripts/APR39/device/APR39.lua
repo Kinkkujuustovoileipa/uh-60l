@@ -17,6 +17,7 @@ local radian_to_degree = 57.2957795
 local apr39PowerSwitchOn = false
 rwrPower = get_param_handle("APR39_POWER")
 rwrBrightness = get_param_handle("APR39_BRIGHTNESS")
+rwrBrightnessTracker = 1
 volume = 1
 
 annunciatorBusy = false
@@ -60,6 +61,12 @@ dev:listen_command(device_commands.apr39Power)
 dev:listen_command(device_commands.apr39Volume)
 dev:listen_command(device_commands.apr39Brightness)
 
+dev:listen_command(Keys.apr39PowerCycle)
+dev:listen_command(Keys.apr39VolumeIncDec)
+dev:listen_command(Keys.apr39BrightnessIncDec)
+dev:listen_command(Keys.apr39Volume_AXIS)
+dev:listen_command(Keys.apr39Brightness_AXIS)
+
 function SetCommand(command,value)
     if command == device_commands.apr39Power then
 		apr39PowerSwitchOn = value == 1
@@ -68,6 +75,25 @@ function SetCommand(command,value)
 		--print_message_to_user("vol: "..volume)
 	elseif command == device_commands.apr39Brightness then
 		rwrBrightness:set(value)
+		rwrBrightnessTracker = value
+	elseif command == Keys.apr39PowerCycle then
+		if apr39PowerSwitchOn == true then
+			apr39PowerSwitchOn = false
+			dev:performClickableAction(device_commands.apr39Power, 0, false)
+		elseif apr39PowerSwitchOn == false then
+			apr39PowerSwitchOn = true
+			dev:performClickableAction(device_commands.apr39Power, 1, false)
+		end
+	elseif command == Keys.apr39VolumeIncDec then
+		dev:performClickableAction(device_commands.apr39Volume, clamp(volume + value, 0, 1), false)
+	elseif command == Keys.apr39BrightnessIncDec then
+		dev:performClickableAction(device_commands.apr39Brightness, clamp(rwrBrightnessTracker + value, 0, 1), false)
+	elseif command == Keys.apr39Volume_AXIS then
+		local normalisedValue = ( ( value + 1 ) / 2 ) * 1.0 -- normalised {-1 to 1} to {0 - 1.0}
+		dev:performClickableAction(device_commands.apr39Volume, normalisedValue, false)
+	elseif command == Keys.apr39Brightness_AXIS then
+		local normalisedValue = ( ( value + 1 ) / 2 ) * 1.0 -- normalised {-1 to 1} to {0 - 1.0}
+        dev:performClickableAction(device_commands.apr39Brightness, normalisedValue, false)
 	end
 end
 
@@ -415,7 +441,7 @@ function update()
 	updateNetworkArgs(GetSelf())
 	--print_message_to_user(Dump(dev))
 	if paramCB_APR39:get() == 1 and apr39PowerSwitchOn then
-		GetDevice(devices.APR39):set_power(true) -- actives the RWR script internally 
+		dev:set_power(true) -- actives the RWR script internally 
 
 		rwrPower:set(1) -- used for the indicator/display
 		doVisual()
@@ -425,6 +451,7 @@ function update()
 		--print_message_to_user(rwrPower:get().."; "..rwrBrightness:get())
 	else
 		rwrPower:set(0)
+		dev:set_power(false)
 		--GetDevice(devices.APR39):set_power(false) -- actives the RWR script internally 	
 	end
 end

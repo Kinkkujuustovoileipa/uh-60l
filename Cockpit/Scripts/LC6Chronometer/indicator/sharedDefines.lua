@@ -4,7 +4,7 @@ dofile(LockOn_Options.script_path.."utils.lua")
 SetScale(METERS)
 bgColor = {0,0,0,50}--{10,13,12,100}
 fontColor = {139, 104, 31, 255}--{139, 104, 31, 10}--{68,71,38,100}
-font = MakeFont({used_DXUnicodeFontData = "font7segment"}, fontColor)
+font = MakeFont({used_DXUnicodeFontData = "h60_font_7seg"}, fontColor)
 font2 = MakeFont({used_DXUnicodeFontData = "T45fontMFD"}, fontColor)
 
 

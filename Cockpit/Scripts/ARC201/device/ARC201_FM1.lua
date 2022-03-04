@@ -11,7 +11,9 @@ make_default_activity(update_time_step)
 
 local hasPower = false
 local paramFreq = get_param_handle("ARC201_FM1_FREQ")
+local paramDisplayFreq = get_param_handle("ARC201_FM1_FREQ_DISPLAY")
 local paramMode = get_param_handle("ARC201_FM1_MODE")
+local paramHomingEnabled = get_param_handle("ARC201_FM1_HOMING_ENABLED")
 local displayString = "30000"
 local manualFreq = 30e6
 local radioDevice = nil
@@ -19,9 +21,11 @@ local canEnterData = false
 local pwrMode = 0
 local presetMode = 0
 local presets = nil
+local rcvMode = 0
 
 function post_initialize()
     dev:performClickableAction(device_commands.fm1Volume, 1, false)
+    dev:performClickableAction(device_commands.fm1ModeSelector, 0.02, false)
 	local dev = GetSelf()
     radioDevice = GetDevice(devices.FM1_RADIO)
     presets = get_aircraft_mission_data("Radio")[1].channels
@@ -54,6 +58,23 @@ dev:listen_command(device_commands.fm1BtnFreq)
 dev:listen_command(device_commands.fm1BtnErfOfst)
 dev:listen_command(device_commands.fm1BtnTime)
 
+dev:listen_command(Keys.fm1FunctionSelectorInc)
+dev:listen_command(Keys.fm1FunctionSelectorDec)
+dev:listen_command(Keys.fm1FunctionSelectorCycle)
+dev:listen_command(Keys.fm1PresetSelectorInc)
+dev:listen_command(Keys.fm1PresetSelectorDec)
+dev:listen_command(Keys.fm1PresetSelectorCycle)
+
+--[[
+dev:listen_command(Keys.fm1PwrSelectorInc)
+dev:listen_command(Keys.fm1PwrSelectorDec)
+dev:listen_command(Keys.fm1PwrSelectorCycle)
+dev:listen_command(Keys.fm1fm2ModeSelectorInc)
+dev:listen_command(Keys.fm1fm2ModeSelectorDec)
+dev:listen_command(Keys.fm1fm2ModeSelectorCycle)
+]]
+
+
 function SetCommand(command,value)
 
     if command == device_commands.fm1FunctionSelector then
@@ -70,9 +91,32 @@ function SetCommand(command,value)
                 updatePresetMode()
             end
         end
+    elseif command == Keys.fm1FunctionSelectorInc and pwrMode < 8 then
+        --print_message_to_user(pwrMode) -- results in whole digits 0 to 8
+        dev:performClickableAction(device_commands.fm1FunctionSelector, pwrMode / 100 + 0.01, false)
+    elseif command == Keys.fm1FunctionSelectorDec and pwrMode > 0 then
+        dev:performClickableAction(device_commands.fm1FunctionSelector, pwrMode / 100 - 0.01, false)
+    elseif command == Keys.fm1FunctionSelectorCycle then
+        pwrMode = pwrMode + 1
+        if pwrMode > 8 then
+            pwrMode = 0
+        end
+        dev:performClickableAction(device_commands.fm1FunctionSelector, pwrMode / 100, false)
     elseif command == device_commands.fm1PresetSelector then
         presetMode = round(value * 100)
         updatePresetMode()
+    elseif command == device_commands.fm1ModeSelector then
+        rcvMode = round(value * 100)
+    elseif command == Keys.fm1PresetSelectorInc and presetMode < 7 then
+        dev:performClickableAction(device_commands.fm1PresetSelector, presetMode / 100 + 0.01, false)
+    elseif command == Keys.fm1PresetSelectorDec and presetMode > 0 then
+        dev:performClickableAction(device_commands.fm1PresetSelector, presetMode / 100 - 0.01, false)
+    elseif command == Keys.fm1PresetSelectorCycle then
+        presetMode = presetMode + 1
+        if presetMode > 7 then
+            presetMode = 0
+        end
+        dev:performClickableAction(device_commands.fm1PresetSelector, presetMode / 100, false)
     else
         if value > 0 then
             if command == device_commands.fm1Btn1 then
@@ -144,6 +188,14 @@ function enterNewFreq()
     end
 end
 
+function updateReceiverMode()
+    if rcvMode == 0 then
+        paramHomingEnabled:set(1)
+    else
+        paramHomingEnabled:set(0)
+    end
+end
+
 function updatePresetMode()
     if presetMode > 0 and presetMode < 7 then
         if hasPower and pwrMode > 1 then
@@ -151,6 +203,7 @@ function updatePresetMode()
         end
         canEnterData = false
         displayString = tostring(presets[presetMode] * 1e3)
+        --printsec(presets[presetMode] * 1e6)
         radioDevice:set_frequency(presets[presetMode] * 1e6)
     elseif presetMode == 7 then
         paramMode:set(0)
@@ -160,13 +213,18 @@ function updatePresetMode()
         end
         displayString = tostring(manualFreq / 1e3)
         radioDevice:set_frequency(manualFreq)
+        --printsec(manualFreq)
     end
 end
 
 function update()
     updateNetworkArgs(GetSelf())
+    updateReceiverMode()
     hasPower = paramCB_VHFFM1:get() > 0
-    paramFreq:set(formatPrecedingUnderscores(displayString, 5).."@")
+    if displayString ~= "" then
+        paramFreq:set(tonumber(displayString) * 1e3)
+    end
+    paramDisplayFreq:set(formatPrecedingUnderscores(displayString, 5).."@")
 end
 
 need_to_be_closed = false

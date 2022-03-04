@@ -7,6 +7,7 @@ count = 10000
 
 Keys =
 {
+	iCommandEnginesStart = 309, -- Testing
 	BattSwitch	 	 = counter(),
 	ExtPwrSwitch	 = counter(),
 	ThrottleCutoff 	 = counter(),
@@ -30,8 +31,11 @@ Keys =
 	slewStabUp = counter(),
 	slewStabDown = counter(),
 
-	showControlInd = counter(),
-	toggleDoors = counter(),
+	showControlInd 		= counter(),
+	toggleDoors 		= counter(),
+
+	toggleDoorsClose	= counter(),
+	toggleDoorsOpen		= counter(),
 
 	landingLightToggle = counter(),
 	landingLightExtend = counter(),
@@ -57,25 +61,264 @@ Keys =
 	pilotICPXmitSelectorDec = counter(),
 
 	-- AN/AVS-7
-	avs7Toggle = counter(),
-	avs7Brighten = counter(),
-    avs7Dim = counter(),
+	avs7Toggle 		= counter(),
+	avs7Brighten 	= counter(),
+    avs7Dim 		= counter(),
 
 	-- Countermeasures
-	dispenseChaffDown = counter(),
-	dispenseChaffUp = counter(),
+	dispenseChaffDown 	= counter(),
+	dispenseChaffUp 	= counter(),
+	dispenseFlareDown 	= counter(),
+	dispenseFlareUp 	= counter(),
 
 	-- Doors
-	toggleCopilotDoor = counter(),
-	toggleLeftCargoDoor = counter(),
-	toggleRightCargoDoor = counter(),
-	toggleLeftGunnerDoor = counter(),
-	toggleRightGunnerDoor = counter(),
+	toggleCopilotDoor 		= counter(),
+	toggleLeftCargoDoor 	= counter(),
+	toggleRightCargoDoor 	= counter(),
+	toggleLeftGunnerDoor 	= counter(),
+	toggleRightGunnerDoor 	= counter(),
 
 	-- AAR Probe
 	toggleProbe = counter(),
-
+	
 	radioPTT = counter(),
+	
+	-- Toggles
+	cycleposLightIntensity 	= counter(), -- Position Lights
+	cyclecabinLightMode 	= counter(),
+	cyclecockpitLightMode 	= counter(),
+	navLightModeCycle 		= counter(),
+	posLightModeCycle		= counter(), -- Position Lights FLASH/STEADY
+	antiLightGrpCycle		= counter(), -- Anticollision Lights LOWER/BOTH/UPPER
+	antiLightModeCycle		= counter(), -- Anticollision Lights NIGHT/OFF/DAY
+	magCompassLightsCycle 	= counter (),
+	
+	-- AN/ARC-164 UHF Radio
+	arc164_presetInc				= counter(),
+	arc164_presetDec 				= counter(),
+	arc164_freq_XoooooInc			= counter(),
+	arc164_freq_XoooooDec			= counter(),
+	arc164_freq_oXooooInc			= counter(),
+	arc164_freq_oXooooDec			= counter(),
+	arc164_freq_ooXoooInc			= counter(),
+	arc164_freq_ooXoooDec			= counter(),
+	arc164_freq_oooXooInc			= counter(),
+	arc164_freq_oooXooDec			= counter(),
+	arc164_freq_ooooXXInc			= counter(),
+	arc164_freq_ooooXXDec			= counter(),
+	arc164_modeInc					= counter(),
+	arc164_modeDec					= counter(),
+	arc164_xmitmodeInc				= counter(),
+	arc164_xmitmodeDec				= counter(),
+	arc164_modeCycle				= counter(),
+	arc164_xmitmodeCycle			= counter(),
+
+	-- APN-209 Radar Altimeter
+	apn209PilotLoSetInc 			= counter(),
+	apn209PilotLoSetDec				= counter(),
+	apn209PilotHiSetInc				= counter(),
+	apn209PilotHiSetDec				= counter(),
+	apn209CopilotLoSetInc			= counter(),
+	apn209CopilotLoSetDec			= counter(),
+	apn209CopilotHiSetInc			= counter(),
+	apn209CopilotHiSetDec			= counter(),
+
+	-- AN/ASN-128B
+	SelectDisplayInc				= counter(),
+	SelectDisplayDec				= counter(),
+	SelectModeInc					= counter(),
+	SelectModeDec					= counter(),
+
+	-- AN/ARN-147
+	arn147MHzInc = counter(),
+	arn147MHzDec = counter(),
+	arn147KHzInc = counter(),
+	arn147KHzDec = counter(),
+	arn147PowerCycle = counter(),
+
+	-- FM Radios 201 FM1
+	fm1PresetSelectorInc		= counter(),
+	fm1PresetSelectorDec		= counter(),
+	fm1PresetSelectorCycle		= counter(),
+	fm1FunctionSelectorInc		= counter(),
+	fm1FunctionSelectorDec		= counter(),
+	fm1FunctionSelectorCycle	= counter(),
+
+	-- FM Radios 201 FM2
+	fm2PresetSelectorInc		= counter(),
+	fm2PresetSelectorDec		= counter(),
+	fm2PresetSelectorCycle		= counter(),
+	fm2FunctionSelectorInc		= counter(),
+	fm2FunctionSelectorDec		= counter(),
+	fm2FunctionSelectorCycle	= counter(),
+
+	--[[
+	fm1PwrSelectorInc			= counter(),
+	fm1PwrSelectorDec			= counter(),
+	fm1PwrSelectorCycle			= counter(),
+	fm1ModeSelectorInc			= counter(),
+	fm1ModeSelectorDec			= counter(),
+	fm1ModeSelectorCycle		= counter(),
+
+	fm2PwrSelectorInc			= counter(),
+	fm2PwrSelectorDec			= counter(),
+	fm2PwrSelectorCycle			= counter(),
+	fm2ModeSelectorInc			= counter(),
+	fm2ModeSelectorDec			= counter(),
+	fm2ModeSelectorCycle		= counter(),
+	]]
+
+	-- BARO ALTIMETERs
+	pilotBarometricScaleSetInc		= counter(),
+	pilotBarometricScaleSetDec		= counter(),
+	copilotBarometricScaleSetInc	= counter(),
+	copilotBarometricScaleSetDec	= counter(),
+	
+	-- ARC-186
+	arc186Selector10MHzInc		= counter(),
+	arc186Selector1MHzInc		= counter(),
+	arc186Selector100KHzInc		= counter(),
+	arc186Selector25KHzInc		= counter(),
+	arc186FreqSelectorInc		= counter(),
+	arc186PresetSelectorInc		= counter(),
+	arc186ModeSelectorInc		= counter(),
+	arc186Selector10MHzDec		= counter(),
+	arc186Selector1MHzDec		= counter(),
+	arc186Selector100KHzDec		= counter(),
+	arc186Selector25KHzDec		= counter(),
+	arc186FreqSelectorDec		= counter(),
+	arc186PresetSelectorDec		= counter(),
+	arc186ModeSelectorDec		= counter(),
+
+	-- Electrical
+	BattSwitchOn				= counter(),
+	BattSwitchOff				= counter(),
+	gen1SwitchOn				= counter(),
+	gen1SwitchOff				= counter(),
+	gen1SwitchTest				= counter(),
+	gen2SwitchOn				= counter(),
+	gen2SwitchOff				= counter(),
+	gen2SwitchTest				= counter(),
+	extPwrSwitchOn				= counter(),
+	extPwrSwitchOff				= counter(),
+	extPwrSwitchReset			= counter(),
+	apuGenSwitchOn				= counter(),
+	apuGenSwitchOff				= counter(),
+	apuGenSwitchTest			= counter(),
+	switchFuelPumpPrime			= counter(),
+	switchFuelPumpOff			= counter(),
+	switchFuelPumpApuBoost		= counter(),
+	switchAirSourceApu			= counter(),
+	switchAirSourceOff			= counter(),
+	switchAirSourceEngine		= counter(),
+	switchAPUOn					= counter(),
+	switchAPUOff				= counter(),
+
+	-- Overhead Panel Light Knobs
+	glareshieldLightsInc		= counter(),
+	glareshieldLightsDec		= counter(),
+	cpltInstrLightsInc			= counter(),
+	cpltInstrLightsDec			= counter(),
+	lightedSwitchesInc			= counter(),
+	lightedSwitchesDec			= counter(),
+	upperConsoleLightsInc		= counter(),
+	upperConsoleLightsDec		= counter(),
+	lowerConsoleLightsInc		= counter(),
+	lowerConsoleLightsDec		= counter(),
+	pltInstrLightsInc			= counter(),
+	pltInstrLightsDec			= counter(),
+	nonFltInstrLightsInc		= counter(),
+	nonFltInstrLightsDec		= counter(),
+	formationLights_AXIS		= counter(),
+	formationLightsInc			= counter(),
+	formationLightsDec			= counter(),
+
+	-- Wiper
+	wiperSelectorInc 			= counter(),
+	wiperSelectorDec 			= counter(),
+	wiperSelectorCycle 			= counter(),
+
+	-- Axis
+	pltRdrAltLights_AXIS			= counter(),
+	cpltRdrAltLights_AXIS			= counter(),
+	apn209PilotLoSet_AXIS			= counter(),
+	apn209PilotHiSet_AXIS			= counter(),
+	apn209CopilotLoSet_AXIS			= counter(),
+	apn209CopilotHiSet_AXIS			= counter(),
+	pilotBarometricScaleSet_AXIS	= counter(),
+	copilotBarometricScaleSet_AXIS	= counter(),
+
+	-- ECQ
+	engFSSBoth			= counter(),
+	setEngControlBoth	= counter(),
+	eng1FSS_AXIS		= counter(),
+	eng2FSS_AXIS		= counter(),
+	engFSSBoth_AXIS		= counter(),
+
+	-- CISP Pilot
+	PilotCISHdgCycle		= counter(),
+	PilotCISNavCycle		= counter(),
+	PilotCISAltCycle		= counter(),
+	PilotNavGPSCycle		= counter(),
+	PilotNavVORILSCycle		= counter(),
+	PilotNavBACKCRSCycle	= counter(),
+	PilotNavFMHOMECycle		= counter(),
+	PilotTURNRATECycle		= counter(),
+	PilotCRSHDGCycle		= counter(),
+	PilotVERTGYROCycle		= counter(),
+	PilotBRG2Cycle			= counter(),
+
+	-- CISP Copilot
+	CopilotNavGPSCycle		= counter(),
+	CopilotNavVORILSCycle	= counter(),
+	CopilotNavBACKCRSCycle	= counter(),
+	CopilotNavFMHOMECycle	= counter(),
+	CopilotTURNRATECycle	= counter(),
+	CopilotCRSHDGCycle		= counter(),
+	CopilotVERTGYROCycle	= counter(),
+	CopilotBRG2Cycle		= counter(),
+	
+	-- AN/ARN-149
+	arn149PresetCycle 		= counter(),
+	arn149ToneTestCycle 	= counter(),
+	arn149VolumeCycle 		= counter(),
+	arn149PowerCycle 		= counter(),
+	arn149thousandsCycle	= counter(),
+	arn149hundredsCycle 	= counter(),
+	arn149tensCycle 		= counter(),
+	arn149onesCycle 		= counter(),
+	arn149tenthsCycle 		= counter(),
+
+	-- AFCS
+	afcsStabAutoToggle 		= counter(),
+	afcsFPSToggle 			= counter(),
+	afcsBoostToggle 		= counter(),
+	afcsSAS1Toggle  		= counter(),
+	afcsSAS2Toggle  		= counter(),
+	afcsTrimToggle  		= counter(),
+	miscTailWheelLockToggle = counter(),
+
+	-- RWR
+	apr39PowerCycle 		= counter(),
+	apr39BrightnessIncDec	= counter(),
+	apr39VolumeIncDec		= counter(),
+	apr39Volume_AXIS		= counter(),
+	apr39Brightness_AXIS	= counter(),
+
+	-- Aux Fuel 
+	afmcpXferModeCycle 		= counter(),
+	afmcpManXferCycle 		= counter(),
+	afmcpXferFromCycle 		= counter(),
+	afmcpPressCycle 		= counter(),
+	afmcpPress_AXIS			= counter(),
+	afmcpPressInc 			= counter(),
+	afmcpPressDec 			= counter(),
+
+	-- Countermeasures
+	cmProgramDial_AXIS 		= counter(),
+	cmProgramDialInc 		= counter(),
+	cmProgramDialDec 		= counter(),
+	cmProgramDialCycle		= counter(),
 }
 
 count = 3200
@@ -100,18 +343,18 @@ device_commands =
 	eng2Starter = counter(),
 
 	-- AHRU
-	ahruMode = counter(),
-	ahruFunc = counter(),
-	ahruUp = counter(),
-	ahruRight = counter(),
-	ahruEnter = counter(),
+	ahruMode 	= counter(),
+	ahruFunc 	= counter(),
+	ahruUp 		= counter(),
+	ahruRight 	= counter(),
+	ahruEnter 	= counter(),
 
 	RWRpower		= counter(),
 	RWRBrightness	= counter(),
 
-	CAPLampTest = counter(),
-	CAPLampBrightness = counter(),
-	CAPMasterCautionReset = counter(),
+	CAPLampTest 			= counter(),
+	CAPLampBrightness 		= counter(),
+	CAPMasterCautionReset 	= counter(),
 
 	-- AFCS
 	afcsStabAuto	= counter(),
@@ -165,16 +408,16 @@ device_commands =
 	foo = counter(),
 
 	--Radio
-	arc164_mode                      = counter(),
-    arc164_xmitmode                  = counter(),
-    arc164_volume                    = counter(),
-    arc164_squelch                   = counter(),
-    arc164_freq_preset               = counter(),
-	arc164_freq_Xooooo				= counter(),
-	arc164_freq_oXoooo				= counter(),
-	arc164_freq_ooXooo				= counter(),
-	arc164_freq_oooXoo				= counter(),
-	arc164_freq_ooooXX				= counter(),
+	arc164_mode        	= counter(),
+    arc164_xmitmode    	= counter(),
+    arc164_volume      	= counter(),
+    arc164_squelch     	= counter(),
+    arc164_freq_preset 	= counter(),
+	arc164_freq_Xooooo	= counter(),
+	arc164_freq_oXoooo	= counter(),
+	arc164_freq_ooXooo	= counter(),
+	arc164_freq_oooXoo	= counter(),
+	arc164_freq_ooooXX	= counter(),
 	arc164_preset = counter(),
 
 	--Lighting Panel
@@ -196,7 +439,7 @@ device_commands =
 	cabinLightMode = counter(),
 	cockpitLightMode = counter(),
 
-	wiperSelector = counter(),
+	wiperSelector 		= counter(),
 
 	pltRdrAltLights = counter(),
 	cpltRdrAltLights = counter(),
@@ -231,6 +474,7 @@ device_commands =
 	cmArmSwitch = counter(),
 	cmProgramDial = counter(),
 	cmChaffDispense = counter(),
+	cmFlareDispense = counter(),
 
 	-- ARC201 FM1
 	fm1PresetSelector = counter(),
@@ -363,6 +607,15 @@ device_commands =
 	afmcpManXfer = counter(),
 	afmcpXferFrom = counter(),
 	afmcpPress = counter(),
+
+	-- Axis
+	glareshieldLights_AXIS 	= counter(),
+	cpltInstrLights_AXIS	= counter(),
+	lightedSwitches_AXIS	= counter(),
+	upperConsoleLights_AXIS	= counter(),
+	lowerConsoleLights_AXIS	= counter(),
+	pltInstrLights_AXIS		= counter(),
+	nonFltInstrLights_AXIS	= counter(),
 }
 
 EFM_commands = 	-- commands for use in EFM (make sure to copy to inputs.h)
@@ -398,15 +651,15 @@ EFM_commands = 	-- commands for use in EFM (make sure to copy to inputs.h)
 
 	setRefuelProbeState = 3046,
 
-	slewStabUp = 3050,
-	slewStabDown = 3051,
+	slewStabUp			= 3050,
+	slewStabDown		= 3051,
 
-	lockTailWheel = 3052,
+	lockTailWheel		= 3052,
 
-	afmcpXferMode = 3053,
-	afmcpManXfer = 3054,
-	afmcpXferFrom = 3055,
-	
+	afmcpXferMode		= 3053,
+	afmcpManXfer		= 3054,
+	afmcpXferFrom		= 3055,
+		
 	trimUp				= 4017,
 	trimDown			= 4018,
 	trimLeft			= 4019,
@@ -415,7 +668,7 @@ EFM_commands = 	-- commands for use in EFM (make sure to copy to inputs.h)
 	trimSet 	        = 4026,
 	trimReset           = 4027,
 	
-	radioPTT			= 4029,
+	intercomPTT			= 4029,
 	
 	nonFltLighting		= 4040,
 	
@@ -423,10 +676,12 @@ EFM_commands = 	-- commands for use in EFM (make sure to copy to inputs.h)
 	
 	wheelbrake			= 3100,
 	wheelbrakeToggle	= 3101,
-	setParkingBrake 	= 3104,
-	
-	collectiveIncrease = 3102,
-	collectiveDecrease = 3103,
+	wheelbrakeLeft		= 3102,
+	wheelbrakeRight		= 3103,
+	setParkingBrake		= 3104,
+
+	collectiveIncrease = 3105,
+	collectiveDecrease = 3106,
 
 	dampenValue = 5001,
 

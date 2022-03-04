@@ -61,7 +61,7 @@ elements["PNT-043"].sound = {{ECL_TO_IDLE, ECL_TO_OFF}}
 elements["PNT-043"].updatable = false
 
 -- PILOT BARO ALTIMETER
-elements["PNT-063"]	= default_axis(_("Barometric Scale Set"),    devices.PLTAAU32A, device_commands.pilotBarometricScaleSet, 63, 0, 0.1, false, true)
+elements["PNT-063"]	= default_axis(_("Barometric Scale Set"),  devices.PLTAAU32A, device_commands.pilotBarometricScaleSet, 63, 0, 0.1, false, true)
 
 -- COPILOT BARO ALTIMETER
 elements["PNT-073"]	= default_axis(_("Barometric Scale Set"),  devices.CPLTAAU32A, device_commands.copilotBarometricScaleSet, 73, 0, 0.1, false, true)
@@ -333,28 +333,28 @@ elements["PNT-653"]	= default_3_position_tumb(_("AN/ARN-147 Power Selector OFF/O
 -- WIPERS
 elements["PNT-631"]	= multiposition_switch(_("Wipers PARK/OFF/LOW/HI"),   devices.MISC, device_commands.wiperSelector, 631, 4,  0.33,  false, 0, 16, false)
 
--- ARC-201 FM1
-elements["PNT-700"]	= multiposition_switch(_("AN/ARC-201 (FM1) PRESET Selector"),   devices.ARC201_FM2, device_commands.fm2PresetSelector, 700, 8,  0.01,  false, 0, 16, false)
-elements["PNT-701"]	= multiposition_switch(_("AN/ARC-201 (FM1) FUNCTION Selector"), devices.ARC201_FM2, device_commands.fm2FunctionSelector, 701, 9,  0.01,  false, 0, 16, false)
-elements["PNT-702"]	= multiposition_switch(_("AN/ARC-201 (FM1) PWR Selector"),      devices.ARC201_FM2, device_commands.fm2PwrSelector, 702, 4,  0.01,  false, 0, 16, false)
-elements["PNT-703"]	= multiposition_switch(_("AN/ARC-201 (FM1) MODE Selector"),     devices.ARC201_FM2, device_commands.fm2ModeSelector, 703, 4,  0.01,  false, 0, 16, false)
-elements["PNT-704"]	= default_axis_limited(_("AN/ARC-201 (FM1) Volume"),            devices.ARC201_FM2, device_commands.fm2Volume, 704, 0, 0.1, true, false, {0,1})
+-- ARC-201 FM2
+elements["PNT-700"]	= multiposition_switch(_("AN/ARC-201 (FM2) PRESET Selector"),   devices.ARC201_FM2, device_commands.fm2PresetSelector, 700, 8,  0.01,  false, 0, 16, false)
+elements["PNT-701"]	= multiposition_switch(_("AN/ARC-201 (FM2) FUNCTION Selector"), devices.ARC201_FM2, device_commands.fm2FunctionSelector, 701, 9,  0.01,  false, 0, 16, false)
+elements["PNT-702"]	= multiposition_switch(_("AN/ARC-201 (FM2) PWR Selector"),      devices.ARC201_FM2, device_commands.fm2PwrSelector, 702, 4,  0.01,  false, 0, 16, false)
+elements["PNT-703"]	= multiposition_switch(_("AN/ARC-201 (FM2) MODE Selector"),     devices.ARC201_FM2, device_commands.fm2ModeSelector, 703, 4,  0.01,  false, 0, 16, false)
+elements["PNT-704"]	= default_axis_limited(_("AN/ARC-201 (FM2) Volume"),            devices.ARC201_FM2, device_commands.fm2Volume, 704, 0, 0.1, true, false, {0,1})
 
-elements["PNT-705"]	= default_button(_("AN/ARC-201 (FM1) Btn 1"),        devices.ARC201_FM2, device_commands.fm2Btn1, 705)
-elements["PNT-706"]	= default_button(_("AN/ARC-201 (FM1) Btn 2"),        devices.ARC201_FM2, device_commands.fm2Btn2, 706)
-elements["PNT-707"]	= default_button(_("AN/ARC-201 (FM1) Btn 3"),        devices.ARC201_FM2, device_commands.fm2Btn3, 707)
-elements["PNT-708"]	= default_button(_("AN/ARC-201 (FM1) Btn 4"),        devices.ARC201_FM2, device_commands.fm2Btn4, 708)
-elements["PNT-709"]	= default_button(_("AN/ARC-201 (FM1) Btn 5"),        devices.ARC201_FM2, device_commands.fm2Btn5, 709)
-elements["PNT-710"]	= default_button(_("AN/ARC-201 (FM1) Btn 6"),        devices.ARC201_FM2, device_commands.fm2Btn6, 710)
-elements["PNT-711"]	= default_button(_("AN/ARC-201 (FM1) Btn 7"),        devices.ARC201_FM2, device_commands.fm2Btn7, 711)
-elements["PNT-712"]	= default_button(_("AN/ARC-201 (FM1) Btn 8"),        devices.ARC201_FM2, device_commands.fm2Btn8, 712)
-elements["PNT-713"]	= default_button(_("AN/ARC-201 (FM1) Btn 9"),        devices.ARC201_FM2, device_commands.fm2Btn9, 713)
-elements["PNT-714"]	= default_button(_("AN/ARC-201 (FM1) Btn 0"),        devices.ARC201_FM2, device_commands.fm2Btn0, 714)
-elements["PNT-715"]	= default_button(_("AN/ARC-201 (FM1) Btn CLR"),      devices.ARC201_FM2, device_commands.fm2BtnClr, 715)
-elements["PNT-716"]	= default_button(_("AN/ARC-201 (FM1) Btn ENT"),      devices.ARC201_FM2, device_commands.fm2BtnEnt, 716)
-elements["PNT-717"]	= default_button(_("AN/ARC-201 (FM1) Btn FREQ"),     devices.ARC201_FM2, device_commands.fm2BtnFreq, 717)
-elements["PNT-718"]	= default_button(_("AN/ARC-201 (FM1) Btn ERF/OFST"), devices.ARC201_FM2, device_commands.fm2BtnErfOfst, 718)
-elements["PNT-719"]	= default_button(_("AN/ARC-201 (FM1) Btn TIME"),     devices.ARC201_FM2, device_commands.fm2BtnTime, 719)
+elements["PNT-705"]	= default_button(_("AN/ARC-201 (FM2) Btn 1"),        devices.ARC201_FM2, device_commands.fm2Btn1, 705)
+elements["PNT-706"]	= default_button(_("AN/ARC-201 (FM2) Btn 2"),        devices.ARC201_FM2, device_commands.fm2Btn2, 706)
+elements["PNT-707"]	= default_button(_("AN/ARC-201 (FM2) Btn 3"),        devices.ARC201_FM2, device_commands.fm2Btn3, 707)
+elements["PNT-708"]	= default_button(_("AN/ARC-201 (FM2) Btn 4"),        devices.ARC201_FM2, device_commands.fm2Btn4, 708)
+elements["PNT-709"]	= default_button(_("AN/ARC-201 (FM2) Btn 5"),        devices.ARC201_FM2, device_commands.fm2Btn5, 709)
+elements["PNT-710"]	= default_button(_("AN/ARC-201 (FM2) Btn 6"),        devices.ARC201_FM2, device_commands.fm2Btn6, 710)
+elements["PNT-711"]	= default_button(_("AN/ARC-201 (FM2) Btn 7"),        devices.ARC201_FM2, device_commands.fm2Btn7, 711)
+elements["PNT-712"]	= default_button(_("AN/ARC-201 (FM2) Btn 8"),        devices.ARC201_FM2, device_commands.fm2Btn8, 712)
+elements["PNT-713"]	= default_button(_("AN/ARC-201 (FM2) Btn 9"),        devices.ARC201_FM2, device_commands.fm2Btn9, 713)
+elements["PNT-714"]	= default_button(_("AN/ARC-201 (FM2) Btn 0"),        devices.ARC201_FM2, device_commands.fm2Btn0, 714)
+elements["PNT-715"]	= default_button(_("AN/ARC-201 (FM2) Btn CLR"),      devices.ARC201_FM2, device_commands.fm2BtnClr, 715)
+elements["PNT-716"]	= default_button(_("AN/ARC-201 (FM2) Btn ENT"),      devices.ARC201_FM2, device_commands.fm2BtnEnt, 716)
+elements["PNT-717"]	= default_button(_("AN/ARC-201 (FM2) Btn FREQ"),     devices.ARC201_FM2, device_commands.fm2BtnFreq, 717)
+elements["PNT-718"]	= default_button(_("AN/ARC-201 (FM2) Btn ERF/OFST"), devices.ARC201_FM2, device_commands.fm2BtnErfOfst, 718)
+elements["PNT-719"]	= default_button(_("AN/ARC-201 (FM2) Btn TIME"),     devices.ARC201_FM2, device_commands.fm2BtnTime, 719)
 
 -- CPLT ICP
 elements["PNT-800"]	= multiposition_switch(_("Copilot ICP XMIT Selector (Inop.)"),            devices.CPLT_ICP, device_commands.copilotICPXmitSelector, 800, 6,  1/5,  false, 0, 16, false)

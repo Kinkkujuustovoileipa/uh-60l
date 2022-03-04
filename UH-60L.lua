@@ -33,6 +33,142 @@ end
 
 fuel_tank_230("{UH60_FUEL_TANK_230}")
 
+local function seat_gunner_l(clsid)
+	local data =
+	{
+		category	= CAT_PODS,
+		CLSID		= clsid,
+		attribute	=  {wsType_Air,wsType_Free_Fall,wsType_FuelTank,WSTYPE_PLACEHOLDER},
+		Picture		= "seat_icon_leftgunner.png",
+		displayName	= _("Left Gunner Seat"),
+		Weight_Empty	= 20,
+		Weight			= 100, -- 200USG = 757.082 liter * 0.79kg/l fuel weight 
+		Cx_pil		= 0.000956902,
+		shape_table_data = 
+		{
+			{
+				name	= "UH60_SEAT_GUNNER_L";
+				file	= "leftSeat";
+				life	= 1;
+				fire	= { 0, 1};
+				username	= "UH60_SEAT_GUNNER_L";
+				index	= WSTYPE_PLACEHOLDER;
+			},
+		},
+		Elements	= 
+		{
+			{
+				ShapeName	= "leftSeat",
+			}, 
+		}, 
+	}
+	declare_loadout(data)
+end
+
+seat_gunner_l("{UH60_SEAT_GUNNER_L}")
+
+local function seat_gunner_r(clsid)
+	local data =
+	{
+		category	= CAT_PODS,
+		CLSID		= clsid,
+		attribute	=  {wsType_Air,wsType_Free_Fall,wsType_FuelTank,WSTYPE_PLACEHOLDER},
+		Picture		= "seat_icon_rightgunner.png",
+		displayName	= _("Right Gunner Seat"),
+		Weight_Empty	= 20,
+		Weight			= 100, -- 200USG = 757.082 liter * 0.79kg/l fuel weight 
+		Cx_pil		= 0.000956902,
+		shape_table_data = 
+		{
+			{
+				name	= "UH60_SEAT_GUNNER_R";
+				file	= "rightSeat";
+				life	= 1;
+				fire	= { 0, 1};
+				username	= "UH60_SEAT_GUNNER_R";
+				index	= WSTYPE_PLACEHOLDER;
+			},
+		},
+		Elements	= 
+		{
+			{
+				ShapeName	= "rightSeat",
+			}, 
+		}, 
+	}
+	declare_loadout(data)
+end
+
+seat_gunner_r("{UH60_SEAT_GUNNER_R}")
+
+local function seat_cargo_all(clsid)
+	local data =
+	{
+		category	= CAT_PODS,
+		CLSID		= clsid,
+		attribute	=  {wsType_Air,wsType_Free_Fall,wsType_FuelTank,WSTYPE_PLACEHOLDER},
+		Picture		= "seat_icon_threerows.png",
+		displayName	= _("Cargo Seats (Three Rows)"),
+		Weight_Empty	= 20,
+		Weight			= 900, -- 200USG = 757.082 liter * 0.79kg/l fuel weight 
+		Cx_pil		= 0.000956902,
+		shape_table_data = 
+		{
+			{
+				name	= "UH60_SEAT_CARGO_ALL";
+				file	= "fullCargoSeats";
+				life	= 1;
+				fire	= { 0, 1};
+				username	= "UH60_SEAT_CARGO_ALL";
+				index	= WSTYPE_PLACEHOLDER;
+			},
+		},
+		Elements	= 
+		{
+			{
+				ShapeName	= "fullCargoSeats",
+			}, 
+		}, 
+	}
+	declare_loadout(data)
+end
+
+seat_cargo_all("{UH60_SEAT_CARGO_ALL}")
+
+local function seat_cargo_rear(clsid)
+	local data =
+	{
+		category	= CAT_PODS,
+		CLSID		= clsid,
+		attribute	=  {wsType_Air,wsType_Free_Fall,wsType_FuelTank,WSTYPE_PLACEHOLDER},
+		Picture		= "seat_icon_backrow.png",
+		displayName	= _("Cargo Seats (Rear Row)"),
+		Weight_Empty	= 20,
+		Weight			= 300, -- 200USG = 757.082 liter * 0.79kg/l fuel weight 
+		Cx_pil		= 0.000956902,
+		shape_table_data = 
+		{
+			{
+				name	= "UH60_SEAT_CARGO_REAR";
+				file	= "rearCargoSeats";
+				life	= 1;
+				fire	= { 0, 1};
+				username	= "UH60_SEAT_CARGO_REAR";
+				index	= WSTYPE_PLACEHOLDER;
+			},
+		},
+		Elements	= 
+		{
+			{
+				ShapeName	= "rearCargoSeats",
+			}, 
+		}, 
+	}
+	declare_loadout(data)
+end
+
+seat_cargo_rear("{UH60_SEAT_CARGO_REAR}")
+
 UH60L =
 {
 	Name										=	'UH-60L',
@@ -226,21 +362,30 @@ UH60L =
 	passivCounterm =
 	{
 		CMDS_Edit = false,
-		SingleChargeTotal = 30,
+		SingleChargeTotal = 90,
 		chaff = {default = 30, increment = 30, chargeSz = 1},
-		flare = {default = 0, increment = 0, chargeSz = 0},
+		flare = {default = 60, increment = 60, chargeSz = 1},
 	},
 
     chaff_flare_dispenser =
 	{
-        [1] = { dir =  {45, 0, -20}, pos =  {-0.672, -1.273, -4.041}, },
+		--{ dir =  {Z, Y, X}, pos =  {Z, Y, X}, }  -- Z=back/fwd,Y=down/up(+),X=left/right
+		-- chaff particles have no ejection power, so spawn them 1m up and back from launcher to give better effect
+        [1] = { dir =  {-0.9,1,-0.1}, pos =  {-3.591 - 1, -0.982 + 1, -0.641}, }, -- chaff
+        [2] = { dir =  {1, -1, -0.5}, pos =  {-4.115, -1.27, -0.695}, }, -- flare left
+        [3] = { dir =  {1, -1, 0.5}, pos =  {-4.115, -1.27, 0.695}, }, -- flare right
     },
 
+	--[[
 	Guns =
 	{
 	},
-
-	stores_number = 4,
+	--]]
+	
+	stores_number = 0,
+	--HardpointRacksArg = 123,
+	--HardpointRacksWeight = 401,
+	--HardpointRacks_Edit = true,
 
 	Pylons =
 	{
@@ -254,22 +399,27 @@ UH60L =
             {
 				{
 					CLSID = "{UH60_FUEL_TANK_230}",
-					arg_value = 1,
+					arg_value = 0,
 					attach_point_position = {0, 0, 0},
-					required = {{station = 4,loadout = {"{UH60_FUEL_TANK_230}"}}},
-					attach_point_oriented = true
+					required = {{station = 7,loadout = {"{UH60_FUEL_TANK_230}"}}},
+					attach_point_oriented = true,
+					forbidden =
+					{
+						{loadout = { "<CLEAN>" }, station = 2},
+						{loadout = { "<CLEAN>" }, station = 6},
+						{loadout = { "<CLEAN>" }, station = 7},
+					}
 				},
 				{
 					CLSID = "<CLEAN>",
-					arg_value = 0,
+					arg_value = 1,
 					required =
 					{
 						{station = 2,loadout = {"<CLEAN>"}},
-						{station = 3,loadout = {"<CLEAN>"}},
-						{station = 4,loadout = {"<CLEAN>"}},
+						{station = 6,loadout = {"<CLEAN>"}},
+						{station = 7,loadout = {"<CLEAN>"}},
 					},
 				},
-
             }
         ),
         pylon(2, 0, 0.797, -1.244, 2.058,
@@ -282,24 +432,72 @@ UH60L =
             {
 				{
 					CLSID = "{UH60_FUEL_TANK_230}",
-					arg_value = 1,
+					arg_value = 0,
 					attach_point_position = {0, 0, 0},
-					required = {{station = 3,loadout = {"{UH60_FUEL_TANK_230}"}}},
-					attach_point_oriented = true
+					required = {{station = 6,loadout = {"{UH60_FUEL_TANK_230}"}}},
+					attach_point_oriented = true,
+					forbidden =
+					{
+						{loadout = { "<CLEAN>" }, station = 1},
+						{loadout = { "<CLEAN>" }, station = 6},
+						{loadout = { "<CLEAN>" }, station = 7},
+					}
 				},
 				{
 					CLSID = "<CLEAN>",
-					arg_value = 0,
+					arg_value = 1,
 					required =
 					{
 						{station = 1,loadout = {"<CLEAN>"}},
-						{station = 3,loadout = {"<CLEAN>"}},
-						{station = 4,loadout = {"<CLEAN>"}},
+						{station = 6,loadout = {"<CLEAN>"}},
+						{station = 7,loadout = {"<CLEAN>"}},
 					},
 				},
             }
         ),
-        pylon(3, 0, 0.797, -1.244, -2.058,
+        pylon(3, 0, 0, 0, 0,
+            {
+               use_full_connector_position = false,
+			   --connector = "pylon2",
+			   --arg = 123,
+			   DisplayName = "L Gunner"
+            },
+            {
+				{
+					CLSID = "{UH60_SEAT_GUNNER_L}",
+				},
+            }
+        ),
+		pylon(4, 0, 0, 0, 0,
+            {
+               use_full_connector_position = false,
+			   --connector = "pylon2",
+			   --arg = 123,
+			   DisplayName = "Cargo"
+            },
+            {
+				{
+					CLSID = "{UH60_SEAT_CARGO_REAR}",
+				},
+				{
+					CLSID = "{UH60_SEAT_CARGO_ALL}",
+				},
+            }
+        ),
+		pylon(5, 0, 0, 0, 0,
+            {
+               use_full_connector_position = false,
+			   --connector = "pylon2",
+			   --arg = 123,
+			   DisplayName = "R Gunner"
+            },
+            {
+				{
+					CLSID = "{UH60_SEAT_GUNNER_R}",
+				},
+            }
+        ),
+		pylon(6, 0, 0.797, -1.244, -2.058,
             {
                use_full_connector_position = true,
 			   connector = "pylon2",
@@ -309,46 +507,58 @@ UH60L =
             {
 				{
 					CLSID = "{UH60_FUEL_TANK_230}",
-					arg_value = 1,
+					arg_value = 0,
 					attach_point_position = {0, 0, 0},
 					required = {{station = 2,loadout = {"{UH60_FUEL_TANK_230}"}}},
-					attach_point_oriented = true
+					attach_point_oriented = true,
+					forbidden =
+					{
+						{loadout = { "<CLEAN>" }, station = 1},
+						{loadout = { "<CLEAN>" }, station = 2},
+						{loadout = { "<CLEAN>" }, station = 7},
+					}
 				},
 				{
 					CLSID = "<CLEAN>",
-					arg_value = 0,
+					arg_value = 1,
 					required =
 					{
 						{station = 1,loadout = {"<CLEAN>"}},
 						{station = 2,loadout = {"<CLEAN>"}},
-						{station = 4,loadout = {"<CLEAN>"}},
+						{station = 7,loadout = {"<CLEAN>"}},
 					},
 				},
             }
         ),
-        pylon(4, 0, 0.797, -1.244, -2.844,
+        pylon(7, 0, 0.797, -1.244, -2.844,
             {
                use_full_connector_position = true,
 			   connector = "pylon1",
 			   arg = 123,
-			   DisplayName = "R Inbd"
+			   DisplayName = "R Outbd"
             },
             {
 				{
 					CLSID = "{UH60_FUEL_TANK_230}",
-					arg_value = 1,
+					arg_value = 0,
 					attach_point_position = {0, 0, 0},
 					required = {{station = 1,loadout = {"{UH60_FUEL_TANK_230}"}}},
-					attach_point_oriented = true
+					attach_point_oriented = true,
+					forbidden =
+					{
+						{loadout = { "<CLEAN>" }, station = 1},
+						{loadout = { "<CLEAN>" }, station = 2},
+						{loadout = { "<CLEAN>" }, station = 6},
+					}
 				},
 				{
 					CLSID = "<CLEAN>",
-					arg_value = 0,
+					arg_value = 1,
 					required =
 					{
 						{station = 1,loadout = {"<CLEAN>"}},
 						{station = 2,loadout = {"<CLEAN>"}},
-						{station = 3,loadout = {"<CLEAN>"}},
+						{station = 6,loadout = {"<CLEAN>"}},
 					},
 				},
             }
@@ -388,18 +598,18 @@ UH60L =
 	{		-- deps_cells defines what other parts get destroyed along with it
 		["MAIN"]  			= {critical_damage = 10, args = {151}},
 		["TAIL"]			= {critical_damage = 4, args = {159}, deps_cells = {"BLADE_5_IN", "BLADE_5_CENTER", "BLADE_6_IN", "BLADE_6_CENTER"}},
-		["BLADE_1_IN"]		= {critical_damage = 1, args = {161}}, -- 64
-		["BLADE_1_CENTER"]	= {critical_damage = 1, args = {161}, deps_cells = {"BLADE_1_IN"}}, -- 65
-		["BLADE_2_IN"]		= {critical_damage = 1, args = {162}}, -- 67
-		["BLADE_2_CENTER"]	= {critical_damage = 1, args = {162}, deps_cells = {"BLADE_2_IN"}}, -- 68
-		["BLADE_3_IN"]		= {critical_damage = 1, args = {163}}, -- 70
-		["BLADE_3_CENTER"]	= {critical_damage = 1, args = {163}, deps_cells = {"BLADE_3_IN"}}, -- 71
-		["BLADE_4_IN"]		= {critical_damage = 1, args = {164}}, -- 73
-		["BLADE_4_CENTER"]	= {critical_damage = 1, args = {164}, deps_cells = {"BLADE_4_IN"}}, -- 74
-		["BLADE_5_IN"]		= {critical_damage = 1, args = {165}}, -- 76
-		["BLADE_5_CENTER"]	= {critical_damage = 1, args = {165}, deps_cells = {"BLADE_5_IN"}}, -- 77
-		["BLADE_6_IN"]		= {critical_damage = 1, args = {166}}, -- 79
-		["BLADE_6_CENTER"]	= {critical_damage = 1, args = {166}, deps_cells = {"BLADE_6_IN"}}, -- 80
+		["BLADE_1_IN"]		= {critical_damage = 3, args = {161}}, -- 64
+		["BLADE_1_CENTER"]	= {critical_damage = 3, args = {161}, deps_cells = {"BLADE_1_IN"}}, -- 65
+		["BLADE_2_IN"]		= {critical_damage = 3, args = {162}}, -- 67
+		["BLADE_2_CENTER"]	= {critical_damage = 3, args = {162}, deps_cells = {"BLADE_2_IN"}}, -- 68
+		["BLADE_3_IN"]		= {critical_damage = 3, args = {163}}, -- 70
+		["BLADE_3_CENTER"]	= {critical_damage = 3, args = {163}, deps_cells = {"BLADE_3_IN"}}, -- 71
+		["BLADE_4_IN"]		= {critical_damage = 3, args = {164}}, -- 73
+		["BLADE_4_CENTER"]	= {critical_damage = 3, args = {164}, deps_cells = {"BLADE_4_IN"}}, -- 74
+		["BLADE_5_IN"]		= {critical_damage = 3, args = {165}}, -- 76
+		["BLADE_5_CENTER"]	= {critical_damage = 3, args = {165}, deps_cells = {"BLADE_5_IN"}}, -- 77
+		["BLADE_6_IN"]		= {critical_damage = 3, args = {166}}, -- 79
+		["BLADE_6_CENTER"]	= {critical_damage = 3, args = {166}, deps_cells = {"BLADE_6_IN"}}, -- 80
 		["WHEEL_R"]         = {critical_damage = 3},
 		["WHEEL_L"]         = {critical_damage = 3},
 		["WHEEL_F"]         = {critical_damage = 3},
@@ -657,9 +867,9 @@ UH60L =
 			control = "checkbox",
 			label = _("Enable Fuel Probe"),
 			defValue = false,
-			weightWhenOn = 80
+			weightWhenOn = 0
 		},
-		{id = "SoloFlight", control = 'checkbox' , label = _('Solo Flight'), defValue = false, weightWhenOn = -80},
+		--{id = "SoloFlight", control = 'checkbox' , label = _('Solo Flight'), defValue = false, weightWhenOn = 0},
 		{id = "NetCrewControlPriority" , control = 'comboList', label = _('Aircraft Control Priority'), playerOnly = true,
 		  values = {{id =  0, dispName = _("Pilot")},
 					{id =  1, dispName = _("Instructor")},

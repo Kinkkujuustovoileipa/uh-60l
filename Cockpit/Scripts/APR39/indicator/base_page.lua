@@ -16,7 +16,7 @@ local fontWarning = MakeFont({used_DXUnicodeFontData = "baseFont"}, warningColor
 local fontCaution = MakeFont({used_DXUnicodeFontData = "baseFont"}, cautionColor)
 local fontAdvisory = MakeFont({used_DXUnicodeFontData = "baseFont"}, advisoryColor)
 --local center = {0.55,-0.4,2.4} -- {L/R,U/D,forward/back} for debug
-local center = calculateIndicatorCenter({0.0501,-0.768,2.499}) -- {L/R,U/D,forward/back}
+local center = calculateIndicatorCenter({0.0626,-0.769,2.5623}) -- {L/R,U/D,forward/back}
 local rotation = {0, 0, dashRotation} -- main panel rotation roughly 22deg
 local stringdefs = {0.006 * RWR_SCALE * 10,0.77*0.006 * RWR_SCALE * 10, 0, 0}
 
@@ -45,10 +45,11 @@ base.element_params  = {"APR39_POWER", "APR39_BRIGHTNESS"}
 base.controllers     = {{"parameter_in_range",0,0.9,1.1}, {"opacity_using_parameter", 1}}
 Add(base)
 
+--drawGrid(0, 0, 0, 100, 100, base)
 
 function addContact(i)
     i = "0"..i
-    local radius = 0.35 * RWR_SCALE	
+    local radius = 0.32 * RWR_SCALE	
     local innerRadius = 0.025 * RWR_SCALE
 
     -- SEARCH TICK

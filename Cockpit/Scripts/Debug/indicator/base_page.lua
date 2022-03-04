@@ -116,13 +116,17 @@ addTextBlock({airspeedX, airspeedY - yDiff * 13,  0},  {"Raw Roll Input: %f"},  
 addTextBlock({airspeedX, airspeedY - yDiff * 14,  0},  {"Raw Pedal Input: %f"},      {"paramDebugRawPedal"})
 addTextBlock({airspeedX, airspeedY - yDiff * 15,  0},  {"Pitch Trim: %f"},           {"paramDebugPitchTrim"})
 addTextBlock({airspeedX, airspeedY - yDiff * 16,  0},  {"Roll Trim: %f"},            {"paramDebugRollTrim"})
-addTextBlock({airspeedX, airspeedY - yDiff * 17,  0},  {"FPS Roll State: %f"},       {"paramDebugFPSRollOn"})
-addTextBlock({airspeedX, airspeedY - yDiff * 18,  0},  {"FPS Pitch State: %f"},      {"paramDebugFPSPitchOn"})
+addTextBlock({airspeedX, airspeedY - yDiff * 17,  0},  {"FPS Roll State: %f"},       {"ROLL_AFC"})
+addTextBlock({airspeedX, airspeedY - yDiff * 18,  0},  {"FPS Pitch State: %f"},      {"PITCH_AFC"})
 addTextBlock({airspeedX, airspeedY - yDiff * 19,  0},  {"Refuel Probe State: %f"},   {"paramDebugProbeState"})
 addTextBlock({airspeedX, airspeedY - yDiff * 20,  0},  {"G Force: %f"},              {"paramDebugG"})
 addTextBlock({airspeedX, airspeedY - yDiff * 21,  0},  {"Blade Slap Normal: %f"},              {"paramDebugBladeSlap"})
 addTextBlock({airspeedX, airspeedY - yDiff * 22,  0},  {"Blade Slap G: %f"},              {"paramDebugBladeSlapG"})
 addTextBlock({airspeedX, airspeedY - yDiff * 23,  0},  {"Angle of Slide: %f"},              {"paramDebugSlide"})
+
+addTextBlock({airspeedX, airspeedY - yDiff * 24,  0},  {"E1 Fuel Flow: %f lbs/hr"},  {"E1_FUEL_FLOW"})
+addTextBlock({airspeedX, airspeedY - yDiff * 25,  0},  {"E2 Fuel Flow: %f lbs/hr"},  {"E2_FUEL_FLOW"})
+addTextBlock({airspeedX, airspeedY - yDiff * 26,  0},  {"Cruise Torque Req: %f"},  {"DEBUG_CRUISE_TRQ"})
 
 
 

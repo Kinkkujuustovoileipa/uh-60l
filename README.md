@@ -4,15 +4,52 @@ A free UH-60L Black Hawk mod for Digital Combat Simulator
 Download the latest version from the [releases page](https://github.com/Kinkkujuustovoileipa/uh-60l/releases)
 ## Guide
 - [Link](https://docs.google.com/presentation/d/1kCJf5Nk-fU_21eO7W1ozYfb9FKt488ax65IbeuIGVtA/edit?usp=sharing)
-Manual is also available in-game
+- Manual is also available in-game
 ## Installation
 - Extract the ‘Mods’ folder from the zip file into C:\Users\###\Saved Games\DCS\ folder (Steam) or C:\Users\###\Saved Games\DCS.OpenBeta\ (Standalone if Open Beta installed)
 - You may require the latest [C++ redistributables](https://docs.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170) for this mod to work properly
 - If you use SRS, copy and paste the “DCS-SimpleRadioStandalone.lua” file to “C:\Users\###\Saved Games\DCS\Mods\Services\DCS-SRS\Scripts\” - BACK UP THE ORIGINAL!
 - In the mission editor, make sure the Historical Filter is disabled
 ## Changelog
-### 1.0
-- Initial release
+### 1.2
+#### Feature Changes
+- Air source requirement added to engine start procedure
+- Flight model updated - more accurate torque/transmission behaviour (ETL, mass, etc.)
+- Flight Path Stabilization & Trim System improved
+- Flare countermeasures added
+- Configurable intenal cargo added
+- Cockpit model updated for scale
+- Many many many wonderful keybinds
+#### Bugs/Corrections
+- Wheelbrakes fixed
+- Autostart enhancement added
+- Damage to ground fire fixed
+- Rename wheel lock binds correction
+- Toggle Keybinds for CISP/MODE buttons enhancement
+- Inclinometer movement bug fixed
+- Removable seats added
+- uh-60 hover issue with "Solo Flight" Checked in ME bug fixed
+- Chaff and Flare Dispensers correction fixed
+- No starter/engine noise when starting #1 engine fixed
+- Add HDG bug, COURSE bug, radio preset inc / decrease key bindings
+- Add more instant Action Missions enhancement
+- Heat/Start Air Source switch seems to be inop
+- Add rudder binds for keyboard and controller
+- Add pitch/roll binds for keyboard and controller
+- 10' ft Hover TQ required does not change with weight increase/decrease
+- VSI/HSI Flags showing incorrectly
+- APU ON advisory illuminates early
+- Collective position
+- Pedal authority is too strong
+- ICS/XMIT Next and Previous keybinds dont work
+- Nr (Rotor Speed) not Driven by Np(Engine Speed)
+- Multiplayer Disconnect issues
+- Master caution does not appear with caution advisory panel cautions
+- [Feature request] Separate key bindings for extending and retracting the fuel probe enhancement 
+- Have Num+/Num- be default for collective inc/dec enhancement
+- Anticollision, Position, NAV, Cabin Light keybinds missing enhancement
+- Add more Fuel probe AAR keybinds enhancement
+- NG at idle correction
 ### 1.1
 #### Feature Changes
 - Radios refactored - FM1, UHF, VHF, FM2 radios all work in game
@@ -73,3 +110,5 @@ Manual is also available in-game
 - Have the course and heading knobs adjust by 1 with mouse wheel bug fixed
 - HUD Distance to Waypoint shows more than 999.9 km correction fixed
 - HUD Indicated Airspeed goes above 180kts correction fixed
+### 1.0
+- Initial release

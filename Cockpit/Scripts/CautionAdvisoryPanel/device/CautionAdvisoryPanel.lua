@@ -49,7 +49,11 @@ function SetCommand(command,value)
             brightness = 0.75
         end
     elseif command == device_commands.CAPMasterCautionReset then
-        acknowledgedFaults = currentFaults
+        --print_message_to_user("acknowledge")
+        acknowledgedFaults = {}
+        for k,v in pairs(currentFaults) do
+            table.insert(acknowledgedFaults, v)
+        end
         mcHandle:set(0)
     end
 end
@@ -82,7 +86,7 @@ function update()
                     end
 
                     --handle master caution light
-                    if (param:get() == 1) then
+                    if (param:get() > 0) then
                         local fault = v.param
                         local faultAcknowledged = false
                         for k,v in pairs(acknowledgedFaults) do
@@ -95,7 +99,30 @@ function update()
                             mcHandle:set(1)
                         end
 
-                        table.insert(currentFaults, fault)
+                        local faultPresent = false
+                        for i,j in pairs(currentFaults) do
+                            if j == v.param then
+                                faultPresent = true
+                            end
+                        end
+                        if faultPresent == false then
+                            table.insert(currentFaults, fault)
+                        end
+                    else
+                        -- if the error is no longer present, it should be removed from the acknowledged faults table
+                        -- current faults should be a small table so this shouldn't affect performance
+                        for i,j in pairs(currentFaults) do
+                            if j == v.param then
+                                table.remove(currentFaults, i)
+                            end
+                        end
+
+                        for i,j in pairs(acknowledgedFaults) do
+                            if j == v.param then
+                                table.remove(acknowledgedFaults, i)
+                            end
+                        end
+                        --printsec(Dump(acknowledgedFaults))
                     end
                 end
             end

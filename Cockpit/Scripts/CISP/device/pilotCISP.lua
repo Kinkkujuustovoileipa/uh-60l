@@ -22,6 +22,7 @@ paramVSICollectiveCmdBar = get_param_handle("PILOT_VSI_COLLECTIVE_CMD_BAR")
 paramVSITurnRateInd = get_param_handle("PILOT_VSI_TURN_RATE_IND")
 paramVSITrackErrorInd = get_param_handle("PILOT_VSI_TRACK_ERROR_IND")
 paramVSIGlideSlopeInd = get_param_handle("PILOT_VSI_GLIDE_SLOPE_IND")
+paramVSISlipIndicator = get_param_handle("PILOT_VSI_SLIP_IND")
 
 -- VSI FLAGS
 paramVSICMDFlag = get_param_handle("PILOT_VSI_CMD_FLAG")
@@ -80,6 +81,18 @@ dev:listen_command(device_commands.PilotCRSHDGToggle)
 dev:listen_command(device_commands.PilotVERTGYROToggle)
 dev:listen_command(device_commands.PilotBRG2Toggle)
 
+dev:listen_command(Keys.PilotCISHdgCycle)
+dev:listen_command(Keys.PilotCISNavCycle)
+dev:listen_command(Keys.PilotCISAltCycle)
+dev:listen_command(Keys.PilotNavGPSCycle)
+dev:listen_command(Keys.PilotNavVORILSCycle)
+dev:listen_command(Keys.PilotNavBACKCRSCycle)
+dev:listen_command(Keys.PilotNavFMHOMECycle)
+dev:listen_command(Keys.PilotTURNRATECycle)
+dev:listen_command(Keys.PilotCRSHDGCycle)
+dev:listen_command(Keys.PilotVERTGYROCycle)
+dev:listen_command(Keys.PilotBRG2Cycle)
+
 -- HSI
 dev:listen_command(device_commands.pilotHSIHdgSet)
 dev:listen_command(device_commands.pilotHSICrsSet)
@@ -87,8 +100,19 @@ dev:listen_command(device_commands.pilotHSICrsSet)
 pltHeading = 0
 pltCourse = 0
 
+local PilotNavGPSTracker	 = 0
+local PilotNavVORILSTracker	 = 0
+local PilotNavBACKCRSTracker = 0
+local PilotNavFMHOMETracker	 = 0
+local PilotTURNRATETracker	 = 0
+local PilotCRSHDGTracker	 = 0
+local PilotVERTGYROTracker	 = 0
+local PilotBRG2Tracker		 = 0
+
 modeSelPower = false
 ahruPower = false
+
+mission = nil
 
 function post_initialize()
     local birth = LockOn_Options.init_conditions.birth_place
@@ -106,6 +130,8 @@ function post_initialize()
         local aircraftHeading = 360 - (sensor_data:getHeading() * radian_to_degree)
         paramHSICompass:set(formatCompassDir(aircraftHeading + paramAHRUHeadingError:get()))
     end
+
+    load_tempmission_file()
 end
 
 function SetCommand(command,value)
@@ -118,6 +144,16 @@ function SetCommand(command,value)
             else
                 hdgModeOn = false
             end
+            --[[ -- TODO: Test to make sure these are not necessary
+        elseif command == Keys.PilotCISHdgCycle then -- same as original command
+            --print_message_to_user("pressedSecond")
+            if value > 0 then
+                hdgModeOn = true
+                navModeOn = false
+            else
+                hdgModeOn = false
+            end
+            ]]
         elseif command == device_commands.PilotCISNavToggle then
             if value > 0 then
                 navModeOn = true
@@ -132,6 +168,23 @@ function SetCommand(command,value)
             else
                 navModeOn = false
             end
+           
+        --[[ -- TODO: Test to make sure these are not necessary
+        elseif command == Keys.PilotCISNavCycle then
+            if value > 0 then
+                navModeOn = true
+                hdgModeOn = false
+
+                -- If switching on ILS, switch on ALT hold as well
+                if ilsModeOn then
+                    altModeOn = true
+                    pilotAltHoldAltitude = sensor_data:getBarometricAltitude()
+                    pilotAirspeedHold = sensor_data:getIndicatedAirSpeed()
+                end
+            else
+                navModeOn = false
+            end
+        ]]
         elseif command == device_commands.PilotCISAltToggle then
             if altModeOn == false then
                 -- Alt hold only engages if vertical speed less than 200fpm
@@ -142,12 +195,30 @@ function SetCommand(command,value)
             else
                 altModeOn = false
             end
+            --[[-- TODO: Test to make sure these are not necessary
+        elseif command == Keys.PilotCISAltCycle then
+            if altModeOn == false then
+                -- Alt hold only engages if vertical speed less than 200fpm
+                if (math.abs(sensor_data:getVerticalVelocity()) * msToFpm <= 200) then
+                    altModeOn = true
+                    pilotAltHoldAltitude = sensor_data:getBarometricAltitude()
+                end
+            else
+                altModeOn = false
+            end
+            ]]
         elseif command == device_commands.PilotNavGPSToggle then
             if value > 0 then
                 dplrGpsModeOn = true
             else
                 dplrGpsModeOn = false
             end
+            if value ~= PilotNavGPSTracker then
+                PilotNavGPSTracker = 1 - PilotNavGPSTracker
+            end
+        elseif command == Keys.PilotNavGPSCycle then
+            PilotNavGPSTracker = 1 - PilotNavGPSTracker
+            dev:performClickableAction(device_commands.PilotNavGPSToggle, PilotNavGPSTracker, true)
         elseif command == device_commands.PilotNavVORILSToggle then
             if vorModeOn or ilsModeOn then
                 vorModeOn = false
@@ -164,7 +235,6 @@ function SetCommand(command,value)
                     ilsModeOn = false
                 end
             end
-
             if navModeOn and (ilsModeOn or vorModeOn) then
                 if navModeOn then
                     altModeOn = true
@@ -172,43 +242,85 @@ function SetCommand(command,value)
                     pilotAirspeedHold = sensor_data:getIndicatedAirSpeed()
                 end
             end
+
+            if value ~= PilotNavVORILSTracker then
+                PilotNavVORILSTracker = 1 - PilotNavVORILSTracker
+            end
+        elseif command == Keys.PilotNavVORILSCycle then
+            PilotNavVORILSTracker = 1 - PilotNavVORILSTracker
+            dev:performClickableAction(device_commands.PilotNavVORILSToggle, PilotNavVORILSTracker, true)
         elseif command == device_commands.PilotNavBACKCRSToggle then
             if value > 0 then
                 backCrsModeOn = true
             else
                 backCrsModeOn = false
             end
-        elseif command == device_commands.PilotNavFMHOMEToggle then
-            if value > 0 then
+            if value ~= PilotNavBACKCRSTracker then
+                PilotNavBACKCRSTracker = 1 - PilotNavBACKCRSTracker
+            end
+        elseif command == Keys.PilotNavBACKCRSCycle then
+            PilotNavBACKCRSTracker = 1 - PilotNavBACKCRSTracker
+            dev:performClickableAction(device_commands.PilotNavBACKCRSToggle, PilotNavBACKCRSTracker, true)
+        elseif command == device_commands.PilotNavFMHOMEToggle then -- TODO: Untested for plt and cplt
+            if (not fmHomeModeOn) and validFMSignal then
                 fmHomeModeOn = true
             else
                 fmHomeModeOn = false
             end
+            if value ~= PilotNavFMHOMETracker then
+                PilotNavFMHOMETracker = 1 - PilotNavFMHOMETracker
+            end
+        elseif command == Keys.PilotNavFMHOMECycle then -- TODO: Untested for plt and cplt
+            --print_message_to_user("PilotNavFMHOMECycle")
+            PilotNavFMHOMETracker = 1 - PilotNavFMHOMETracker
+            --print_message_to_user(PilotNavFMHOMETracker)
+            dev:performClickableAction(device_commands.PilotNavFMHOMEToggle, PilotNavFMHOMETracker, true)
         elseif command == device_commands.PilotTURNRATEToggle then
             if value > 0 then
                 turnRateIsAlt = true
             else
                 turnRateIsAlt = false
             end
-        elseif command == device_commands.PilotCRSHDGToggle then
-            if value > 0 then
-                crsHdgIsCplt = true
-            else
-                crsHdgIsCplt = false
+            if value ~= PilotTURNRATETracker then
+                PilotTURNRATETracker = 1 - PilotTURNRATETracker
             end
-            dev:performClickableAction(device_commands.CopilotCRSHDGToggle,value,true)
+        elseif command == Keys.PilotTURNRATECycle then
+            PilotTURNRATETracker = 1 - PilotTURNRATETracker
+            dev:performClickableAction(device_commands.PilotTURNRATEToggle, PilotTURNRATETracker, true)
+        elseif command == device_commands.PilotCRSHDGToggle then
+            paramCISPSource:set(value)
+            if value ~= PilotCRSHDGTracker then
+                PilotCRSHDGTracker = 1 - PilotCRSHDGTracker
+            end
+        elseif command == Keys.PilotCRSHDGCycle then
+            PilotCRSHDGTracker = 1 - PilotCRSHDGTracker
+            dev:performClickableAction(device_commands.PilotCRSHDGToggle, PilotCRSHDGTracker, true)
         elseif command == device_commands.PilotVERTGYROToggle then
             if value > 0 then
                 vertGyroIsAlt = true
             else
                 vertGyroIsAlt = false
             end
+
+            if value ~= PilotVERTGYROTracker then
+                PilotVERTGYROTracker = 1 - PilotVERTGYROTracker
+            end
+        elseif command == Keys.PilotVERTGYROCycle then
+            PilotVERTGYROTracker = 1 - PilotVERTGYROTracker
+            dev:performClickableAction(device_commands.PilotVERTGYROToggle, PilotVERTGYROTracker, true)
         elseif command == device_commands.PilotBRG2Toggle then
             if brg2IsVOR then
                 brg2IsVOR = false
             else
                 brg2IsVOR = true
             end
+
+            if value ~= PilotBRG2Tracker then
+                PilotBRG2Tracker = 1 - PilotBRG2Tracker
+            end
+        elseif command == Keys.PilotBRG2Cycle then
+            PilotBRG2Tracker = 1 - PilotBRG2Tracker
+            dev:performClickableAction(device_commands.PilotBRG2Toggle, PilotBRG2Tracker, true)
         end
     end
     

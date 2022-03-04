@@ -3,10 +3,10 @@ dofile(LockOn_Options.script_path.."utils.lua")
 
 SetScale(METERS)
 local advisoryColor = {0,255,0,255}
-local fontAdvisory = MakeFont({used_DXUnicodeFontData = "font7segment"}, advisoryColor)
-center = calculateIndicatorCenter({-0.126,-0.747,2.52352}) -- {L/R,U/D,forward/back}
+local fontAdvisory = MakeFont({used_DXUnicodeFontData = "h60_font_7seg"}, advisoryColor)
+center = calculateIndicatorCenter({-0.096,-0.75,2.584}) -- {L/R,U/D,forward/back}
 rotation = {0, 0, dashRotation} -- main panel rotation roughly 22deg
-stringdefs = {0.0065,0.0045, 0, 0}
+stringdefs = {0.0065,0.004, 0, 0}
 
 verts = {}
 dx=.0145
@@ -32,7 +32,9 @@ base.element_params  = {"CB_AHRU_PLT"}
 base.controllers     = {{"parameter_in_range",0,0.9,1.1}}
 Add(base)
 
-local spacingX = 0.024
+--drawGrid(0, 0, 0, 100, 100, base)
+
+local spacingX = 0.022
 
 local fuel1             = CreateElement "ceStringPoly"
 fuel1.name              = create_guid_string()
@@ -66,7 +68,7 @@ local fuel3             = CreateElement "ceStringPoly"
 fuel3.name              = create_guid_string()
 fuel3.material          = fontAdvisory
 fuel3.alignment         = "LeftCenter"
-fuel3.init_pos		    = {spacingX * 2,0,0} -- L/R, D/U, F/B
+fuel3.init_pos		    = {spacingX * 2 - 0.0005,0,0} -- L/R, D/U, F/B
 fuel3.stringdefs        = stringdefs
 fuel3.formats           = {"%s"}
 fuel3.element_params    = {"AFMS_DISPLAY_INBD_R"}
@@ -80,7 +82,7 @@ local fuel4             = CreateElement "ceStringPoly"
 fuel4.name              = create_guid_string()
 fuel4.material          = fontAdvisory
 fuel4.alignment         = "LeftCenter"
-fuel4.init_pos		    = {spacingX * 3 + 0.001,0,0} -- L/R, D/U, F/B
+fuel4.init_pos		    = {spacingX * 3,0,0} -- L/R, D/U, F/B
 fuel4.stringdefs        = stringdefs
 fuel4.formats           = {"%s"}
 fuel4.element_params    = {"AFMS_DISPLAY_OUTBD_R"}

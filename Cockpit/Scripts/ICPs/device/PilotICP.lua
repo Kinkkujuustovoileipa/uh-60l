@@ -4,7 +4,7 @@ dofile(LockOn_Options.script_path.."utils.lua")
 dev = GetSelf()
 sensor_data = get_base_data()
 Terrain = require('terrain')
-update_time_step = 0.1  
+update_time_step = 0.1
 make_default_activity(update_time_step)
 
 local xmitMode = 1
@@ -86,29 +86,12 @@ function post_initialize()
     dev:performClickableAction(device_commands.pilotICPToggleVHF,1,true)
     dev:performClickableAction(device_commands.pilotICPToggleFM2,1,true)
     dev:performClickableAction(device_commands.pilotICPToggleHF,1,true)
-end
-
-function setXMITMode()
-    --[[
-    local intercom = GetDevice(devices.INTERCOM)
-    if xmitMode == 2 then
-        intercom:set_communicator(devices.FM1_RADIO)
-    elseif xmitMode == 3 then
-        intercom:set_communicator(devices.UHF_RADIO)
-    elseif xmitMode == 4 then
-        intercom:set_communicator(devices.VHF_RADIO)
-    else
-        intercom:set_communicator(nil)
-    end
-
-    intercom:make_setup_for_communicator()
-    ]]
+    dev:performClickableAction(device_commands.pilotICPToggleVOR,1,true)
+    dev:performClickableAction(device_commands.pilotICPToggleADF,1,true)
 end
 
 function update()
     updateNetworkArgs(GetSelf())
-    --paramPTT:set(0)
-    --GetDevice(devices.INTERCOM):
 end
 
 need_to_be_closed = false

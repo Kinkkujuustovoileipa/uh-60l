@@ -78,6 +78,7 @@ function CockpitEvent(event,val)
 end
 
 function post_initialize()
+    fm_setAvionicsAlive(1)
     str_ptr = string.sub(tostring(dev.link),10)
     efm_data_bus.fm_setElecPTR(str_ptr)
 
@@ -120,7 +121,12 @@ function update()
     converter2On = paramConverter2On:get()
     batteryCharge = paramBatteryCharge:get()
 
-    --print_message_to_user("AC ESS: "..ACEssBusOn)
+    -- device commands
+    dev:DC_Battery_on(DCEssBusOn > 0)
+    dev:AC_Generator_1_on(Gen1On> 0)
+    dev:AC_Generator_2_on(Gen2On > 0)
+
+    --printsec("AC1: "..dev:get_AC_Bus_1_voltage().."; AC2: "..dev:get_AC_Bus_2_voltage().."; DC1: "..dev:get_DC_Bus_1_voltage().."; DC2:"..dev:get_DC_Bus_2_voltage())
 
     --print_message_to_user("DC ESS: "..DCEssBusOn.."; DC Bus 1: "..DCBus1On.."; DC Bus 2: "..DCBus2On.."; AC ESS: "..ACEssBusOn.."; AC Bus 1: "..ACBus1On.."; AC Bus 2: "..ACBus2On)
     --print_message_to_user("APU GEN: "..APUGenOn)

@@ -2,8 +2,8 @@ dofile(LockOn_Options.common_script_path.."elements_defs.lua")
 dofile(LockOn_Options.script_path.."utils.lua")
 
 greenColor = {0,255,0,220}
-font7segment = MakeFont({used_DXUnicodeFontData = "dotMatrixFont"}, greenColor)
-center = calculateIndicatorCenter({-0.11,-0.938,2.36}) -- {L/R,U/D,forward/back}
+h60_font_7seg = MakeFont({used_DXUnicodeFontData = "dotMatrixFont"}, greenColor)
+center = calculateIndicatorCenter({-0.086,-0.916,2.444}) -- {L/R,U/D,forward/back}
 rotation = {0, 0, 80} -- main panel rotation roughly 22deg
 --center = {0.55,-0.2,2.4} -- {L/R,U/D,forward/back}
 --rotation = {0, 0, 0} -- main panel rotation roughly 22deg
@@ -20,7 +20,7 @@ navLinePos = {0.104, -0.0285, 0}
 function createTextLine(pos, params, controllers, base, align)
     local line1Text           	= CreateElement "ceStringPoly"
     line1Text.name            	= create_guid_string()
-    line1Text.material        	= font7segment
+    line1Text.material        	= h60_font_7seg
     line1Text.alignment       	= align or "LeftCenter"
     line1Text.init_pos			= pos -- L/R, D/U, F/B
     line1Text.stringdefs      	= stringdefs
@@ -37,7 +37,7 @@ end
 function createHardcodedTextLine(pos, value, base, align)
     local line1Text           	= CreateElement "ceStringPoly"
     line1Text.name            	= create_guid_string()
-    line1Text.material        	= font7segment
+    line1Text.material        	= h60_font_7seg
     line1Text.alignment       	= align or "LeftCenter"
     line1Text.init_pos			= pos -- L/R, D/U, F/B
     line1Text.stringdefs      	= stringdefs

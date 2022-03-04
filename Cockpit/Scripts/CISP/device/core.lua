@@ -1,4 +1,4 @@
-
+dofile(LockOn_Options.common_script_path.."tools.lua")
 dofile(LockOn_Options.script_path.."CISP/device/beaconData.lua")
 
 -- 'Master Modes'
@@ -39,8 +39,10 @@ paramARN147Freq = get_param_handle("ARN147_FREQ")
 validVOR = false
 validILS = false
 vorILSBearing = 0
-vorPos = {}
-vorILSDistance = -1
+localizerPos = {}
+glideSlopePos = {}
+localizerBeaconDistance = -1
+glideSlopeBeaconDistance = -1
 ilsDirection = -1
 gsBeaconAlt = 0
 
@@ -75,15 +77,29 @@ paramCpltRdrAltLo = get_param_handle("COPILOT_APN209_LOBUG")
 
 paramTrackAngle = get_param_handle("TRACK_ANGLE")
 
+paramCISPSource = get_param_handle("CIPS_SOURCE")
+
+-- FM Homing
+paramFM1Freq = get_param_handle("ARC201_FM1_FREQ")
+paramFM1Mode = get_param_handle("ARC201_FM1_MODE")
+paramFM1HomingEnabled = get_param_handle("ARC201_FM1_HOMING_ENABLED")
+
+fmHomingFreq = -1
+fmBearing = 0
+validFMSignal = false
+
 -- Lights
 paramCISPHDGLt = get_param_handle("LIGHTING_CIS_HDG_ON")
 paramCISPNAVLt = get_param_handle("LIGHTING_CIS_NAV_ON")
 paramCISPALTLt = get_param_handle("LIGHTING_CIS_ALT_ON")
 
+paramGroundSpeed = get_param_handle("GROUND_SPEED")
+
 flagMoveSpeed = 5
 
 function getBeaconData(freq, type)
     type = nil or type
+    --print_message_to_user(Dump(freq))
     local selfx, selfy, selfz = sensor_data.getSelfCoordinates()
     
     for k,v in pairs(beacons) do
@@ -114,6 +130,15 @@ function getBeaconData(freq, type)
                     return v
                 end
             end
+        end
+    end
+
+    --printsec(Dump(freq))
+    -- Check for mission beacons - these have no type
+    local missionBeacons = getMissionBeacons(mission)
+    for k,v in pairs(missionBeacons) do
+        if v.frequency == freq then
+            return v
         end
     end
 
@@ -148,6 +173,7 @@ end
 function updateADF()
     adfBearing = 0
     local adfFreq = paramARN149Freq:get()
+    --printsec(adfFreq)
     if adfFreq and adfFreq > 0 then
         local beaconData = getBeaconData(adfFreq)
         if beaconData then
@@ -158,9 +184,29 @@ function updateADF()
     end
 end
 
+function updateFMHoming()
+    paramFM1Freq = get_param_handle("ARC201_FM1_FREQ")
+    if paramFM1Mode:get() > 0 and paramFM1HomingEnabled:get() > 0 then
+        fmHomingFreq = paramFM1Freq:get()
+        local beaconData = getBeaconData(fmHomingFreq)
+        if beaconData then
+            local selfx, selfy, selfz = sensor_data.getSelfCoordinates()
+            fmBearing = getBearingToPosition(beaconData.position, {selfx, selfy, selfz})
+            validFMSignal = true
+            --print_message_to_user(Dump("ADF Freq: "..adfFreq.."; Bearing: "..adfBearing))
+        else
+            validFMSignal = false
+            fmHomingFreq = -1
+        end
+    else
+        fmHomingFreq = -1
+        validFMSignal = false
+    end
+end
+
 function updateVORILS()
     vorILSBearing = 0
-    vorILSDistance = -1
+    localizerBeaconDistance = -1
     validVOR = false
     validILS = false
 
@@ -172,21 +218,26 @@ function updateVORILS()
             if beaconData.type == BEACON_TYPE_ILS_LOCALIZER or beaconData.type == BEACON_TYPE_ILS_GLIDESLOPE or beaconData.type == BEACON_TYPE_VOR or beaconData.type == BEACON_TYPE_VOR_DME or beaconData.type == BEACON_TYPE_VORTAC then
                 local selfx, selfy, selfz = sensor_data.getSelfCoordinates()
                 vorILSBearing = getBearingToPosition(beaconData.position, {selfx, selfy, selfz})
-                vorPos = beaconData.position
+                localizerPos = beaconData.position
                 local selfX,selfY,selfZ = sensor_data.getSelfCoordinates()
-                vorILSDistance = math.sqrt((vorPos[1] - selfX)^2 + (vorPos[3] - selfZ)^2)
-
+                localizerBeaconDistance = math.sqrt((localizerPos[1] - selfX)^2 + (localizerPos[3] - selfZ)^2)
+                
                 -- Consider ILS as subtype of VOR, can still apply VOR to ILS
-                if beaconData.type == BEACON_TYPE_ILS_LOCALIZER or beaconData.type == BEACON_TYPE_ILS_GLIDESLOPE then
+                if beaconData.type == BEACON_TYPE_ILS_LOCALIZER then
                     validILS = true
-                    -- The localiser and glideslope have different directions, use the glideslope
+                    
+                    -- Localizer data
+                    ilsDirection = formatCompassDir(beaconData.direction - 180)
+                    localizerPos = beaconData.position
+                    
+                    -- Glideslope data
                     local gsBeacon = getBeaconData(vorFreq, BEACON_TYPE_ILS_GLIDESLOPE)
-                    ilsDirection = formatCompassDir(gsBeacon.direction - 180)
-                    vorPos = gsBeacon.position
+                    glideSlopePos = gsBeacon.position
                     gsBeaconAlt = gsBeacon.position[2]
+                    glideSlopeBeaconDistance = math.sqrt((glideSlopePos[1] - selfX)^2 + (glideSlopePos[3] - selfZ)^2)
 
                     -- Set track error
-                    vorILSTrackError = getShortestRadialPath(vorILSBearing, course)
+                    vorILSTrackError = getShortestRadialPath(vorILSBearing, ilsDirection)
                 else
                     validVOR = true
                     vorILSTrackError = getShortestRadialPath(vorILSBearing, course)
@@ -225,11 +276,11 @@ end
 
 function updateCRSDeviationBar()
     local crsDeviationPos = 0
-    if navModeOn and vorModeOn and validVOR then
+    if vorModeOn and validVOR then
         crsDeviationPos = clamp(vorILSTrackError / 10, -1, 1)
-    elseif navModeOn and ilsModeOn and validILS then
+    elseif ilsModeOn and validILS then
         crsDeviationPos = clamp(vorILSTrackError / 2.5, -1, 1)
-    elseif navModeOn and dplrGpsModeOn then
+    elseif dplrGpsModeOn then
         crsDeviationPos = clamp(paramGPSTrackError:get() / 10, -1, 1)
     end
 
@@ -260,14 +311,14 @@ function interceptFollowRadial(courseDir, bearing, distanceToTarget)
     -- Now we want the distance to the radial intercept point. We know dist to beacon, intercept heading and heading to beacon, so calculate the remaining angle and sides
     -- using law of sines
     local distanceToRadial = -1
-    --print_message_to_user(vorILSDistance)
+    --print_message_to_user(localizerBeaconDistance)
     if distanceToTarget >= 0 then
-        distanceToRadial = math.abs(vorILSDistance * math.sin(math.rad(crsDeviationDeg))) / math.sin(math.rad(135))
+        distanceToRadial = math.abs(localizerBeaconDistance * math.sin(math.rad(crsDeviationDeg))) / math.sin(math.rad(135))
     else
         return
     end
 
-    --print_message_to_user("VOR Dist: "..vorILSDistance.."; crsDeviationDeg: "..crsDeviationDeg.."; distToIntercept: "..distanceToRadial)
+    --print_message_to_user("VOR Dist: "..localizerBeaconDistance.."; crsDeviationDeg: "..crsDeviationDeg.."; distToIntercept: "..distanceToRadial)
     local standardRateBankAngle = ((sensor_data:getIndicatedAirSpeed() * msToKts) / 10) + 7
     -- r = s^2/11.26*a
     -- a = (s^2/r)/11.26
@@ -325,7 +376,7 @@ function updateVSI()
     elseif navModeOn then
         -- Check for mode
         if vorModeOn then
-            if vorILSDistance < 10 and not stationPassageSubModeOn then
+            if localizerBeaconDistance < 10 and not stationPassageSubModeOn then
                 enableStationPassageSubMode()
             elseif math.abs(vorILSTrackError) > 15 then -- Check for heading submode
                 hdgSubModeOn = true
@@ -344,10 +395,10 @@ function updateVSI()
 		        commandRoll = calculateRollCmdPosUsingHdg(hdgOffset)
             else
                 -- Default VOR mode - intercept the radial at 45deg then follow
-                commandRoll = interceptFollowRadial(course, vorILSBearing, vorILSDistance)
+                commandRoll = interceptFollowRadial(course, vorILSBearing, localizerBeaconDistance)
             end
         elseif ilsModeOn then
-            if vorILSDistance < 10 and not stationPassageSubModeOn then
+            if localizerBeaconDistance < 10 and not stationPassageSubModeOn then
                 enableStationPassageSubMode()
             elseif gsFlagPos > 0 then
                 approachSubModeOn = true
@@ -369,7 +420,7 @@ function updateVSI()
 		        commandRoll = calculateRollCmdPosUsingHdg(hdgOffset)
             else
                 -- Default ILS mode - intercept the radial at 45deg then follow
-                commandRoll = interceptFollowRadial(course, vorILSBearing, vorILSDistance)
+                commandRoll = interceptFollowRadial(ilsDirection, vorILSBearing, localizerBeaconDistance)
             end
         elseif dplrGpsModeOn then
             -- Check for submodes
@@ -398,6 +449,9 @@ function updateVSI()
                 -- Default DPLR GPS mode - intercept the waypoint course at 45deg then follow
                 commandRoll = interceptFollowRadial(paramGPSCourse:get(), paramGPSBearing:get(), paramGPSDist:get())
             end
+        elseif fmHomeModeOn then
+            local hdgOffset = getShortestRadialPath(fmBearing, paramTrackAngle:get())
+            commandRoll = calculateRollCmdPosUsingHdg(hdgOffset)
         end
 	end
 
@@ -412,7 +466,9 @@ function updateVSI()
         local clampedSpeed = clamp(airspeedDiff / 10, -1, 1)
         local clampedAccel = clamp(acceleration / 3, -1, 1)
         -- Animation is limited to +10/-10 deg of current attitude. -1 and 1 anim states reserved for 'off screen' position, like other indicators
+
         commandPitch = clamp(clampedSpeed + clampedAccel, -0.5, 0.5)
+        commandPitch = clamp(commandPitch - (sensor_data:getPitch() * radian_to_degree) * 0.05, -0.5, 0.5)
         --print_message_to_user("Airspeed: "..sensor_data:getIndicatedAirSpeed().."; Hold: "..pilotAirspeedHold.."; Acc: "..acceleration.."; clampedSpeed: "..clampedSpeed.."; clampedAccel: "..clampedAccel.."; commandPitch: "..commandPitch)
     end
     
@@ -433,33 +489,33 @@ function updateVSI()
             local dH = math.max(paramPltRdrAltLo:get(), paramCpltRdrAltLo:get())
 
             if heliRdrAlt <= dH then
-                targetAlt = heliAlt
+                targetAlt = dH
             else
                 -- Assume GS signal at 20km and GS is 3deg, and within 2.5deg of radial. Indicator range +/- .5deg
                 local ilsDeviationDeg = getShortestRadialPath(ilsDirection, vorILSBearing)
-                if ilsDeviationDeg <= 2.5 and vorILSDistance <= 20000 then
+                if ilsDeviationDeg <= 2.5 and localizerBeaconDistance <= 20000 then
                     -- Calculate height of glide path at present position
-                    targetAlt = ((vorILSDistance * math.sin(math.rad(3)) / math.sin(math.rad(87))) + gsBeaconAlt) * meters_to_feet
+                    targetAlt = clamp(((glideSlopeBeaconDistance * math.sin(math.rad(3)) / math.sin(math.rad(87))) + gsBeaconAlt) * meters_to_feet, -1000, pilotAltHoldAltitude * meters_to_feet)
                 end
             end
         end
         
-        local vs = clamp((sensor_data.getVerticalVelocity() * msToFpm) / 1000, -1, 1)
-        local relAlt = clamp((heliAlt / 100) - (targetAlt / 100), -1, 1)
+        local vs = clamp((sensor_data.getVerticalVelocity() * msToFpm) / 1500, -1, 1)
+        local relAlt = clamp((heliAlt / 50) - (targetAlt / 50), -1, 1)
 
         commandCollective = clamp(relAlt + vs, -1, 1) / 2
-        --printsec("vs: "..vs.."; ra: "..relAlt.."cc: "..commandCollective)
+        --printsec("vs: "..vs.."; ra: "..relAlt.."; cc: "..commandCollective.."; tA: "..targetAlt)
     end
     
     moveGauge(paramVSICollectiveCmdBar, commandCollective, 1, update_time_step)
     
 	-- Glideslope
-    if navModeOn and (ilsModeOn and validILS) then
+    if ilsModeOn and validILS then
         -- Assume GS signal at 20km and GS is 3deg, and within 2.5deg of radial. Indicator range +/- .5deg
         local ilsDeviationDeg = getShortestRadialPath(ilsDirection, vorILSBearing)
-        if ilsDeviationDeg <= 2.5 and vorILSDistance <= 20000 then
+        if ilsDeviationDeg <= 2.5 and localizerBeaconDistance <= 20000 then
             -- Calculate angle from beacon to helo
-            local glideAngle = math.deg(math.atan((sensor_data:getBarometricAltitude() - gsBeaconAlt) / vorILSDistance))
+            local glideAngle = math.deg(math.atan((sensor_data:getBarometricAltitude() - gsBeaconAlt) / glideSlopeBeaconDistance))
             gsIndPos = clamp((glideAngle - 3) * -2, -1, 1)
             --print_message_to_user("On GS. Glide Angle: "..glideAngle)
             gsFlagPos = 1
@@ -467,7 +523,7 @@ function updateVSI()
             gsFlagPos = 0
             gsIndPos = 0
         end
-        --print_message_to_user(ilsDeviationDeg..", "..vorILSDistance)
+        --print_message_to_user(ilsDeviationDeg..", "..localizerBeaconDistance)
     end
     
     moveGauge(paramVSIGlideSlopeInd, gsIndPos, 1, update_time_step)
@@ -475,13 +531,13 @@ function updateVSI()
     
 	-- Track Error
     local trackErrorIndPos = 0
-    if navModeOn and (ilsModeOn and validILS) then
+    if ilsModeOn and validILS then
         local ilsDeviationDeg = getShortestRadialPath(ilsDirection, vorILSBearing)
         trackErrorIndPos = -clamp(ilsDeviationDeg / 2.5, -1, 1)
-    elseif navModeOn and vorModeOn and validVOR then
+    elseif vorModeOn and validVOR then
         local vorDeviationDeg = getShortestRadialPath(course, vorILSBearing)
         trackErrorIndPos = -clamp(vorDeviationDeg / 10, -1, 1)
-    elseif navModeOn and dplrGpsModeOn then
+    elseif dplrGpsModeOn then
         trackErrorIndPos = -clamp(paramGPSTrackError:get() / 10, -1, 1)
     end
     
@@ -489,13 +545,19 @@ function updateVSI()
     
 	-- Turn Rate
 	local turnRate = radian_to_degree * sensor_data:getRateOfYaw()
+    turnRate = tonumber(string.format("%.3f", turnRate))
 	--print_message_to_user(-turnRate)
 	-- max at two minute turn = 3deg per sec
     moveGauge(paramVSITurnRateInd, -turnRate / 3, 1, update_time_step)
+
+    -- Inclinometer
+    local slipInd = math.deg(sensor_data.getAngleOfSlide()) / 18.5
+    --printsec(math.deg(sensor_data.getAngleOfSlide()))
+    moveGauge(paramVSISlipIndicator, slipInd, 1, update_time_step)
 end
 
 function updateVORDirFlag()
-    if validVOR then
+    if (validVOR and vorModeOn) or (validILS and ilsModeOn) then
         if vorILSTrackError > 90 or vorILSTrackError < -90 then
             paramHSIVorToFrom:set(-1)
         else
@@ -507,7 +569,7 @@ function updateVORDirFlag()
 end
 
 function updateFlags()
-    if validVOR or validILS then
+    if (validVOR and vorModeOn) or (validILS and ilsModeOn) or (validFMSignal and fmHomeModeOn) then
         moveGauge(paramVSINAVFlag, 1, flagMoveSpeed, update_time_step)
         moveGauge(paramHSINavFlag, 0, flagMoveSpeed, update_time_step)
     else
@@ -515,7 +577,7 @@ function updateFlags()
         moveGauge(paramHSINavFlag, 1, flagMoveSpeed, update_time_step)
     end
 
-    if hdgModeOn or navModeOn or altModeOn then
+    if paramCB_PLTMODESEL:get() > 0 then
         moveGauge(paramVSICMDFlag, 1, flagMoveSpeed, update_time_step)
     else
         moveGauge(paramVSICMDFlag, 0, flagMoveSpeed, update_time_step)
@@ -663,6 +725,17 @@ function updateCore()
         ilsModeOn = false
     end
 
+    -- FM Homing overrides all
+    if fmHomeModeOn then
+        vorModeOn = false
+        ilsModeOn = false
+        dplrGpsModeOn = false
+    end
+
+    if not validFMSignal then
+        fmHomeModeOn = false
+    end
+
     if paramAltMode:get() ~= altModeBtnState then
         if altModeOn == false then
             -- Alt hold only engages if vertical speed less than 200fpm
@@ -682,6 +755,9 @@ function updateCore()
     copilotCourse = paramCopilotHSICourse:get()
     copilotHeading = paramCopilotHSIHeading:get()
 
+
+    crsHdgIsCplt = paramCISPSource:get() > 0
+
     if crsHdgIsCplt then
         heading = copilotHeading
         course = copilotCourse
@@ -693,6 +769,7 @@ function updateCore()
     updateStationPassageSubMode()
 
     updateADF()
+    updateFMHoming()
     updateVORILS()
     updateVORDirFlag()
 

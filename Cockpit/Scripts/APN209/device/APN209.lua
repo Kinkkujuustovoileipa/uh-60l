@@ -19,7 +19,7 @@ function updateAPN209()
     -- TODO DO PROPERLY
     get_param_handle("RDR_ALT_BRIGHTNESS"):set(1)
 
-    isOn = lowAlt > 0 and paramCB_RdrAltm:get() > 0
+    isOn = lowAlt > 0 and paramCB_RdrAltm:get() > 0 and sensor_data:getRadarAltitude() * meters_to_feet <= 1500
 
     paramLoBug:set(lowAlt)
     paramHiBug:set(hiAlt)
@@ -27,7 +27,7 @@ function updateAPN209()
     if isOn then
         paramFlag:set(1)
 
-        radarAltitude = clamp((sensor_data:getRadarAltitude() * meters_to_feet) - 8, 0, 1510) -- accounts for suspension height
+        radarAltitude = clamp((sensor_data:getRadarAltitude() * meters_to_feet) - 8, 0, 1550) -- accounts for suspension height
         digitReadout = radarAltitude
         if digitReadout > 200 then
             digitReadout = round(radarAltitude / 10) * 10

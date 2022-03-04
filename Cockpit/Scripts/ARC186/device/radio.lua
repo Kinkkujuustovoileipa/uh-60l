@@ -38,9 +38,6 @@ function post_initialize()
   dev:set_frequency(30E6)
 
   dev:set_modulation(MODULATION_AM) -- gives DCS.log INFO msg:  COCKPITBASE: avBaseRadio::ext_set_modulation not implemented, used direct set
-
-  --str_ptr = string.sub(tostring(dev.link),10)
-  --efm_data_bus.fm_setRadioPTR(str_ptr)
 end
 
 function listen_event()

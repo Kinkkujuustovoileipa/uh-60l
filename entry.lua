@@ -4,7 +4,7 @@ declare_plugin(self_ID,
 	dirName			= current_mod_path,
 	displayName		= _("UH-60L Black Hawk"),
 	fileMenuName	= _("UH-60L"),
-	version 		= "1.1",
+	version 		= "1.2",
 	state			= "installed",
 	info			= _("The UH-60L Black Hawk is a utility helicopter used by the US Army and other forces around the world."),
 

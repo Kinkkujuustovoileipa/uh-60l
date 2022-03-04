@@ -6,7 +6,7 @@ local advisoryColor = {220,200,160,255}
 local presetsColor = {0,0,0,255}
 local fontAdvisory = MakeFont({used_DXUnicodeFontData = "14segFont"}, advisoryColor)
 local fontPresets = MakeFont({used_DXUnicodeFontData = "baseFont"}, presetsColor)
-center = calculateIndicatorCenter({0.155,-0.955,2.23}) -- {L/R,U/D,forward/back}
+center = calculateIndicatorCenter({0.152,-0.9305,2.33}) -- {L/R,U/D,forward/back}
 rotation = {0, 0, 80} -- main panel rotation roughly 22deg
 
 verts = {}
@@ -36,7 +36,7 @@ freq.name            = create_guid_string()
 freq.material        = fontAdvisory
 freq.alignment       = "CenterCenter"
 freq.init_pos		 = {-.034, 0.007, 0.002} -- L/R, D/U, F/B
-freq.stringdefs      = {0.009,0.85*0.009, 0, 0} -- {size vertical, horizontal, 0, 0}
+freq.stringdefs      = {0.007,0.79*0.009, 0, 0} -- {size vertical, horizontal, 0, 0}
 freq.formats         = {"%06.0f"}
 freq.element_params  = {"ARC164_FREQ", "CB_UHF_AM", "ARC164_MODE"}
 freq.controllers     = {{"text_using_parameter",0,0}, {"parameter_in_range",1,0.9,1.1}, {"parameter_in_range",2,0.9,1.1}}
@@ -49,8 +49,8 @@ local preset           = CreateElement "ceStringPoly"
 preset.name            = create_guid_string()
 preset.material        = fontAdvisory
 preset.alignment       = "CenterCenter"
-preset.init_pos		   = {-0.004, 0.0368, 0.0025}  -- L/R, D/U, F/B
-preset.stringdefs      = {0.009,0.77*0.009, 0, 0} -- {size vertical, horizontal, 0, 0}
+preset.init_pos		   = {-0.009, 0.032, 0.0024}  -- L/R, D/U, F/B
+preset.stringdefs      = {0.007,0.75*0.007, 0, 0} -- {size vertical, horizontal, 0, 0}
 preset.formats         = {"%02.0f"}
 preset.element_params  = {"ARC164_PRESET", "CB_UHF_AM", "ARC164_MODE"}
 preset.controllers     = {{"text_using_parameter",0,0}, {"parameter_in_range",1,0.9,1.1}, {"parameter_in_range",2,0.9,1.1}}
@@ -64,9 +64,9 @@ function addPresetFreq(x, y, param)
     freq.name            = create_guid_string()
     freq.material        = fontPresets
     freq.alignment       = "LeftCenter"
-    freq.init_pos		   = {x, y, -0.0055}  -- L/R, D/U, F/B
-    freq.stringdefs      = {0.004,0.35*0.01, -0.0015, 0.01} -- {size vertical, horizontal, 0, 0}
-    freq.formats         = {"%03.0f"}
+    freq.init_pos		   = {x, y, -0.0040}  -- L/R, D/U, F/B
+    freq.stringdefs      = {0.003,0.30*0.01, -0.0, 0.01} -- {size vertical, horizontal, 0, 0}
+    freq.formats         = {"%03.3f"}
     freq.element_params  = param
     freq.controllers     = {{"text_using_parameter",0,0}}
     freq.h_clip_relation = h_clip_relations.compare
@@ -75,10 +75,10 @@ function addPresetFreq(x, y, param)
     Add(freq)
 end
 
-local freqX = -0.095
-local freqXSpacing = 0.024
-local freqY = 0.0565
-local freqYSpacing = 0.0048
+local freqX = -0.085
+local freqXSpacing = 0.020
+local freqY = 0.049
+local freqYSpacing = 0.0040
 
 for i=1,20 do
     local x = freqX

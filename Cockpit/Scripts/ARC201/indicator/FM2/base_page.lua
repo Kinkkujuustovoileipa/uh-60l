@@ -4,7 +4,7 @@ dofile(LockOn_Options.script_path.."utils.lua")
 SetScale(METERS)
 local advisoryColor = {146,116,54,255}
 local fontAdvisory = MakeFont({used_DXUnicodeFontData = "14segFont"}, advisoryColor)
-center = calculateIndicatorCenter({-0.173,-0.982,2.062}) -- {L/R,U/D,forward/back}
+center = calculateIndicatorCenter({-0.1295,-0.954,2.186}) -- {L/R,U/D,forward/back}
 rotation = {0, 0, 80} -- main panel rotation roughly 22deg
 
 verts = {}
@@ -36,7 +36,7 @@ freq.name            = create_guid_string()
 freq.material        = fontAdvisory
 freq.alignment       = "CenterCenter"
 freq.init_pos		 = {-.03, 0, 0} -- L/R, D/U, F/B
-freq.stringdefs      = {0.95 * 0.01,0.8*0.01, -0.001, 0} -- {size vertical, horizontal, 0, 0}
+freq.stringdefs      = {0.94 * 0.01,0.75*0.01, -0.0012, 0} -- {size vertical, horizontal, 0, 0}
 freq.formats         = {"%s"}
 freq.element_params  = {"ARC201_FM2_FREQ"}
 freq.controllers     = {{"text_using_parameter",0,0}}
