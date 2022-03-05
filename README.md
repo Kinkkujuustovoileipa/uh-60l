@@ -1,7 +1,7 @@
 # UH-60L DCS Mod
 A free UH-60L Black Hawk mod for Digital Combat Simulator
 ## Download
-Download the latest version from the [releases page](https://github.com/Kinkkujuustovoileipa/uh-60l/releases)
+After reading this readme, [click here to download the latest version from the releases page.](https://github.com/Kinkkujuustovoileipa/uh-60l/releases)
 ## Guide
 - [Link](https://docs.google.com/presentation/d/1kCJf5Nk-fU_21eO7W1ozYfb9FKt488ax65IbeuIGVtA/edit?usp=sharing)
 - Manual is also available in-game
