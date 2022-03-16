@@ -1,4 +1,4 @@
--- Version 1.9.8.0
+-- Version 1.9.9.0
 -- Special thanks to Cap. Zeen, Tarres and Splash for all the help
 -- with getting the radio information :)
 -- Run the installer to correctly install this file
@@ -208,6 +208,7 @@ function SR.exporter()
         SR.lastKnownPos = _point
 
         _lastUnitId = ""
+        _lastUnitType = ""
     end
 
     if SR.unicast then
@@ -492,10 +493,10 @@ function SR.exportRadioSU27(_data)
     _data.radios[4].freqMode = 1
     _data.radios[4].encKey = 1
     _data.radios[4].encMode = 1 -- FC3 Gui Toggle + Gui Enc key setting
-    
+
     _data.control = 0;
     _data.selected = 1
-    
+
     return _data
 end
 
@@ -1801,6 +1802,7 @@ _fa18.iff = {
 }
 _fa18.enttries = 0
 _fa18.mode3opt =  ""    -- to distinguish between 3 and 3/C while ED doesn't fix the different codes for those
+_fa18.identEnd = 0      -- time to end IFF ident -(18 seconds)
 
 --[[
 From NATOPS - https://info.publicintelligence.net/F18-ABCD-000.pdf (VII-23-2)
@@ -1853,6 +1855,7 @@ function SR.exportRadioFA18C(_data)
         _fa18ent = false
         _fa18.enttries = 0
         _fa18.mode3opt = ""
+        _fa18.identEnd = 0
     end
 
     local getGuardFreq = function (freq,currentGuard,modulation)
@@ -2017,7 +2020,9 @@ function SR.exportRadioFA18C(_data)
     if _ufc.UFC_OptionDisplay2 == "2   " then
         -- Check if on XP
         if _ufc.UFC_ScratchPadString1Display == "X" then
-            iff.status = 1
+            if iff.status <= 0 then
+                iff.status = 1
+            end
             if _ufc.UFC_OptionCueing1 == ":" then
                 local code = string.match(_ufc.UFC_OptionDisplay1, "1-%d%d")    -- actual code is displayed in the option display
                 if code then
@@ -2041,22 +2046,23 @@ function SR.exportRadioFA18C(_data)
 
         -- Check if on AI
         elseif _ufc.UFC_ScratchPadString1Display == "A" then
-            iff.status = 1
+            if iff.status <= 0 then
+                iff.status = 1
+            end
         -- Check if it is OFF
         else
             iff.status = 0
         end
     end
 
-    -- check if identing (this should last 30 seconds...)
-    local iffIdent = SR.getButtonPosition(99)
-
     -- Mode 1/3 IDENT, requires mode 1 or mode 3 to be on and I/P pushbutton press
-    if iffIdent == 1 and iff.status == 1 and (iff.mode1 ~= -1 or iff.mode3 ~= -1) then
-        iff.status = 2
-    elseif iff.status == 2 and iffIdent == 0 then
-        -- remove IDENT status when pushbutton released
-        iff.status = 1
+    if iff.status > 0 then
+        if SR.getButtonPosition(99) == 1 and (iff.mode1 ~= -1 or iff.mode3 ~= -1) then
+            _fa18.identEnd = LoGetModelTime() + 18
+            iff.status = 2
+        elseif iff.status == 2 and LoGetModelTime() >= _fa18.identEnd then
+            iff.status = 1
+        end
     end
 
     -- set current IFF settings
@@ -2838,35 +2844,32 @@ function SR.exportRadioMosquitoFBMkVI (_data)
     _data.radios[2].modulation = 0
     _data.radios[2].volume = SR.getRadioVolume(0, 364, { 0.0, 1.0 }, false)
 
-    _data.selected = 1
-
-    -- Expansion Radio - Server Side Controlled
-    _data.radios[3].name = "AN/ARC-186(V)"
-    _data.radios[3].freq = 124.8 * 1000000 --116,00-151,975 MHz
+    _data.radios[3].name = "R1155" 
+    _data.radios[3].freq = SR.getRadioFrequency(27,500,true)
     _data.radios[3].modulation = 0
-    _data.radios[3].secFreq = 121.5 * 1000000
-    _data.radios[3].volume = 1.0
-    _data.radios[3].freqMin = 116 * 1000000
-    _data.radios[3].freqMax = 151.975 * 1000000
-    _data.radios[3].volMode = 1
-    _data.radios[3].freqMode = 1
-    _data.radios[3].expansion = true
+    _data.radios[3].volume = SR.getRadioVolume(0, 229, { 0.0, 1.0 }, false)
+
+    _data.radios[4].name = "T1154" 
+    _data.radios[4].freq = SR.getRadioFrequency(26,500,true)
+    _data.radios[4].modulation = 0
+    _data.radios[4].volume = 1
+    _data.radios[4].volMode = 1
+
 
     -- Expansion Radio - Server Side Controlled
-    _data.radios[4].name = "AN/ARC-164 UHF"
-    _data.radios[4].freq = 251.0 * 1000000 --225-399.975 MHZ
-    _data.radios[4].modulation = 0
-    _data.radios[4].secFreq = 243.0 * 1000000
-    _data.radios[4].volume = 1.0
-    _data.radios[4].freqMin = 225 * 1000000
-    _data.radios[4].freqMax = 399.975 * 1000000
-    _data.radios[4].volMode = 1
-    _data.radios[4].freqMode = 1
-    _data.radios[4].expansion = true
-    _data.radios[4].encKey = 1
-    _data.radios[4].encMode = 1 -- FC3 Gui Toggle + Gui Enc key setting
+    _data.radios[5].name = "AN/ARC-210"
+    _data.radios[5].freq = 124.8 * 1000000 
+    _data.radios[5].modulation = 0
+    _data.radios[5].secFreq = 121.5 * 1000000
+    _data.radios[5].volume = 1.0
+    _data.radios[5].freqMin = 116 * 1000000
+    _data.radios[5].freqMax = 300 * 1000000
+    _data.radios[5].volMode = 1
+    _data.radios[5].freqMode = 1
+    _data.radios[5].expansion = true
 
     _data.control = 0; -- no ptt, same as the FW and 109. No connector.
+    _data.selected = 1
 
     return _data;
 end
@@ -3129,6 +3132,232 @@ function SR.exportRadioC101CC(_data)
     return _data;
 end
 
+
+function SR.exportRadioMB339A(_data)
+
+    _data.capabilities = { dcsPtt = true, dcsIFF = true, dcsRadioSwitch = true, intercomHotMic = true, desc = "To enable the HotMic pull the INT knob located on ICS" }
+
+    -- Radio initialization
+    local comm1Radio = 6
+    local comm2Radio = 7
+
+    local ARC150_device = GetDevice(comm1Radio)
+    local SRT_651_device = GetDevice(comm2Radio)
+
+    -- PTT initialization
+    local comm1Ptt = ARC150_device:is_ptt_pressed()
+    local comm2Ptt = SRT_651_device:is_ptt_pressed()
+    local stickPtt = ARC150_device:is_stick_ptt_pressed() or SRT_651_device:is_stick_ptt_pressed()
+
+    -- ICS variables declaration
+    local seat = GetDevice(0):get_current_seat() -- per multicrew
+    local selector
+    local callSwitch
+    local intercomVolume
+    local comm1Volume
+    local comm2Volume
+    local callReduction = 1.0
+    local generalVolume
+    local intercomSwitch
+    local comm1Switch
+    local comm2Switch
+
+    -- ICS FWD/AFT
+    if seat == 0 then
+        selector = SR.getSelectorPosition(131, 1.0)
+        callSwitch = SR.getSelectorPosition(130, 1.0)
+        comm1Switch = GetDevice(0):get_argument_value(115)
+        comm1Volume = GetDevice(0):get_argument_value(116)
+        comm2Switch = GetDevice(0):get_argument_value(117)
+        comm2Volume = GetDevice(0):get_argument_value(118)
+        intercomSwitch = GetDevice(0):get_argument_value(127)
+        intercomVolume = GetDevice(0):get_argument_value(128)
+        generalVolume = GetDevice(0):get_argument_value(129)
+    else
+        selector = SR.getSelectorPosition(148, 1.0)
+        callSwitch = SR.getSelectorPosition(147, 1.0)
+        comm1Switch = GetDevice(0):get_argument_value(132)
+        comm1Volume = GetDevice(0):get_argument_value(133)
+        comm2Switch = GetDevice(0):get_argument_value(134)
+        comm2Volume = GetDevice(0):get_argument_value(135)
+        intercomSwitch = GetDevice(0):get_argument_value(144)
+        intercomVolume = GetDevice(0):get_argument_value(145)
+        generalVolume = GetDevice(0):get_argument_value(146)
+    end
+
+    -- Volume knobs and call reduction feature
+    if comm1Switch < 0.5 then
+        comm1Volume = 0.0
+    end
+
+    if comm2Switch < 0.5 then
+        comm2Volume = 0.0
+    end
+
+    if callSwitch > 0.5 then
+        callReduction = 0.7
+    end
+
+    -- Intercom Function
+    _data.radios[1].name = "Intercom"
+    _data.radios[1].freq = 100
+    _data.radios[1].modulation = 2
+    _data.radios[1].volume = intercomVolume * generalVolume
+
+    -- AN/ARC-150(V)2 - COMM1 Radio
+    local modeSelectorComm1 = GetDevice(0):get_argument_value(665)
+
+    _data.radios[2].name = "AN/ARC-150(V)2 - UHF COMM1"
+    _data.radios[2].freq = ARC150_device:is_on() and SR.round(ARC150_device:get_frequency(), 5000) or 1
+    _data.radios[2].modulation = ARC150_device:get_modulation()
+    _data.radios[2].volume = comm1Volume * generalVolume * callReduction
+    if ARC150_device:is_on() and modeSelectorComm1 > 0.8 then
+        _data.radios[2].secFreq = 243.0 * 1000000
+    else
+        _data.radios[2].secFreq = 0
+    end
+    _data.radios[2].freqMin = 225 * 1000000
+    _data.radios[2].freqMax = 399.975 * 1000000
+
+    -- SRT-651/N - COMM2 Radio
+    local modeSelectorComm2 = GetDevice(0):get_argument_value(650)
+
+    _data.radios[3].name = "SRT-651/N - V/UHF COMM2"
+    _data.radios[3].freq = SRT_651_device:is_on() and SR.round(SRT_651_device:get_frequency(), 5000) or 1
+    _data.radios[3].modulation = SRT_651_device:get_modulation()
+    _data.radios[3].volume = comm2Volume * generalVolume * callReduction
+    if SRT_651_device:is_on() then
+        if modeSelectorComm2 == 0 then
+            _data.radios[3].secFreq = 243.0 * 1000000
+        elseif modeSelectorComm2 > 0.4 and modeSelectorComm2 < 0.6 then
+            _data.radios[3].secFreq = SR.round(SRT_651_device:get_frequency(), 5000)
+        end
+    else
+        _data.radios[3].secFreq = 0
+    end
+    _data.radios[3].freqMin = 30 * 1000000
+    _data.radios[3].freqMax = 399.975 * 1000000
+   
+
+    -- Process stick Ptt e Intercom HotMic
+    if intercomSwitch > 0.5 then -- intercomSwitch > 0.5 for HotMic On
+        _data.ptt = false
+        if (selector == 0 and stickPtt) then
+            _data.selected = 1      -- radios[2] ARC-150
+            _data.ptt = true
+        elseif (selector == 1 and stickPtt) then
+            _data.selected = 2      -- radios[3] SRT-651
+            _data.ptt = true
+        else
+            _data.selected = 0      -- radios[1] intercom
+            _data.ptt = true
+        end 
+    else
+        _data.ptt = false
+        if callSwitch > 0.1 then
+            _data.selected = 0      -- radios[1] intercom
+            _data.ptt = true
+        else
+            if (selector == 0) then
+                _data.selected = 1      -- radios[2] ARC-150
+                if stickPtt then
+                    _data.ptt = true
+                else
+                    _data.ptt = false
+                end
+            elseif (selector == 1) then
+                _data.selected = 2      -- radios[3] SRT-651
+                if stickPtt then
+                    _data.ptt = true
+                else
+                    _data.ptt = false
+                end
+            else
+                _data.selected = -1
+                _data.ptt = false
+            end
+        end
+    end
+
+    -- Process throttle ptt
+    if (comm1Ptt) then
+        _data.selected = 1      -- radios[2] ARC-150
+        _data.ptt = true
+    elseif (comm2Ptt) then
+        _data.selected = 2      -- radios[3] SRT-651
+        _data.ptt = true
+    end
+
+    _data.control = 1 -- enables complete radio control
+
+
+    -- IFF trasponder
+    _data.iff = {status=0, mode1=0, mode3=0, mode4=false, control=0, expansion=false}
+
+    local convConst = 0.125
+
+    local codeXxxxxx = SR.round(GetDevice(0):get_argument_value(728) / convConst, 1)
+    local codexXxxxx = SR.round(GetDevice(0):get_argument_value(729) / convConst, 1)
+    local codexxXxxx = SR.round(GetDevice(0):get_argument_value(730) / convConst, 1)
+    local codexxxXxx = SR.round(GetDevice(0):get_argument_value(731) / convConst, 1)
+    local codexxxxXx = SR.round(GetDevice(0):get_argument_value(732) / convConst, 1)
+    local codexxxxxX = SR.round(GetDevice(0):get_argument_value(733) / convConst, 1)
+
+    -- IFF Master knob
+    local iffMaster = SR.getSelectorPosition(714,0.25)
+
+    -- IFF Ident switch
+    local iffIdent = GetDevice(0):get_argument_value(712) -- -1 Mic / 0 Out / 1 Ident
+    local stickIdent = ARC150_device:is_stick_ptt_pressed()
+
+    if iffMaster >= 2 then
+        _data.iff.status = 1 -- NORMAL
+
+        if iffIdent == 1 then
+            _data.iff.status = 2 -- IDENT (BLINKY THING)
+        end
+
+        -- MIC mode - when you transmit on UHF then IDENT
+        if iffIdent == -1 then
+            _data.iff.mic = 1
+
+            if stickIdent or comm1Ptt then -- Only for UHF radio PTTs
+                _data.iff.status = 2 -- IDENT (BLINKY THING)
+            end
+        end
+    end
+
+    -- Mode 1
+    local mode1Switch = GetDevice(0):get_argument_value(720)
+    _data.iff.mode1 = codeXxxxxx*10 + codexXxxxx
+
+    if mode1Switch ~= 0 then
+        _data.iff.mode1 = -1
+    end
+
+    -- Mode 3
+    local mode3Switch = GetDevice(0):get_argument_value(718)
+    _data.iff.mode3 = codexxXxxx * 1000 + codexxxXxx * 100 + codexxxxXx * 10 + codexxxxxX
+
+    if mode3Switch ~= 0 then
+        _data.iff.mode3 = -1
+    elseif iffMaster == 4 then
+        -- EMERG CODE 7770
+        _data.iff.mode3 = 7700
+    end
+
+    -- Mode 4 - not available in real MB-339 but we have decided to include it for gameplay
+    local mode4Switch = GetDevice(0):get_argument_value(710)
+
+    if mode4Switch ~= 0 then
+        _data.iff.mode4 = false
+    else
+        _data.iff.mode4 = true
+    end
+
+    return _data;
+end
+
 function SR.exportRadioHawk(_data)
 
     local MHZ = 1000000
@@ -3189,12 +3418,49 @@ local _mirageEncStatus = false
 local _previousEncState = 0
 function SR.exportRadioM2000C(_data)
 
+	local RED_devid = 20
+	local GREEN_devid = 19
+    local RED_device = GetDevice(RED_devid)
+    local GREEN_device = GetDevice(GREEN_devid)
+	
+	local has_cockpit_ptt = false;
+	
+    local RED_ptt = false
+    local GREEN_ptt = false
+	
+	pcall(function() 
+		RED_ptt = RED_device:is_ptt_pressed()
+		GREEN_ptt = GREEN_device:is_ptt_pressed()
+		has_cockpit_ptt = true
+		end)
+		
     _data.capabilities = { dcsPtt = false, dcsIFF = true, dcsRadioSwitch = false, intercomHotMic = false, desc = "" }
+    _data.control = 0 
+	
+	-- Different PTT/select control if the module version supports cockpit PTT
+	if has_cockpit_ptt then
+	    _data.control = 1
+		_data.capabilities.dcsPtt = true
+		_data.capabilities.dcsRadioSwitch = true
+		if (GREEN_ptt) then
+			_data.selected = 1 -- radios[2] GREEN V/UHF
+			_data.ptt = true
+		elseif (RED_ptt) then
+			_data.selected = 2 -- radios[3] RED UHF
+			_data.ptt = true
+		else
+			_data.selected = -1
+			_data.ptt = false
+		end
+	end
+	
+	
 
     _data.radios[2].name = "TRT ERA 7000 V/UHF"
     _data.radios[2].freq = SR.getRadioFrequency(19)
     _data.radios[2].modulation = 0
     _data.radios[2].volume = SR.getRadioVolume(0, 707, { 0.0, 1.0 }, false)
+
 
     -- get channel selector
     local _selector = SR.getSelectorPosition(448, 0.50)
@@ -3246,7 +3512,7 @@ function SR.exportRadioM2000C(_data)
 
     _previousEncState = SR.getButtonPosition(432)
 
-    _data.control = 0; -- partial radio, allows hotkeys
+
 
     -- Handle transponder
 
@@ -3808,7 +4074,7 @@ function SR.getButtonPosition(_args)
 
 end
 
-function SR.getRadioFrequency(_deviceId, _roundTo)
+function SR.getRadioFrequency(_deviceId, _roundTo, _ignoreIsOn)
     local _device = GetDevice(_deviceId)
 
     if not _roundTo then
@@ -3816,13 +4082,14 @@ function SR.getRadioFrequency(_deviceId, _roundTo)
     end
 
     if _device then
-        if _device:is_on() then
+        if _device:is_on() or _ignoreIsOn then
             -- round as the numbers arent exact
             return SR.round(_device:get_frequency(), _roundTo)
         end
     end
     return 1
 end
+
 
 function SR.getRadioModulation(_deviceId)
     local _device = GetDevice(_deviceId)
@@ -3998,6 +4265,8 @@ SR.exporters["FW-190A8"] = SR.exportRadioFW190
 SR.exporters["Bf-109K-4"] = SR.exportRadioBF109
 SR.exporters["C-101EB"] = SR.exportRadioC101EB
 SR.exporters["C-101CC"] = SR.exportRadioC101CC
+SR.exporters["MB-339A"] = SR.exportRadioMB339A
+SR.exporters["MB-339APAN"] = SR.exportRadioMB339A
 SR.exporters["Hawk"] = SR.exportRadioHawk
 SR.exporters["Christen Eagle II"] = SR.exportRadioEagleII
 SR.exporters["M-2000C"] = SR.exportRadioM2000C
@@ -4106,4 +4375,4 @@ LuaExportBeforeNextFrame = function()
 end
 
 
-SR.log("Loaded SimpleRadio Standalone Export version: 1.9.8.0")
+SR.log("Loaded SimpleRadio Standalone Export version: 1.9.9.0")
