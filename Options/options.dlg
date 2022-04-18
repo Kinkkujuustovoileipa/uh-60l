@@ -1,59 +1,7 @@
-local CheckBoxSkin = {
-	["params"] = {
-		["name"] = "checkBoxSkin_options",
-	},
-}
-
 dialog = {
 	["children"] = {
 		["containerPlugin"] = {
-			["children"] = {
-				------------ Unsprung cyclic check box ---------------------
-				["unsprungCyclicCheckbox"] = {
-					["params"] = {
-						["bounds"] = {
-							["h"] = 18,
-							["w"] = 300,
-							["x"] = 56,
-							["y"] = 70,
-						},
-						["enabled"] = true,
-						["state"] = true,
-						["tabOrder"] = 0,
-						["text"] = "$UNSPRUNGCYCLICCHKBOX",
-						["tooltip"] = "",
-						["visible"] = true,
-						["zindex"] = 0,
-					},
-					["skin"] = CheckBoxSkin,
-					["type"] = "CheckBox",
-				},
---[[
-				------------ AVS7 VR check box ---------------------
-				["avs7VRCheckbox"] = {
-					["params"] = {
-						["bounds"] = {
-							["h"] = 18,
-							["w"] = 300,
-							["x"] = 56,
-							["y"] = 90,
-						},
-						["enabled"] = true,
-						["state"] = false,
-						["tabOrder"] = 0,
-						["text"] = "$AVS7VRCHKBOX",
-						["tooltip"] = "",
-						["visible"] = true,
-						["zindex"] = 0,
-					},
-					["skin"] = {
-								["params"] = {
-											["name"] = "checkBoxSkin_options",
-											},
-								},
-					["type"] = "CheckBox",
-				},	
-]]	
+			["children"] = {				
 				------------ plane title ------------------------ 
 				["nameLabel"] = {
 					["params"] = {
@@ -76,7 +24,54 @@ dialog = {
 					},
 					["type"] = "Static",
 				},
-				-------------------------------------------
+				------------ aiming mark check box ---------------------
+				["aimingMarkRemoveCheckbox"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = 18,
+							["w"] = 300,
+							["x"] = 56,
+							["y"] = 70,
+						},
+						["enabled"] = true,
+						["state"] = true,
+						["tabOrder"] = 0,
+						["text"] = "$COCKPITOPTION",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+								["params"] = {
+											["name"] = "checkBoxSkin_options",
+											},
+								},
+					["type"] = "CheckBox",
+				},
+				------------ aiming mark check box ---------------------
+				["pedalTrimOptionCheckbox"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = 18,
+							["w"] = 300,
+							["x"] = 56,
+							["y"] = 100,
+						},
+						["enabled"] = true,
+						["state"] = true,
+						["tabOrder"] = 0,
+						["text"] = "$PEDALTRIM",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+								["params"] = {
+											["name"] = "checkBoxSkin_options",
+											},
+								},
+					["type"] = "CheckBox",
+				},
 			},
 			["params"] = {
 				["bounds"] = {

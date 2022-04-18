@@ -98,7 +98,7 @@ elements["PNT-301"]	= springloaded_2_pos_tumb(_("Lamp Test"),	devices.VIDS, devi
 elements["PNT-302"]	= springloaded_2_pos_tumb(_("Lamp Test"),	devices.VIDS, device_commands.pilotPDUTest, 302, 8)
 elements["PNT-303"]	= springloaded_2_pos_tumb(_("Lamp Test"),	devices.VIDS, device_commands.copilotPDUTest, 303, 8)
 
-elements["PNT-304"]	= default_button_tumb_v2_inverted(_("CAP Lamp Test"),	devices.CAUTION_ADVISORY_PANEL, device_commands.CAPLampTest, device_commands.CAPLampBrightness, 304, 8)
+elements["PNT-304"]	= springloaded_3_pos_tumb(_("CAP Lamp Test"),	devices.CAUTION_ADVISORY_PANEL, device_commands.CAPLampTest, device_commands.CAPLampBrightness, 304)
 elements["PNT-305"]	= default_button(_("Master Caution Reset"),	devices.CAUTION_ADVISORY_PANEL, device_commands.CAPMasterCautionReset, 305, 8)
 elements["PNT-306"]	= default_button(_("Master Caution Reset"),	devices.CAUTION_ADVISORY_PANEL, device_commands.CAPMasterCautionReset, 306, 8)
 
@@ -331,7 +331,8 @@ elements["PNT-652"]	= default_2_position_tumb(_("AN/ARN-147 Marker Beacon HI/LO 
 elements["PNT-653"]	= default_3_position_tumb(_("AN/ARN-147 Power Selector OFF/ON/TEST"),   devices.ARN147, device_commands.arn147Power, 653, 8)
 
 -- WIPERS
-elements["PNT-631"]	= multiposition_switch(_("Wipers PARK/OFF/LOW/HI"),   devices.MISC, device_commands.wiperSelector, 631, 4,  0.33,  false, 0, 16, false)
+elements["PNT-631"]	= wiper_selector(_("Wipers PARK/OFF/LOW/HI"),   devices.MISC, device_commands.wiperSelector, 631, 4,  0.5,  false, -0.5, 16, false)
+--elements["PNT-631"]	= multiposition_switch(_("Wipers PARK/OFF/LOW/HI"),   devices.MISC, device_commands.wiperSelector, 631, 4,  0.33,  false, 0, 16, false)
 
 -- ARC-201 FM2
 elements["PNT-700"]	= multiposition_switch(_("AN/ARC-201 (FM2) PRESET Selector"),   devices.ARC201_FM2, device_commands.fm2PresetSelector, 700, 8,  0.01,  false, 0, 16, false)

@@ -688,7 +688,7 @@ function updateWind()
         windSpeedHandle:set("SP: "..formatPrecedingZeros(math.floor(windSpeed * msToKph), 3).."kph")
     end
 
-    windDirHandle:set("DIR: "..formatPrecedingZeros(formatCompassDir(math.floor(windDir)), 3).."°")
+    windDirHandle:set("DIR: "..formatPrecedingZeros(formatCompassDir(math.floor(windDir) - 180), 3).."°")
 end
 
 function updateDateTime()

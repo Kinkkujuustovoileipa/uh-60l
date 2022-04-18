@@ -223,12 +223,13 @@ function updateVORILS()
                 localizerBeaconDistance = math.sqrt((localizerPos[1] - selfX)^2 + (localizerPos[3] - selfZ)^2)
                 
                 -- Consider ILS as subtype of VOR, can still apply VOR to ILS
-                if beaconData.type == BEACON_TYPE_ILS_LOCALIZER then
+                if beaconData.type == BEACON_TYPE_ILS_LOCALIZER or beaconData.type == BEACON_TYPE_ILS_GLIDESLOPE then
                     validILS = true
                     
                     -- Localizer data
-                    ilsDirection = formatCompassDir(beaconData.direction - 180)
-                    localizerPos = beaconData.position
+                    local locBeacon = getBeaconData(vorFreq, BEACON_TYPE_ILS_LOCALIZER)
+                    ilsDirection = formatCompassDir(locBeacon.direction - 180)
+                    localizerPos = locBeacon.position
                     
                     -- Glideslope data
                     local gsBeacon = getBeaconData(vorFreq, BEACON_TYPE_ILS_GLIDESLOPE)

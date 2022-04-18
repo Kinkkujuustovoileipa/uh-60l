@@ -674,7 +674,7 @@ join(res.keyCommands,
 
     -- Others
 	{combos = {{key = 'E', reformers = {'LCtrl'}}}, down 	= iCommandPlaneEject, 	name = _('Eject (3 times)'), category = _('General')},
-    {down = Keys.toggleDoors,     name = _('Pilot Door Open/Close'), category = _('Doors')},
+    {combos = {{key = 'C', reformers = {'LCtrl'}}},	down = Keys.toggleDoors,     	name = _('Pilot Door Open/Close'), category = _('Doors')},
     {down = Keys.toggleCopilotDoor,		name = _('Copilot Door Open/Close'), category = _('Doors')},
     {down = Keys.toggleLeftCargoDoor,	name = _('Left Cargo Door Open/Close'), category = _('Doors')},
     {down = Keys.toggleRightCargoDoor,	 name = _('Right Cargo Door Open/Close'), category = _('Doors')},

@@ -36,7 +36,7 @@ paramMagCompBank:set(0)
 paramMagCompPitch:set(0)
 
 function post_initialize()
-	current_hdg:set(360-(sensor_data.getHeading()*radian_to_degree))
+	current_hdg:set(360-(sensor_data.getMagneticHeading()*radian_to_degree))
 
 	local dev = GetSelf()
     local birth = LockOn_Options.init_conditions.birth_place	
@@ -46,7 +46,6 @@ function post_initialize()
 		paramStabInd:set(1)
     end
 end
-
 
 function SetCommand(command,value)   
 

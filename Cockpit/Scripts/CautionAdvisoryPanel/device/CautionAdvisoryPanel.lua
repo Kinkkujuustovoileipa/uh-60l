@@ -19,15 +19,18 @@ local hasPower = false
 local acknowledgedFaults = {}
 local currentFaults = {}
 
+local paramDimmerEnabled = get_param_handle("LIGHTED_SWITCHES_DIMMER_ENABLED")
+
 function post_initialize()
+    paramDimmerEnabled:set(0)
 	local dev = GetSelf()
     local birth = LockOn_Options.init_conditions.birth_place	
     if birth=="GROUND_HOT" or birth=="AIR_HOT" then 			  
     elseif birth=="GROUND_COLD" then
     end
     
-    dev:performClickableAction(device_commands.CAPLampBrightness,1,true)
-    dispatch_action(nil,device_commands.CAPLampBrightness,1)
+    --dev:performClickableAction(device_commands.CAPLampBrightness,1,true)
+    --dispatch_action(nil,device_commands.CAPLampBrightness,1)
 end
 
 dev:listen_command(device_commands.CAPLampTest)
@@ -42,11 +45,9 @@ function SetCommand(command,value)
             override = false
             brightness = 0.5
         end
-        --print_message_to_user(value)
     elseif command == device_commands.CAPLampBrightness then
-        --print_message_to_user(value)
         if value > 0 then
-            brightness = 0.75
+            paramDimmerEnabled:set(1 - paramDimmerEnabled:get())
         end
     elseif command == device_commands.CAPMasterCautionReset then
         --print_message_to_user("acknowledge")

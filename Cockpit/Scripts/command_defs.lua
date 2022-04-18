@@ -247,6 +247,13 @@ Keys =
 	apn209CopilotHiSet_AXIS			= counter(),
 	pilotBarometricScaleSet_AXIS	= counter(),
 	copilotBarometricScaleSet_AXIS	= counter(),
+	lowerConsoleLights_AXIS			= counter(),
+	glareshieldLights_AXIS 			= counter(),
+	cpltInstrLights_AXIS			= counter(),
+	lightedSwitches_AXIS			= counter(),
+	upperConsoleLights_AXIS			= counter(),
+	pltInstrLights_AXIS				= counter(),
+	nonFltInstrLights_AXIS			= counter(),
 
 	-- ECQ
 	engFSSBoth			= counter(),
@@ -607,15 +614,6 @@ device_commands =
 	afmcpManXfer = counter(),
 	afmcpXferFrom = counter(),
 	afmcpPress = counter(),
-
-	-- Axis
-	glareshieldLights_AXIS 	= counter(),
-	cpltInstrLights_AXIS	= counter(),
-	lightedSwitches_AXIS	= counter(),
-	upperConsoleLights_AXIS	= counter(),
-	lowerConsoleLights_AXIS	= counter(),
-	pltInstrLights_AXIS		= counter(),
-	nonFltInstrLights_AXIS	= counter(),
 }
 
 EFM_commands = 	-- commands for use in EFM (make sure to copy to inputs.h)
@@ -687,6 +685,4 @@ EFM_commands = 	-- commands for use in EFM (make sure to copy to inputs.h)
 
 	startServer = 5016,
 	connectServer = 5017,
-
-	useUnsprungCyclic = 5018,
 }

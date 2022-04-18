@@ -10,7 +10,6 @@ local update_rate = .01
 make_default_activity(update_rate)
 local dev = GetSelf()
 local efm_data_bus = get_efm_data_bus()
-local SHOW_CONTROLS  = get_param_handle("SHOW_CONTROLS")
 --local option_doorsRemove = get_plugin_option_value("UH-60L","doorsRemove","local")
 
 local brakesOn = false
@@ -23,8 +22,16 @@ local paramParkingBrakeAdvisory = get_param_handle("CAP_PARKINGBRAKEON")
 local lastWheelBrakeValue = 0
 local parkingBrakeOnly = false
 
+local optionUnsprungCyclic = get_plugin_option_value("UH-60L", "aimingMarkRemove", "local")
+local paramUnsprungCyclic = get_param_handle("USE_UNSPRUNG_CYCLIC")
+
+local optionPedalTrim = get_plugin_option_value("UH-60L", "pedalTrimOption", "local")
+local paramPedalTrim = get_param_handle("USE_PEDAL_TRIM")
+
+--local optionPedalTrim = get_plugin_option_value("UH-60L", "pedalTrimOption", "local")
+--local paramPedalTrim = get_param_handle("USE_PEDAL_TRIM")
+
 function post_initialize()
-	SHOW_CONTROLS:set(0)
     local birth = LockOn_Options.init_conditions.birth_place
     if birth=="AIR_HOT" or birth=="GROUND_HOT" then
 		dev:performClickableAction(EFM_commands.batterySwitch,1,true)
@@ -54,8 +61,18 @@ function post_initialize()
 	dispatch_action(nil, EFM_commands.setRefuelProbeState, optionFuelProbe)
 	set_aircraft_draw_argument_value(22, optionFuelProbe)
 
-	local optionUnsprungCyclic = get_plugin_option_value("UH-60L", "UNSPRUNG_CYCLIC", "local")
-	dispatch_action(nil, EFM_commands.useUnsprungCyclic, optionUnsprungCyclic)
+	if optionUnsprungCyclic == true then
+		paramUnsprungCyclic:set(1)
+	else
+		paramUnsprungCyclic:set(0)
+	end
+
+	if optionPedalTrim == true then
+		paramPedalTrim:set(1)
+	else
+		paramPedalTrim:set(0)
+	end
+	--paramPedalTrim:set(optionPedalTrim)
 	--print_message_to_user(tostring(optionUnsprungCyclic))
 end
 
@@ -84,7 +101,6 @@ dev:listen_command(Keys.switchAPUOff)
 
 dev:listen_command(Keys.BattSwitch)
 dev:listen_command(Keys.ExtPwrSwitch)
-dev:listen_command(Keys.showControlInd)
 dev:listen_command(device_commands.parkingBrake)
 dev:listen_command(EFM_commands.wheelbrake)
 
@@ -109,8 +125,6 @@ function SetCommand(command,value)
 			dev:performClickableAction(EFM_commands.batterySwitch,-1,true)
 			dispatch_action(nil,EFM_commands.batterySwitch,-1)
 		end
-	elseif command == Keys.showControlInd then
-		SHOW_CONTROLS:set(1-SHOW_CONTROLS:get())
 	elseif command == device_commands.parkingBrake then
 		if value > 0 then
 			parkingBrakeUp = true

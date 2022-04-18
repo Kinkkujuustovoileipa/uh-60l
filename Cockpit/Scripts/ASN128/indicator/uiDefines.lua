@@ -2,6 +2,7 @@ dofile(LockOn_Options.common_script_path.."elements_defs.lua")
 dofile(LockOn_Options.script_path.."utils.lua")
 
 greenColor = {0,255,0,220}
+
 h60_font_7seg = MakeFont({used_DXUnicodeFontData = "dotMatrixFont"}, greenColor)
 center = calculateIndicatorCenter({-0.086,-0.916,2.444}) -- {L/R,U/D,forward/back}
 rotation = {0, 0, 80} -- main panel rotation roughly 22deg

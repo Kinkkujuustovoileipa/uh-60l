@@ -21,6 +21,8 @@ paramLightsMagCompass = get_param_handle("LIGHTING_MAGCOMPASS")
 paramightsDomeBlue = get_param_handle("LIGHTING_DOME_BLUE")
 paramightsDomeWhite = get_param_handle("LIGHTING_DOME_WHITE")
 
+local paramDimmerEnabled = get_param_handle("LIGHTED_SWITCHES_DIMMER_ENABLED")
+
 paramProbeState = get_param_handle("PROBE_STATE");
 
 -- Default light values
@@ -131,9 +133,18 @@ dev:listen_command(Keys.searchLightDim)
 dev:listen_command(Keys.pltRdrAltLights_AXIS)
 dev:listen_command(Keys.cpltRdrAltLights_AXIS)
 
+dev:listen_command(Keys.lowerConsoleLights_AXIS)
+dev:listen_command(Keys.glareshieldLights_AXIS)
+dev:listen_command(Keys.cpltInstrLights_AXIS)
+dev:listen_command(Keys.lightedSwitches_AXIS)
+dev:listen_command(Keys.upperConsoleLights_AXIS)
+dev:listen_command(Keys.pltInstrLights_AXIS)
+dev:listen_command(Keys.nonFltInstrLights_AXIS)
+
 -- Fuel Probe
 dev:listen_command(device_commands.fuelProbe)
 dev:listen_command(Keys.toggleProbe)
+
 
 function post_initialize()
 	
@@ -151,6 +162,7 @@ function post_initialize()
 		local hour = get_absolute_model_time() / 3600
 
 		if hour > 18 or hour < 7 then
+			paramDimmerEnabled:set(1)
 			dev:performClickableAction(device_commands.cpltInstrLights, 	0.5, true)
 			dev:performClickableAction(device_commands.lightedSwitches, 	0.3, true)
 			dev:performClickableAction(device_commands.formationLights, 	1, true)
@@ -181,12 +193,12 @@ function SetCommand(command,value)
 	if command == device_commands.cpltInstrLights then
 		cpltInstBrightness = value / 4
 		--print_message_to_user(cpltInstBrightness)
-	elseif command == device_commands.cpltInstrLights_AXIS then
+	elseif command == Keys.cpltInstrLights_AXIS then
 		local normalisedValue = ( ( value + 1 ) / 2 ) * 1.0 -- normalised {-1 to 1} to {0 - 1.0}
         dev:performClickableAction(device_commands.cpltInstrLights, normalisedValue, false)
 	elseif command == device_commands.lightedSwitches then
 		switchesBrightness = value
-	elseif command == device_commands.lightedSwitches_AXIS then
+	elseif command == Keys.lightedSwitches_AXIS then
 		local normalisedValue = ( ( value + 1 ) / 2 ) * 1.0 -- normalised {-1 to 1} to {0 - 1.0}
         dev:performClickableAction(device_commands.lightedSwitches, normalisedValue, false)
 	elseif command == device_commands.formationLights then
@@ -197,27 +209,27 @@ function SetCommand(command,value)
         dev:performClickableAction(device_commands.formationLights, normalisedValue, false)
 	elseif command == device_commands.upperConsoleLights then
 		upperConsoleBrightness = value / 4
-	elseif command == device_commands.upperConsoleLights_AXIS then
+	elseif command == Keys.upperConsoleLights_AXIS then
 		local normalisedValue = ( ( value + 1 ) / 2 ) * 1.0 -- normalised {-1 to 1} to {0 - 1.0}
         dev:performClickableAction(device_commands.upperConsoleLights, normalisedValue, false)
 	elseif command == device_commands.lowerConsoleLights then
 		lowerConsoleBrightness = value / 4
-	elseif command == device_commands.lowerConsoleLights_AXIS then
+	elseif command == Keys.lowerConsoleLights_AXIS then
 		local normalisedValue = ( ( value + 1 ) / 2 ) * 1.0 -- normalised {-1 to 1} to {0 - 1.0}
         dev:performClickableAction(device_commands.lowerConsoleLights, normalisedValue, false)	
 	elseif command == device_commands.pltInstrLights then
 		pltInstBrightness = value / 4
-	elseif command == device_commands.pltInstrLights_AXIS then
+	elseif command == Keys.pltInstrLights_AXIS then
 		local normalisedValue = ( ( value + 1 ) / 2 ) * 1.0 -- normalised {-1 to 1} to {0 - 1.0}
         dev:performClickableAction(device_commands.pltInstrLights, normalisedValue, false)
 	elseif command == device_commands.nonFltInstrLights then
 		nonFLtInstBrightness = value / 4
-	elseif command == device_commands.nonFltInstrLights_AXIS then
+	elseif command == Keys.nonFltInstrLights_AXIS then
 		local normalisedValue = ( ( value + 1 ) / 2 ) * 1.0 -- normalised {-1 to 1} to {0 - 1.0}
         dev:performClickableAction(device_commands.nonFltInstrLights, normalisedValue, false)
 	elseif command == device_commands.glareshieldLights then
 		glareShieldLightBrightness = value
-	elseif command == device_commands.glareshieldLights_AXIS then
+	elseif command == Keys.glareshieldLights_AXIS then
 		local normalisedValue = ( ( value + 1 ) / 2 ) * 1.0 -- normalised {-1 to 1} to {0 - 1.0}
         dev:performClickableAction(device_commands.glareshieldLights, normalisedValue, false)
 	elseif command == device_commands.magCompassLights then
@@ -411,7 +423,12 @@ function update()
 
 	-- Lighted Switches
 	-- Doesn't have its own CB, will use lowerconsole as placeholder
-	paramLightsSwitches:set(switchesBrightness * lwrCslLtsPwr)
+	-- Requires CAP switch to be in DIM mode else full bright
+	if paramDimmerEnabled:get() > 0 then
+		paramLightsSwitches:set(switchesBrightness * lwrCslLtsPwr)
+	else
+		paramLightsSwitches:set(1 * lwrCslLtsPwr)
+	end
 
 	-- Cabin Dome Lights
 	local cabinDomeLtsPwr = paramCB_LTSCABINDOME:get()

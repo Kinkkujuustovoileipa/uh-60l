@@ -91,15 +91,15 @@ function formatLatString(lat,long)
     local latMin = formatPrecedingZeros(string.format("%.2f",(lat - latDeg) * 60), 5)
     local longMin = formatPrecedingZeros(string.format("%.2f",(long - longDeg) * 60), 5)
 
-    return latHemi..formatPrecedingSpaces(tostring(latDeg), 3).."°"..latMin.."'", longHemi..formatPrecedingZeros(tostring(longDeg), 3).."°"..longMin.."'"
+    return latHemi..formatPrecedingSpaces(tostring(math.abs(latDeg)), 3).."°"..latMin.."'", longHemi..formatPrecedingZeros(tostring(math.abs(longDeg)), 3).."°"..longMin.."'"
 end
 
 function unFormatLatString(lat,long)
     local latD = tonumber(lat:sub(2,4))
-    local latM = tonumber(lat:sub(7,12)) / 60
+    local latM = tonumber(lat:sub(7,11)) / 60
     local latDec = latD + latM
 
-    if lat:sub(1,2) == "S" then
+    if lat:sub(1,1) == "S" then
         latDec = -latDec
     end
 
@@ -107,7 +107,8 @@ function unFormatLatString(lat,long)
     local longM = tonumber(long:sub(7,11)) / 60
     local longDec = longD + longM
 
-    if lat:sub(1,2) == "W" then
+    --print_message_to_user(long:sub(1,1))
+    if long:sub(1,1) == "W" then
         longDec = -longDec
     end
 

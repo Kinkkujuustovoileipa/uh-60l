@@ -33,6 +33,7 @@ local freq_ooooXX = 0
 local paramFreq = get_param_handle("ARC164_FREQ")
 local paramPreset = get_param_handle("ARC164_PRESET")
 local paramMode = get_param_handle("ARC164_MODE")
+local paramChMode = get_param_handle("ARC164_CH_MODE")
 
 local uhf_radio_device = nil
 
@@ -197,7 +198,6 @@ function update()
             end
         else
             frequency = 243e6
-            displayFreq = frequency
         end
     else
         frequency = 0
@@ -215,9 +215,9 @@ function update()
     end
 
     paramMode:set(mode)
-    -- Freq isn't updated when in preset mode
     paramFreq:set(displayFreq / 1e3)
     paramPreset:set(preset)
+    paramChMode:set(mpgMode)
 end
 
 need_to_be_closed = false -- close lua state after initialization

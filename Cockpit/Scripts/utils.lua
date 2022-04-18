@@ -885,23 +885,24 @@ function findMissionFile(fileList)
 
 	for fileNumber, filepath in pairs(fileList) do
 	
-		file = io.open(filepath, "r") 
-	
-		local fLine = file:read()
-		
-		if string.match(fLine, "mission") then
-			file_attr = lfs.attributes(filepath)
-			if file_attr.modification > newest then
-				correctFile = filepath
-				newest = file_attr.modification
-			end
-		end
-		if file then
-		file:close()
-		end
+    if correctFile == 0 then
+      file = io.open(filepath, "r") 
+    
+      local fLine = file:read()
+      
+      if string.match(fLine, "mission") then
+        file_attr = lfs.attributes(filepath)
+        if file_attr.modification > newest then
+          correctFile = filepath
+          newest = file_attr.modification
+        end
+      end
+      if file then
+      file:close()
+      end
+    end
 	end
 	return correctFile
-	
 end
 
 function copyFile(fpath, cpath)
@@ -920,7 +921,7 @@ function load_tempmission_file()
 	local fList = scandir(mdir)
 	local rf 	= findMissionFile(fList)
 	copyFile(rf, cfile)
-
+  
 	dofile(userPath..'h60TempMission.lua')
 
 	log.info("Temp mission file loaded")

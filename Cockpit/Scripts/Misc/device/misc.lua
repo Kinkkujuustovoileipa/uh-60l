@@ -31,6 +31,8 @@ local doorRGnrState = 0
 local doorLCargoState = 0
 local doorRCargoState = 0
 
+local paramControlsIndicator  = get_param_handle("SHOW_CONTROLS")
+
 -- Canopy handling
 dev:listen_command(Keys.toggleDoors)
 dev:listen_command(device_commands.miscTailWheelLock)
@@ -56,6 +58,9 @@ dev:listen_command(Keys.wiperSelectorCycle)
 -- Wipers
 dev:listen_command(device_commands.wiperSelector)
 
+-- Controls Indicator
+dev:listen_command(Keys.showControlInd)
+
 function post_initialize()
     tailWheelLockedState = 0
     tailWheelLocked = 0
@@ -78,7 +83,8 @@ function SetCommand(command,value)
             tailWheelLockTarget = 1 - tailWheelLocked
         end
     elseif command == device_commands.wiperSelector then
-		wiperMode = round(value * 3)
+		wiperMode = round((value + 0.5) * 2)
+        print_message_to_user(wiperMode)
     elseif command == Keys.wiperSelectorInc then
         local sentValue = wiperMode / 3
         dev:performClickableAction(device_commands.wiperSelector, clamp(sentValue + 0.33, 0, 1), true)
@@ -120,6 +126,8 @@ function SetCommand(command,value)
         doorLGnrTgt = 1 - doorLGnrTgt
     elseif command == Keys.toggleRightGunnerDoor then
         doorRGnrTgt = 1 - doorRGnrTgt
+    elseif command == Keys.showControlInd then
+		paramControlsIndicator:set(1 - paramControlsIndicator:get())
     end
 end
 

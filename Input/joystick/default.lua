@@ -890,14 +890,14 @@ join(res.keyCommands, {
 		{action = Keys.engFSSBoth_AXIS, name = _('Engine 1 + 2 FSS'), category = _('Engine Control Quadrant')},
 
 		-- Overhead Panel Lights
-		{action = device_commands.glareshieldLights_AXIS	, name = _('Lights - Glareshield'), category = _('Internal Lighting')},
-		{action = device_commands.cpltInstrLights_AXIS		, name = _('Lights - Flight Instrument Copilot OFF/BRT'), category = _('Internal Lighting')},
-		{action = device_commands.lightedSwitches_AXIS		, name = _('Lights - Lighted Switches OFF/BRT'), category = _('Internal Lighting')},
-		{action = device_commands.upperConsoleLights_AXIS	, name = _('Lights - Console Upper OFF/BRT'), category = _('Internal Lighting')},
-		{action = device_commands.lowerConsoleLights_AXIS	, name = _('Lights - Console Lower OFF/BRT'), category = _('Internal Lighting')},
-		{action = device_commands.pltInstrLights_AXIS		, name = _('Lights - Flight Instrument Pilot OFF/BRT'), category = _('Internal Lighting')},
-		{action = device_commands.nonFltInstrLights_AXIS	, name = _('Lights - Non Flight Instrument OFF/BRT'), category = _('Internal Lighting')},
-		{action = Keys.formationLights_AXIS					, name = _('Lights - Formation OFF/1/2/3/4/5'), category = _('External Lighting')},
+		{action = Keys.glareshieldLights_AXIS	, name = _('Lights - Glareshield'), category = _('Internal Lighting')},
+		{action = Keys.cpltInstrLights_AXIS		, name = _('Lights - Flight Instrument Copilot OFF/BRT'), category = _('Internal Lighting')},
+		{action = Keys.lightedSwitches_AXIS		, name = _('Lights - Lighted Switches OFF/BRT'), category = _('Internal Lighting')},
+		{action = Keys.upperConsoleLights_AXIS	, name = _('Lights - Console Upper OFF/BRT'), category = _('Internal Lighting')},
+		{action = Keys.lowerConsoleLights_AXIS	, name = _('Lights - Console Lower OFF/BRT'), category = _('Internal Lighting')},
+		{action = Keys.pltInstrLights_AXIS		, name = _('Lights - Flight Instrument Pilot OFF/BRT'), category = _('Internal Lighting')},
+		{action = Keys.nonFltInstrLights_AXIS	, name = _('Lights - Non Flight Instrument OFF/BRT'), category = _('Internal Lighting')},
+		{action = Keys.formationLights_AXIS		, name = _('Lights - Formation OFF/1/2/3/4/5'), category = _('External Lighting')},
 		
 		{action = Keys.pltRdrAltLights_AXIS,			name = _('Radar Altimeter Pilot Dimmer'), category = _('APN-209 Radar Altimeter')},
 		{action = Keys.cpltRdrAltLights_AXIS,			name = _('Radar Altimeter Copilot Dimmer'), category = _('APN-209 Radar Altimeter')},
