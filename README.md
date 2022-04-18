@@ -11,6 +11,20 @@ After reading this readme, [click here to download the latest version from the r
 - If you use SRS, copy and paste the “DCS-SimpleRadioStandalone.lua” file to “C:\Users\###\Saved Games\DCS\Mods\Services\DCS-SRS\Scripts\” - BACK UP THE ORIGINAL!
 - In the mission editor, make sure the Historical Filter is disabled
 ## Changelog
+### 1.3
+#### Feature Changes
+- Added option for unsprung cyclic
+- Added option for pedal trim
+- Flight model improvements
+#### Bugs/Corrections
+- Stabilator behaviour overhauled
+- Added Internal Cargo support
+- Added more countries
+- Fuel Probe now shows in ME preview
+- Wiper switch updated
+- Removed SRS script
+- Changed bright mode of lighted switches to use CAP panel dimmer logic
+- Fixed wind direction
 ### 1.2
 #### Feature Changes
 - Air source requirement added to engine start procedure
