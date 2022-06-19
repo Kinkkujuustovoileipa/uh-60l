@@ -269,7 +269,7 @@ function buttonFunctions(command)
                 if (currWP > 1) then
                     currWP = currWP - 1
                 else
-                    currWP = 70
+                    currWP = 100
                 end
             end
         end
