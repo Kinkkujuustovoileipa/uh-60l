@@ -32,7 +32,7 @@ data =
                 paramHandleString = "ASN128_CURRENT_WP",
                 inputData = "",
                 updateInputData = function(input)
-                    data.pages[50][1].inputData = formatPrecedingZeros(waypoints[currWP].number, 2)..":"..input
+                    data.pages[50][1].inputData = formatPrecedingZeros(waypoints[currTGTWP].number, 2)..":"..input
                 end,
             },
             [2] =
@@ -162,7 +162,7 @@ data =
                 paramHandleString = "ASN128_CURRENT_WP",
                 inputData = "",
                 updateInputData = function(input)
-                    data.pages[51][1].inputData = formatPrecedingZeros(waypoints[currWP].number, 2)..":"..input
+                    data.pages[51][1].inputData = formatPrecedingZeros(waypoints[currTGTWP].number, 2)..":"..input
                 end,
             },
             [2] = {
