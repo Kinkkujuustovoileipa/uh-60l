@@ -359,7 +359,7 @@ function SetCommand(command,value)
 		fuelProbeSwitchState = 1 - fuelProbeSwitchState
 	elseif command == Keys.formationLightsInc and  formationBrightness < 1 then
 		dev:performClickableAction(device_commands.formationLights, clamp(formationBrightness + 0.2, 0, 1), false)
-	elseif command == Keys.formationLightsDec and formationBrightness < 0 then
+	elseif command == Keys.formationLightsDec and formationBrightness > 0 then
 		dev:performClickableAction(device_commands.formationLights, clamp(formationBrightness - 0.2, 0, 1), false)
 	elseif command == Keys.glareshieldLightsInc and glareShieldLightBrightness < 1 then 
 		dev:performClickableAction(device_commands.glareshieldLights, clamp(glareShieldLightBrightness + value*4, 0, 1), false)
