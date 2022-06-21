@@ -207,9 +207,16 @@ function selectDisplay(value)
     moreTextHandle:set("more")
     endTextHandle:set("end")
     inputArray = {}
-    if powerUpMode then return end
 
     displayIndex = math.ceil(value * 100)
+	
+    -- This mostly works, except for certain edge cases, but at least is recoverable
+    if powerUpMode then 
+	displayIndex = displayIndex*10
+	return
+    end
+
+    
     
     if (modeIndex == 3 or modeIndex == 4) then
         if displayIndex == 0 then
@@ -227,6 +234,9 @@ function selectDisplay(value)
         elseif displayIndex == 6 then
             changePage(DATUMROUTE_1)
         end
+    -- Temp solution to keep the keyboard/joystick keybinds functioning
+    elseif (modeIndex == 0 or modeIndex == 1 or modeIndex == 2 or modeIndex == 5) then
+	displayIndex = displayIndex*10
     end
 end
 
