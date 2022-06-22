@@ -79,7 +79,7 @@ dev:listen_command(Keys.afcsStabAutoToggle)
 
 function SetCommand(command,value)   
     if command == device_commands.afcsStabAuto then
-		btnStabAutoState = 1 - btnStabAutoState
+		btnStabAutoState = value
 	elseif command == device_commands.afcsBoost then
 		btnBoostState = 1 - btnBoostState
 	elseif command == device_commands.afcsSAS1 then
