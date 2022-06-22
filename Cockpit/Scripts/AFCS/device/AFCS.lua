@@ -79,7 +79,7 @@ dev:listen_command(Keys.afcsStabAutoToggle)
 
 function SetCommand(command,value)   
     if command == device_commands.afcsStabAuto then
-		btnStabAutoState = 1 - btnStabAutoState
+		btnStabAutoState = value
 	elseif command == device_commands.afcsBoost then
 		btnBoostState = 1 - btnBoostState
 	elseif command == device_commands.afcsSAS1 then
@@ -91,10 +91,12 @@ function SetCommand(command,value)
 	elseif command == device_commands.afcsFPS then
 		btnFPSState = 1 - btnFPSState
 	elseif command == device_commands.slewStabUp then
-		btnStabAutoState = 0
+		dev:performClickableAction(device_commands.afcsStabAuto,0,true) --Needed to allow switching afcsStabAuto back on via binding
+		btnStabAutoState = 0 --Needed to allow manual slew to work on first keypress
 		manSlewDir = value
 	elseif command == device_commands.slewStabDown then
-		btnStabAutoState = 0
+		dev:performClickableAction(device_commands.afcsStabAuto,0,true) --Needed to allow switching afcsStabAuto back on via binding
+		btnStabAutoState = 0 --Needed to allow manual slew to work on first keypress
 		manSlewDir = value
 	elseif command == Keys.slewStabDown then -- I don't know why but this only works if it's ass backward...
 		if value > 11.3 then
