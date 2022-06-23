@@ -30,6 +30,7 @@ copilotHeading = 0
 copilotCourse = 0
 
 vorILSTrackError = 0 -- track error for whichever course input is set on CIS
+vorDirFlag = 0 -- HSI to/from flag logic
 pilotAltHoldAltitude = 0
 pilotAirspeedHold = 0
 
@@ -96,6 +97,19 @@ paramCISPALTLt = get_param_handle("LIGHTING_CIS_ALT_ON")
 paramGroundSpeed = get_param_handle("GROUND_SPEED")
 
 flagMoveSpeed = 5
+
+-- Corrects course error to account for travel towards or away (keeps value between +90 & -90)
+function trackErrorRotationalSymmetry(trackError)
+	if trackError > 90 then -- We're flying opposite the course needle
+		trackError = -trackError + 180 -- Invert the error so instrument reads correctly
+		return trackError
+	elseif trackError < -90  then -- We're flying opposite the course needle
+		trackError = -trackError - 180 -- Invert the error so instrument reads correctly
+		return trackError
+	else -- We're flying towards the ILS/course needle, no change needed
+		return trackError
+	end
+end
 
 function getBeaconData(freq, type)
     type = nil or type
@@ -209,6 +223,7 @@ function updateVORILS()
     localizerBeaconDistance = -1
     validVOR = false
     validILS = false
+	local rawTrackError = 0
 
     local vorFreq = paramARN147Freq:get()
 
@@ -238,10 +253,24 @@ function updateVORILS()
                     glideSlopeBeaconDistance = math.sqrt((glideSlopePos[1] - selfX)^2 + (glideSlopePos[3] - selfZ)^2)
 
                     -- Set track error
-                    vorILSTrackError = getShortestRadialPath(vorILSBearing, ilsDirection)
+                    rawTrackError = getShortestRadialPath(vorILSBearing, ilsDirection) -- Error between -180 and +180
+					vorILSTrackError = trackErrorRotationalSymmetry(rawTrackError) -- Error between -90 and +90, for instruments
+					if rawTrackError ~= vorILSTrackError then
+						vorDirFlag = -1 -- We're moving away, set direction flag
+					else
+						vorDirFlag = 1 -- We're moving towards, set direction flag
+					end
                 else
                     validVOR = true
-                    vorILSTrackError = getShortestRadialPath(vorILSBearing, course)
+					
+					-- Set track error, same as above but for `course`
+					rawTrackError = getShortestRadialPath(vorILSBearing, course)
+					vorILSTrackError = trackErrorRotationalSymmetry(rawTrackError)
+					if rawTrackError ~= vorILSTrackError then
+						vorDirFlag = -1
+					else
+						vorDirFlag = 1
+					end
                 end
             end
         end
@@ -531,13 +560,17 @@ function updateVSI()
     moveGauge(paramVSIGSFlag, gsFlagPos, 5, update_time_step)
     
 	-- Track Error
+	local rawTrackError = 0 -- Error from -180 to +180
+	local symmetricTrackError = 0 -- Error adjusted between -90 and +90
     local trackErrorIndPos = 0
     if ilsModeOn and validILS then
-        local ilsDeviationDeg = getShortestRadialPath(ilsDirection, vorILSBearing)
-        trackErrorIndPos = -clamp(ilsDeviationDeg / 2.5, -1, 1)
+        rawTrackError = getShortestRadialPath(ilsDirection, vorILSBearing)
+		symmetricTrackError = trackErrorRotationalSymmetry(rawTrackError)
+        trackErrorIndPos = -clamp(symmetricTrackError / 2.5, -1, 1)
     elseif vorModeOn and validVOR then
-        local vorDeviationDeg = getShortestRadialPath(course, vorILSBearing)
-        trackErrorIndPos = -clamp(vorDeviationDeg / 10, -1, 1)
+        rawTrackError = getShortestRadialPath(course, vorILSBearing)
+		symmetricTrackError = trackErrorRotationalSymmetry(rawTrackError)
+        trackErrorIndPos = -clamp(symmetricTrackError / 10, -1, 1)
     elseif dplrGpsModeOn then
         trackErrorIndPos = -clamp(paramGPSTrackError:get() / 10, -1, 1)
     end
@@ -559,7 +592,8 @@ end
 
 function updateVORDirFlag()
     if (validVOR and vorModeOn) or (validILS and ilsModeOn) then
-        if vorILSTrackError > 90 or vorILSTrackError < -90 then
+        --if vorILSTrackError > 90 or vorILSTrackError < -90 then
+		if vorDirFlag == -1 then
             paramHSIVorToFrom:set(-1)
         else
             paramHSIVorToFrom:set(1)
