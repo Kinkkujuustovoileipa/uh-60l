@@ -26,7 +26,7 @@ agr =
 
 GUI =
 {
-	range = {min = 30E6, max = 87.975E6, step = 25E3}, --Hz
+	range = {min = 29.990E6, max = 87.985E6, step = 5E3}, --Hz
 	displayName = 'VHF-FM Radio AN/ARC-201 (1)',
 	AM = true,
 	FM = true,
