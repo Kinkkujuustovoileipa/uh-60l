@@ -23,9 +23,11 @@ local presetMode = 0
 local presets = nil
 local rcvMode = 0
 local countdownTimer = 0
+local returnTimer = 0
 local blinkTimer = 0
 local checkBlink = false
 local displayTimeoutEnable = false
+local returnTimeoutEnable = false
 local displayMode = "none"
 
 local startSelfTest = false
@@ -136,49 +138,34 @@ function SetCommand(command,value)
     else
         if value > 0 then
             if command == device_commands.fm1Btn1 then
-                --handleValueEntry("1")
                 keypadInput("1")
             elseif command == device_commands.fm1Btn2 then
-                --handleValueEntry("2")
                 keypadInput("2")
             elseif command == device_commands.fm1Btn3 then
-                --handleValueEntry("3")
                 keypadInput("3")
             elseif command == device_commands.fm1Btn4 then
-                --handleValueEntry("4")
                 keypadInput("4")
             elseif command == device_commands.fm1Btn5 then
-                --handleValueEntry("5")
                 keypadInput("5")
             elseif command == device_commands.fm1Btn6 then
-                --handleValueEntry("6")
                 keypadInput("6")
             elseif command == device_commands.fm1Btn7 then
-                --handleValueEntry("7")
                 keypadInput("7")
             elseif command == device_commands.fm1Btn8 then
-                --handleValueEntry("8")
                 keypadInput("8")
             elseif command == device_commands.fm1Btn9 then
-                --handleValueEntry("9")
                 keypadInput("9")
             elseif command == device_commands.fm1Btn0 then
-                --handleValueEntry("0")
                 keypadInput("0")
             elseif command == device_commands.fm1BtnFreq then
-                --handleFnBtn("FREQ")
                 keypadInput("FREQ")
             elseif command == device_commands.fm1BtnClr then
-                --handleFnBtn("CLR")
                 keypadInput("CLR")
             elseif command == device_commands.fm1BtnEnt then
-                --handleFnBtn("ENT")
                 keypadInput("ENT")
             elseif command == device_commands.fm1BtnTime then
-                --handleFnBtn("TIME")
                 keypadInput("TIME")
             elseif command == device_commands.fm1BtnErfOfst then
-                --handleFnBtn("ERFOFST")
                 keypadInput("ERFOFST")
             end
         end
@@ -196,7 +183,7 @@ function keypadInput(key)
         elseif displayMode == "FH" then
             --loadFH(key)
         elseif displayMode == "loadOffset" then
-            --loadOffset(key)
+            loadOffset(key)
         elseif displayMode == "loadTime" then
             --loadTime(key)
         end
@@ -209,10 +196,19 @@ function setDisplayMode(key)
     elseif (pwrMode == 2 or pwrMode == 3) and key == "TIME" then
         displayMode = "displayTime"
     elseif pwrMode == 5 and (rcvMode == 0 or rcvMode == 1) and key == "ERFOFST" then
+        if displayMode ~= "loadOffset" then
+            canEnterData = false
+        end
         displayMode = "loadOffset"
     elseif (pwrMode == 2 or pwrMode == 3) and (rcvMode == 0 or rcvMode == 1) and key == "ERFOFST" then
         displayMode = "displayOffset"
+        returnTimeoutEnable = true
+        returnTimer = 7
+        updateDisplay()
     elseif (pwrMode == 5 or ((pwrMode == 2 or pwrMode == 3) and presetMode == 0)) and (rcvMode == 0 or rcvMode == 1) and key == "FREQ" then
+        if displayMode ~= "loadSC" then
+            canEnterData = false
+        end
         displayMode = "loadSC"
     elseif pwrMode == 5 and rcvMode == 2 and key == "FREQ" then
         displayMode = "loadFH"
@@ -298,7 +294,8 @@ function loadSC(key)
             countdownTimer = 7
             canEnterData = false
             presets[presetMode] = tonumber(displayString * 1e-3)
-            radioDevice:set_frequency(presets[presetMode] * 1e6)
+            updatePresetMode()
+            --radioDevice:set_frequency(presets[presetMode] * 1e6)
             blink(0.25)
         end    
     end
@@ -306,6 +303,69 @@ function loadSC(key)
     updateDisplay()
     
 end
+
+function loadOffset(key)
+    local trueDisplayStringLen = 0
+    local hasNegOffset = false
+    
+    if displayString:sub(1,1) == "-" then
+        trueDisplayStringLen = string.len(displayString) - 1
+        hasNegOffset = true
+    else
+        trueDisplayStringLen = string.len(displayString)
+    end
+    
+    if key == "ERFOFST" and not canEnterData then
+        displayTimeoutEnable = true
+        countdownTimer = 7
+        displayString = calcCurrentOffset(presets[presetMode] * 1e3)
+    elseif key == "ERFOFST" and canEnterData then
+        countdownTimer = 7
+        if displayString:sub(1,1) == "-" then
+            displayString = displayString:sub(2)
+        else
+            displayString = "-"..displayString
+        end
+    elseif key == "CLR" and not canEnterData then
+        countdownTimer = 7
+        displayString = ""
+        canEnterData = true
+    elseif key == "CLR" and canEnterData and trueDisplayStringLen > 0 then
+        countdownTimer = 7
+        displayString = displayString:sub(1, #displayString-1)    
+    elseif trueDisplayStringLen == 0 and canEnterData then
+        countdownTimer = 7
+        if key == "0" or key == "1" then
+            displayString = displayString..key
+        end
+    elseif trueDisplayStringLen == 1 and canEnterData then
+        countdownTimer = 7
+        if (displayString == "0" or displayString == "-0") and key == "0" or key == "5" then
+            displayString = displayString..key
+        elseif (displayString == "1" or displayString == "-1") and key == "0" then
+            displayString = displayString..key
+        end
+    end
+    
+    updateDisplay()
+    
+    if trueDisplayStringLen == 2 and canEnterData then
+        countdownTimer = 7
+        if key == "ENT" then
+            local offset = tonumber(displayString)
+            print_message_to_user(offset)
+            print_message_to_user(calcBaseFreq(presets[presetMode] * 1e3))
+            print_message_to_user((calcBaseFreq(presets[presetMode] * 1e3) + offset) * 1e-3)
+            presets[presetMode] = (calcBaseFreq(presets[presetMode] * 1e3) + offset) * 1e-3
+            setDisplayMode("preKnob")
+            --updatePresetMode()
+            --canEnterData = false
+            blink(0.25)
+        end
+    end
+end
+    
+    
 
 function funcSelfTest()
     if startSelfTest then
@@ -370,6 +430,17 @@ function updateDisplay()
         adjustedText = formatTrailingUnderscores(displayString, 5)
     elseif displayMode == "FH" then
     elseif displayMode == "loadOffset" then
+        if displayString:sub(1,1) == "-" then
+            adjustedText = formatTrailingUnderscores(displayString,3)
+        else
+            adjustedText = formatTrailingUnderscores(displayString,2)
+        end
+        adjustedText = formatPrecedingSpaces(adjustedText, 5)
+    elseif displayMode == "displayOffset" then
+        --print_message_to_user(calcCurrentOffset(presets[presetMode] * 1e3))
+        --print_message_to_user(tostring(calcCurrentOffset(presets[presetMode] * 1e3)))
+        --print_message_to_user(formatPrecedingSpaces(tostring(calcCurrentOffset(presets[presetMode] * 1e3)), 5))
+        adjustedText = formatPrecedingSpaces(calcCurrentOffset(presets[presetMode] * 1e3), 5)
     elseif displayMode == "none" then
         adjustedText = "     "
     end
@@ -391,12 +462,41 @@ function checkDisplayTimeout()
     countdownTimer = countdownTimer - update_time_step
 end
 
+function checkReturnTimeout()
+    if returnTimer <= 0 then
+        returnTimeoutEnable = false
+        canEnterData = false
+        setDisplayMode("funcKnob")
+    end
+    returnTimer = returnTimer - update_time_step
+end
+
 function updateReceiverMode()
     if rcvMode == 0 then
         paramHomingEnabled:set(1)
     else
         paramHomingEnabled:set(0)
     end
+end
+
+function calcBaseFreq(inputFreq)
+    local baseFreq = 25 * (math.floor((inputFreq / 25) + 0.5))
+    return baseFreq
+end
+    
+function calcCurrentOffset(inputFreq)
+    local currentOffset = 0
+    local remainder = inputFreq % 25 -- why the hell does this return incorrect values?
+    remainder = math.floor(remainder + 0.1) -- Using floor to make whole numbers
+    print_message_to_user(remainder)
+    print_message_to_user(formatPrecedingZeros(tostring((remainder - 25) * -1), 2))
+
+    if remainder <= 10 then
+        currentOffset = formatPrecedingZeros(tostring(remainder), 2)
+    else
+        currentOffset = "-"..formatPrecedingZeros(tostring((remainder - 25) * -1), 2)
+    end
+    return currentOffset
 end
 
 function blink(numSeconds)
@@ -427,6 +527,10 @@ function update()
     
     if displayTimeoutEnable then
         checkDisplayTimeout()
+    end
+    
+    if returnTimeoutEnable then
+        checkReturnTimeout()
     end
 
     --paramDisplayFreq:set(formatPrecedingUnderscores(displayString, 5).."@")
