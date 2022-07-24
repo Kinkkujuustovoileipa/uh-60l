@@ -210,6 +210,10 @@ function setDisplayMode(key)
             canEnterData = false
         end
         displayMode = "loadSC"
+    elseif ((pwrMode == 2 or pwrMode == 3) and presetMode ~= 0) and (rcvMode == 0 or rcvMode == 1) and key == "FREQ" then
+        displayMode = "displaySC"
+        canEnterData = false
+        updatePresetMode()
     elseif pwrMode == 5 and rcvMode == 2 and key == "FREQ" then
         displayMode = "loadFH"
     elseif (pwrMode == 2 or pwrMode == 3) and (rcvMode == 0 or rcvMode == 1) and (key == "funcKnob" or key == "preKnob" or key == "modeKnob") then
@@ -305,6 +309,7 @@ function loadSC(key)
 end
 
 function loadOffset(key)
+    returnTimeoutEnable = false
     local trueDisplayStringLen = 0
     local hasNegOffset = false
     
@@ -353,9 +358,9 @@ function loadOffset(key)
         countdownTimer = 7
         if key == "ENT" then
             local offset = tonumber(displayString)
-            print_message_to_user(offset)
-            print_message_to_user(calcBaseFreq(presets[presetMode] * 1e3))
-            print_message_to_user((calcBaseFreq(presets[presetMode] * 1e3) + offset) * 1e-3)
+            --print_message_to_user(offset)
+            --print_message_to_user(calcBaseFreq(presets[presetMode] * 1e3))
+            --print_message_to_user((calcBaseFreq(presets[presetMode] * 1e3) + offset) * 1e-3)
             presets[presetMode] = (calcBaseFreq(presets[presetMode] * 1e3) + offset) * 1e-3
             setDisplayMode("preKnob")
             --updatePresetMode()
@@ -417,7 +422,9 @@ function updatePresetMode()
     end
     --printsec(presets[presetMode] * 1e6)
     radioDevice:set_frequency(presets[presetMode] * 1e6)
+    --paramFreq:set(presets[presetMode] * 1e6)
     --print_message_to_user(presets[presetMode] * 1e6)
+    --print_message_to_user(radioDevice:get_frequency())
     updateDisplay()
 end
 
@@ -449,6 +456,8 @@ function updateDisplay()
         paramDisplayFreq:set(adjustedText.."@")
         --print_message_to_user("updated display with")
         --print_message_to_user(adjustedText)
+        --print_message_to_user(paramFreq:get())
+        
     end
 end
 
