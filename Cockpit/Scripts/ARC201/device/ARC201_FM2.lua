@@ -10,7 +10,6 @@ local update_time_step = 0.1
 make_default_activity(update_time_step)
 
 local hasPower = false
-local paramFreq = get_param_handle("ARC201_FM2_FREQ")
 local paramDisplayFreq = get_param_handle("ARC201_FM2_FREQ_DISPLAY")
 local paramMode = get_param_handle("ARC201_FM2_MODE")
 local displayString = "30000"
@@ -161,9 +160,9 @@ function SetCommand(command,value)
                 keypadInput("CLR")
             elseif command == device_commands.fm2BtnEnt then
                 keypadInput("ENT")
-            elseif command == device_commands.fm1BtnTime then
+            elseif command == device_commands.fm2BtnTime then
                 keypadInput("TIME")
-            elseif command == device_commands.fm1BtnErfOfst then
+            elseif command == device_commands.fm2BtnErfOfst then
                 keypadInput("ERFOFST")
             end
         end
@@ -370,7 +369,7 @@ end
 
 function funcSelfTest()
     if startSelfTest then
-        paramFreq:set(0)
+        radioDevice:set_frequency(0)
         countdownTimer = 17 -- Initialize the timer to 17 seconds
         startSelfTest = false
         displayMode = "selfTest"
