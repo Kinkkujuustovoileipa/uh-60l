@@ -10,27 +10,27 @@ local update_time_step = 0.1
 make_default_activity(update_time_step)
 
 local hasPower = false
-local paramFreq = get_param_handle("ARC201_FM1_FREQ")
-local paramDisplayFreq = get_param_handle("ARC201_FM1_FREQ_DISPLAY")
+local paramFreq = get_param_handle("ARC201_FM1_FREQ") -- this is for FM Homing?
+local paramDisplayFreq = get_param_handle("ARC201_FM1_FREQ_DISPLAY") -- this is for the radio display
 local paramMode = get_param_handle("ARC201_FM1_MODE")
 local paramHomingEnabled = get_param_handle("ARC201_FM1_HOMING_ENABLED")
 local displayString = "30000"
 local manualFreq = 30e6
 local radioDevice = nil
 local canEnterData = false
-local pwrMode = 0
-local presetMode = 0
+local pwrMode = 0 -- position of the function knob
+local presetMode = 0 -- position of the preset knob
 local presets = nil
-local rcvMode = 0
-local countdownTimer = 0
-local returnTimer = 0
-local blinkTimer = 0
-local checkBlink = false
-local displayTimeoutEnable = false
-local returnTimeoutEnable = false
-local displayMode = "none"
+local rcvMode = 0 -- whether or not FM homing is enabled
+local countdownTimer = 0 -- countdown until the radio display turns off
+local returnTimer = 0 -- countdown until the radio display goes back to showing frequency
+local blinkTimer = 0 -- countdown for blinking the display off then back on
+local checkBlink = false -- whether or not blink is occuring
+local displayTimeoutEnable = false -- whether or not the display blanking timeout is active
+local returnTimeoutEnable = false -- whether or not the return timeout is active
+local displayMode = "none" -- what the display is showing
 
-local startSelfTest = false
+local startSelfTest = false -- indicator to initiate the self test
 
 function post_initialize()
     presets = get_aircraft_mission_data("Radio")[1].channels
@@ -45,7 +45,7 @@ function post_initialize()
     local birth = LockOn_Options.init_conditions.birth_place	
     if birth=="GROUND_HOT" or birth=="AIR_HOT" then
         dev:performClickableAction(device_commands.fm1FunctionSelector, .02, false)
-        paramDisplayFreq:set(formatTrailingUnderscores(displayString, 5).."@")
+        paramDisplayFreq:set(formatTrailingUnderscores(displayString, 5).."@") -- needed to prevent NULL shown on radio with hot start
     elseif birth=="GROUND_COLD" then
     end
 end
@@ -93,16 +93,16 @@ function SetCommand(command,value)
 
     if command == device_commands.fm1FunctionSelector then
         pwrMode = round(value * 100)
-        if pwrMode == 0 or pwrMode == 7 or pwrMode == 8 then
+        if pwrMode == 0 or pwrMode == 7 or pwrMode == 8 then -- Function selector = off or zeroize or stow
             canEnterData = false
-            paramMode:set(0)
+            paramMode:set(0) -- turns off display
             radioDevice:set_frequency(0)
         else
-            paramMode:set(1)
+            paramMode:set(1) -- turns on display
 
             if pwrMode == 1 then
                 startSelfTest = true
-            elseif pwrMode == 2 or pwrMode == 3 or pwrMode == 5 then
+            elseif pwrMode == 2 or pwrMode == 3 or pwrMode == 5 then -- Function selector = SQ or SQ OFF or LD
                 setDisplayMode("funcKnob")
             end
         end
@@ -172,12 +172,14 @@ function SetCommand(command,value)
     end
 end
 
-function keypadInput(key)
+function keypadInput(key) -- handle keypad presses
     if hasPower then
+        -- go set display mode based on function key presses
         if (pwrMode == 2 or pwrMode == 3 or pwrMode == 5) and (key == "TIME" or key == "ERFOFST" or key == "FREQ") then
             setDisplayMode(key)
         end
         
+        -- send key presses to the relevant functions based on current displayMode
         if displayMode == "loadSC" then
             loadSC(key)
         elseif displayMode == "FH" then
@@ -190,7 +192,7 @@ function keypadInput(key)
     end
 end
 
-function setDisplayMode(key)
+function setDisplayMode(key) -- logic to set displayMode based on key presses or knob rotation
     if pwrMode == 5 and key == "TIME" then
         displayMode = "loadTime"
     elseif (pwrMode == 2 or pwrMode == 3) and key == "TIME" then
@@ -220,29 +222,29 @@ function setDisplayMode(key)
         canEnterData = false
         displayMode = "displaySC"
         displayTimeoutEnable = false
-        updatePresetMode()
+        updatePresetMode() -- update currently tuned frequency
     elseif pwrMode == 5 and (rcvMode == 0 or rcvMode == 1) and (key == "funcKnob" or key == "preKnob" or key == "modeKnob") then
         canEnterData = false
         displayMode = "loadSC"
         
         if key == "preKnob" then
-            countdownTimer = 7
+            countdownTimer = 7 -- if preset knob is turned, set the countdown to 7sec
         elseif key == "funcKnob" then
-            countdownTimer = 1
+            countdownTimer = 1 -- if the function knob is turned, set countdown to 1sec
         end
         
-        displayTimeoutEnable = true
-        updatePresetMode()
+        displayTimeoutEnable = true -- activate the timeout
+        updatePresetMode() -- update currently tuned frequency
     end
 end
 
-function loadSC(key)
+function loadSC(key) -- load single channel frequencies into a preset
     if key == "FREQ" then
         countdownTimer = 7
         displayTimeoutEnable = true
         canEnterData = true
         
-        if presets[presetMode] == 0 then
+        if presets[presetMode] == 0 then -- check if current preset is set to 0MHz
             displayString = "00000"
         else
             displayString = tostring(presets[presetMode] * 1e3)
@@ -250,25 +252,25 @@ function loadSC(key)
 
     elseif countdownTimer > 0 and canEnterData then
         if key == "CLR" and (displayString == "00000" or displayString == tostring(presets[presetMode] * 1e3)) then
-            countdownTimer = 7
-            displayString = ""
+            countdownTimer = 7 -- reset countdown upon any keypress
+            displayString = "" -- clear the entire display
             --print_message_to_user("all clr")
         elseif key == "CLR" and displayString ~= "00000" then
-            countdownTimer = 7
-            displayString = displayString:sub(1, #displayString-1)
+            countdownTimer = 7 -- reset countdown upon any keypress
+            displayString = displayString:sub(1, #displayString-1) -- backspace one digit
         elseif key ~= "CLR" and canEnterData and string.len(displayString) == 0 then
             --print_message_to_user("len 0")
             --print_message_to_user(key)
-            countdownTimer = 7            
-            if tonumber(key) >= 3 and tonumber(key) <= 8 then
+            countdownTimer = 7 -- reset countdown upon any keypress
+            if tonumber(key) >= 3 and tonumber(key) <= 8 then -- first digit must be between 3 and 8
                 displayString = key
                 --print_message_to_user("first digit")
-            elseif tonumber(key) == 0 then
+            elseif tonumber(key) == 0 then -- if first digit is 0, make display all zeros
                 displayString = "00000"
             end
         elseif canEnterData and string.len(displayString) == 1 then
-            countdownTimer = 7
-            if tonumber(displayString) == 8 then
+            countdownTimer = 7 -- reset countdown upon any keypress
+            if tonumber(displayString) == 8 then -- if first digit is 8 then second digit must be <= 7
                 if tonumber(key) <= 7 then
                     displayString = displayString..key
                 end
@@ -276,15 +278,15 @@ function loadSC(key)
                 displayString = displayString..key
             end
         elseif canEnterData and string.len(displayString) == 2 then
-            countdownTimer = 7
+            countdownTimer = 7 -- reset countdown upon any keypress
             displayString = displayString..key
         elseif canEnterData and string.len(displayString) == 3 then
-            countdownTimer = 7
+            countdownTimer = 7 -- reset countdown upon any keypress
             if tonumber(key) == 0 or tonumber(key) == 2 or tonumber(key) == 5 or tonumber(key) == 7 then
-                displayString = displayString..key
+                displayString = displayString..key -- only 0, 2, 5, and 7 are allowed in this position
             end
-        elseif canEnterData and string.len(displayString) == 4 then
-            countdownTimer = 7
+        elseif canEnterData and string.len(displayString) == 4 then -- logic to only allow last digit of 00, 25, 50, or 75
+            countdownTimer = 7 -- reset countdown upon any keypress
             if tonumber(displayString:sub(4)) == 0 or tonumber(displayString:sub(4)) == 5 then
                 if tonumber(key) == 0 then
                     displayString = displayString..key
@@ -295,12 +297,12 @@ function loadSC(key)
                 end
             end
         elseif canEnterData and string.len(displayString) == 5 and key == "ENT" then
-            countdownTimer = 7
-            canEnterData = false
-            presets[presetMode] = tonumber(displayString * 1e-3)
-            updatePresetMode()
+            countdownTimer = 7 -- reset countdown upon any keypress
+            canEnterData = false -- data is entered, so prevent typing anything more
+            presets[presetMode] = tonumber(displayString * 1e-3) -- set preset to what's on the display
+            updatePresetMode() -- update the frequency tuned by the radio
             --radioDevice:set_frequency(presets[presetMode] * 1e6)
-            blink(0.25)
+            blink(0.25) -- blink the diplay for 0.25sec
         end    
     end
     
@@ -308,12 +310,12 @@ function loadSC(key)
     
 end
 
-function loadOffset(key)
-    returnTimeoutEnable = false
-    local trueDisplayStringLen = 0
-    local hasNegOffset = false
+function loadOffset(key) -- function to load an offset for the current preset
+    returnTimeoutEnable = false -- disable the return timeout because the blanking countdown will be active instead
+    local trueDisplayStringLen = 0 -- the string length not including the "-" symbol
+    local hasNegOffset = false -- boolean for offset being positive or negative
     
-    if displayString:sub(1,1) == "-" then
+    if displayString:sub(1,1) == "-" then -- figure out if offset it positive or negative, and set variables
         trueDisplayStringLen = string.len(displayString) - 1
         hasNegOffset = true
     else
@@ -321,30 +323,30 @@ function loadOffset(key)
     end
     
     if key == "ERFOFST" and not canEnterData then
-        displayTimeoutEnable = true
-        countdownTimer = 7
-        displayString = calcCurrentOffset(presets[presetMode] * 1e3)
-    elseif key == "ERFOFST" and canEnterData then
-        countdownTimer = 7
-        if displayString:sub(1,1) == "-" then
-            displayString = displayString:sub(2)
+        displayTimeoutEnable = true -- make the display timeout active
+        countdownTimer = 7 -- reset countdown
+        displayString = calcCurrentOffset(presets[presetMode] * 1e3) -- set displayString to current offset value
+    elseif key == "ERFOFST" and canEnterData then -- if canEnterData then ERFOFST toggles between + and - offset
+        countdownTimer = 7 -- reset countdown
+        if displayString:sub(1,1) == "-" then -- if negative
+            displayString = displayString:sub(2) -- remove negative sign
         else
-            displayString = "-"..displayString
+            displayString = "-"..displayString -- otherwise prepend negative
         end
-    elseif key == "CLR" and not canEnterData then
-        countdownTimer = 7
-        displayString = ""
+    elseif key == "CLR" and not canEnterData then -- this is when pressing clear to enable entering data
+        countdownTimer = 7 -- reset countdown
+        displayString = "" -- clear the display
         canEnterData = true
-    elseif key == "CLR" and canEnterData and trueDisplayStringLen > 0 then
-        countdownTimer = 7
-        displayString = displayString:sub(1, #displayString-1)    
+    elseif key == "CLR" and canEnterData and trueDisplayStringLen > 0 then -- this is when pressing clear after data is being entered
+        countdownTimer = 7 -- reset countdown
+        displayString = displayString:sub(1, #displayString-1) -- backspace one character
     elseif trueDisplayStringLen == 0 and canEnterData then
-        countdownTimer = 7
-        if key == "0" or key == "1" then
-            displayString = displayString..key
+        countdownTimer = 7 -- reset countdown upon any keypress
+        if key == "0" or key == "1" then -- only 0 or 1 are valid for the first digit
+            displayString = displayString..key -- append the digit, in case there's a "-" symbol
         end
-    elseif trueDisplayStringLen == 1 and canEnterData then
-        countdownTimer = 7
+    elseif trueDisplayStringLen == 1 and canEnterData then -- logic for only allowing valid second digits based on the first digit
+        countdownTimer = 7 -- reset countdown upon any keypress
         if (displayString == "0" or displayString == "-0") and key == "0" or key == "5" then
             displayString = displayString..key
         elseif (displayString == "1" or displayString == "-1") and key == "0" then
@@ -355,17 +357,17 @@ function loadOffset(key)
     updateDisplay()
     
     if trueDisplayStringLen == 2 and canEnterData then
-        countdownTimer = 7
+        countdownTimer = 7 -- reset countdown upon any keypress
         if key == "ENT" then
             local offset = tonumber(displayString)
             --print_message_to_user(offset)
             --print_message_to_user(calcBaseFreq(presets[presetMode] * 1e3))
             --print_message_to_user((calcBaseFreq(presets[presetMode] * 1e3) + offset) * 1e-3)
-            presets[presetMode] = (calcBaseFreq(presets[presetMode] * 1e3) + offset) * 1e-3
-            setDisplayMode("preKnob")
+            presets[presetMode] = (calcBaseFreq(presets[presetMode] * 1e3) + offset) * 1e-3  -- shift stored preset by entered offset value
+            setDisplayMode("preKnob") -- run setDisplayMode as if the preset knob had been changed
             --updatePresetMode()
             --canEnterData = false
-            blink(0.25)
+            blink(0.25) -- blink display for 0.25sec
         end
     end
 end
@@ -409,8 +411,8 @@ function funcSelfTest()
     updateDisplay()
 end
 
-function updatePresetMode()
-    if presets[presetMode] == 0 then
+function updatePresetMode() -- tune the radio based on the preset selected, and then update the display
+    if presets[presetMode] == 0 then -- if the preset freq is 0, put FILL on the display
         if presetMode == 7 then
             displayString = "FILLC"
         else
@@ -428,7 +430,7 @@ function updatePresetMode()
     updateDisplay()
 end
 
-function updateDisplay()
+function updateDisplay() -- refresh the values on the display according to the current displayMode of the radio
     local adjustedText = ""
     
     if displayMode == "selfTest" then
@@ -461,7 +463,7 @@ function updateDisplay()
     end
 end
 
-function checkDisplayTimeout()
+function checkDisplayTimeout() -- function to check if the display timeout has reached 0, and if so turn off the display
     if countdownTimer <= 0 then
         displayTimeoutEnable = false
         canEnterData = false
@@ -471,7 +473,7 @@ function checkDisplayTimeout()
     countdownTimer = countdownTimer - update_time_step
 end
 
-function checkReturnTimeout()
+function checkReturnTimeout() -- function to check if the return timeout has reached 0, and if so act as if the function knob has been turned
     if returnTimer <= 0 then
         returnTimeoutEnable = false
         canEnterData = false
@@ -480,7 +482,7 @@ function checkReturnTimeout()
     returnTimer = returnTimer - update_time_step
 end
 
-function updateReceiverMode()
+function updateReceiverMode() -- function to turn FM homing on or off
     if rcvMode == 0 then
         paramHomingEnabled:set(1)
     else
@@ -488,17 +490,17 @@ function updateReceiverMode()
     end
 end
 
-function calcBaseFreq(inputFreq)
+function calcBaseFreq(inputFreq) -- calculates the base frequency of a preset, essentially reverses any applied offset
     local baseFreq = 25 * (math.floor((inputFreq / 25) + 0.5))
     return baseFreq
 end
     
-function calcCurrentOffset(inputFreq)
+function calcCurrentOffset(inputFreq) -- given any preset frequency, calculates what the offset value is
     local currentOffset = 0
     local remainder = inputFreq % 25 -- why the hell does this return incorrect values?
     remainder = math.floor(remainder + 0.1) -- Using floor to make whole numbers
-    print_message_to_user(remainder)
-    print_message_to_user(formatPrecedingZeros(tostring((remainder - 25) * -1), 2))
+    --print_message_to_user(remainder)
+    --print_message_to_user(formatPrecedingZeros(tostring((remainder - 25) * -1), 2))
 
     if remainder <= 10 then
         currentOffset = formatPrecedingZeros(tostring(remainder), 2)
@@ -508,7 +510,7 @@ function calcCurrentOffset(inputFreq)
     return currentOffset
 end
 
-function blink(numSeconds)
+function blink(numSeconds) -- switches the display off for numSeconds
     blinkTimer = blinkTimer - update_time_step
     if numSeconds ~= nil then
         paramMode:set(0)
@@ -530,15 +532,15 @@ function update()
         funcSelfTest()
     end
     
-    if checkBlink then
+    if checkBlink then -- if blink is occuring, check it
         blink()
     end
     
-    if displayTimeoutEnable then
+    if displayTimeoutEnable then -- if display timeout is enabled, run the check function
         checkDisplayTimeout()
     end
     
-    if returnTimeoutEnable then
+    if returnTimeoutEnable then -- if return timeout is enabled, run the check function
         checkReturnTimeout()
     end
 
