@@ -47,6 +47,7 @@ function post_initialize()
         dev:performClickableAction(device_commands.fm1FunctionSelector, .02, false)
         paramDisplayFreq:set(formatTrailingUnderscores(displayString, 5).."@") -- needed to prevent NULL shown on radio with hot start
     elseif birth=="GROUND_COLD" then
+        paramDisplayFreq:set("".."@")
     end
 end
 
@@ -95,6 +96,7 @@ function SetCommand(command,value)
         pwrMode = round(value * 100)
         if pwrMode == 0 or pwrMode == 7 or pwrMode == 8 then -- Function selector = off or zeroize or stow
             canEnterData = false
+            paramDisplayFreq:set("".."@")
             paramMode:set(0) -- turns off display
             radioDevice:set_frequency(0)
         else
