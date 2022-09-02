@@ -45,6 +45,7 @@ function post_initialize()
         dev:performClickableAction(device_commands.fm2FunctionSelector, .02, false)
         paramDisplayFreq:set(formatTrailingUnderscores(displayString, 5).."@")
     elseif birth=="GROUND_COLD" then
+        paramDisplayFreq:set("".."@")
     end
 end
 
@@ -92,6 +93,7 @@ function SetCommand(command,value)
         pwrMode = round(value * 100)
         if pwrMode == 0 or pwrMode == 7 or pwrMode == 8 then
             canEnterData = false
+            paramDisplayFreq:set("".."@")
             paramMode:set(0)
             radioDevice:set_frequency(0)
         else
