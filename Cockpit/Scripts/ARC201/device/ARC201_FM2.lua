@@ -254,7 +254,7 @@ function loadSC(key)
             displayString = tostring(presets[presetMode] * 1e3)
         end
 
-    elseif countdownTimer > 0 and canEnterData then
+    elseif canEnterData then
         if key == "CLR" and (displayString == "00000" or displayString == tostring(presets[presetMode] * 1e3)) then
             --reset timer upon any keypress
             if (pwrMode == 2 or pwrMode == 3) then
