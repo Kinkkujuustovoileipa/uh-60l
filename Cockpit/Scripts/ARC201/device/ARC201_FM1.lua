@@ -242,8 +242,15 @@ end
 
 function loadSC(key) -- load single channel frequencies into a preset
     if key == "FREQ" then
-        countdownTimer = 7
-        displayTimeoutEnable = true
+        if (pwrMode == 2 or pwrMode == 3) then --if in SQ ON of OFF, return to normal display instead of blank display
+            displayTimeoutEnable = false
+            returnTimeoutEnable = true
+            returnTimer = 7
+        else --otherwise blank the display
+            returnTimeoutEnable = false
+            displayTimeoutEnable = true
+            countdownTimer = 7            
+        end
         canEnterData = true
         
         if presets[presetMode] == 0 then -- check if current preset is set to 0MHz
@@ -254,16 +261,31 @@ function loadSC(key) -- load single channel frequencies into a preset
 
     elseif countdownTimer > 0 and canEnterData then
         if key == "CLR" and (displayString == "00000" or displayString == tostring(presets[presetMode] * 1e3)) then
-            countdownTimer = 7 -- reset countdown upon any keypress
+            --reset timer upon any keypress
+            if (pwrMode == 2 or pwrMode == 3) then
+                returnTimer = 7
+            else
+                countdownTimer = 7
+            end
             displayString = "" -- clear the entire display
             --print_message_to_user("all clr")
         elseif key == "CLR" and displayString ~= "00000" then
-            countdownTimer = 7 -- reset countdown upon any keypress
+            --reset timer upon any keypress
+            if (pwrMode == 2 or pwrMode == 3) then
+                returnTimer = 7
+            else
+                countdownTimer = 7
+            end
             displayString = displayString:sub(1, #displayString-1) -- backspace one digit
         elseif key ~= "CLR" and canEnterData and string.len(displayString) == 0 then
             --print_message_to_user("len 0")
             --print_message_to_user(key)
-            countdownTimer = 7 -- reset countdown upon any keypress
+            --reset timer upon any keypress
+            if (pwrMode == 2 or pwrMode == 3) then
+                returnTimer = 7
+            else
+                countdownTimer = 7
+            end
             if tonumber(key) >= 3 and tonumber(key) <= 8 then -- first digit must be between 3 and 8
                 displayString = key
                 --print_message_to_user("first digit")
@@ -271,7 +293,12 @@ function loadSC(key) -- load single channel frequencies into a preset
                 displayString = "00000"
             end
         elseif canEnterData and string.len(displayString) == 1 then
-            countdownTimer = 7 -- reset countdown upon any keypress
+            --reset timer upon any keypress
+            if (pwrMode == 2 or pwrMode == 3) then
+                returnTimer = 7
+            else
+                countdownTimer = 7
+            end
             if tonumber(displayString) == 8 then -- if first digit is 8 then second digit must be <= 7
                 if tonumber(key) <= 7 then
                     displayString = displayString..key
@@ -280,15 +307,30 @@ function loadSC(key) -- load single channel frequencies into a preset
                 displayString = displayString..key
             end
         elseif canEnterData and string.len(displayString) == 2 then
-            countdownTimer = 7 -- reset countdown upon any keypress
+            --reset timer upon any keypress
+            if (pwrMode == 2 or pwrMode == 3) then
+                returnTimer = 7
+            else
+                countdownTimer = 7
+            end
             displayString = displayString..key
         elseif canEnterData and string.len(displayString) == 3 then
-            countdownTimer = 7 -- reset countdown upon any keypress
+            --reset timer upon any keypress
+            if (pwrMode == 2 or pwrMode == 3) then
+                returnTimer = 7
+            else
+                countdownTimer = 7
+            end
             if tonumber(key) == 0 or tonumber(key) == 2 or tonumber(key) == 5 or tonumber(key) == 7 then
                 displayString = displayString..key -- only 0, 2, 5, and 7 are allowed in this position
             end
         elseif canEnterData and string.len(displayString) == 4 then -- logic to only allow last digit of 00, 25, 50, or 75
-            countdownTimer = 7 -- reset countdown upon any keypress
+            --reset timer upon any keypress
+            if (pwrMode == 2 or pwrMode == 3) then
+                returnTimer = 7
+            else
+                countdownTimer = 7
+            end
             if tonumber(displayString:sub(4)) == 0 or tonumber(displayString:sub(4)) == 5 then
                 if tonumber(key) == 0 then
                     displayString = displayString..key
@@ -299,7 +341,12 @@ function loadSC(key) -- load single channel frequencies into a preset
                 end
             end
         elseif canEnterData and string.len(displayString) == 5 and key == "ENT" then
-            countdownTimer = 7 -- reset countdown upon any keypress
+            --reset timer upon any keypress
+            if (pwrMode == 2 or pwrMode == 3) then
+                returnTimer = 7
+            else
+                countdownTimer = 7
+            end
             canEnterData = false -- data is entered, so prevent typing anything more
             presets[presetMode] = tonumber(displayString * 1e-3) -- set preset to what's on the display
             updatePresetMode() -- update the frequency tuned by the radio
