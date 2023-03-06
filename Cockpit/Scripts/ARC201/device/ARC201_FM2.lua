@@ -237,8 +237,15 @@ end
 
 function loadSC(key)
     if key == "FREQ" then
-        countdownTimer = 7
-        displayTimeoutEnable = true
+        if (pwrMode == 2 or pwrMode == 3) then --if in SQ ON of OFF, return to normal display instead of blank display
+            displayTimeoutEnable = false
+            returnTimeoutEnable = true
+            returnTimer = 7
+        else --otherwise blank the display
+            returnTimeoutEnable = false
+            displayTimeoutEnable = true
+            countdownTimer = 7            
+        end
         canEnterData = true
         
         if presets[presetMode] == 0 then
@@ -249,16 +256,31 @@ function loadSC(key)
 
     elseif countdownTimer > 0 and canEnterData then
         if key == "CLR" and (displayString == "00000" or displayString == tostring(presets[presetMode] * 1e3)) then
-            countdownTimer = 7
+            --reset timer upon any keypress
+            if (pwrMode == 2 or pwrMode == 3) then
+                returnTimer = 7
+            else
+                countdownTimer = 7
+            end
             displayString = ""
             --print_message_to_user("all clr")
         elseif key == "CLR" and displayString ~= "00000" then
-            countdownTimer = 7
+            --reset timer upon any keypress
+            if (pwrMode == 2 or pwrMode == 3) then
+                returnTimer = 7
+            else
+                countdownTimer = 7
+            end
             displayString = displayString:sub(1, #displayString-1)
         elseif key ~= "CLR" and canEnterData and string.len(displayString) == 0 then
             --print_message_to_user("len 0")
             --print_message_to_user(key)
-            countdownTimer = 7            
+            --reset timer upon any keypress
+            if (pwrMode == 2 or pwrMode == 3) then
+                returnTimer = 7
+            else
+                countdownTimer = 7
+            end           
             if tonumber(key) >= 3 and tonumber(key) <= 8 then
                 displayString = key
                 --print_message_to_user("first digit")
@@ -266,7 +288,12 @@ function loadSC(key)
                 displayString = "00000"
             end
         elseif canEnterData and string.len(displayString) == 1 then
-            countdownTimer = 7
+            --reset timer upon any keypress
+            if (pwrMode == 2 or pwrMode == 3) then
+                returnTimer = 7
+            else
+                countdownTimer = 7
+            end
             if tonumber(displayString) == 8 then
                 if tonumber(key) <= 7 then
                     displayString = displayString..key
@@ -275,15 +302,30 @@ function loadSC(key)
                 displayString = displayString..key
             end
         elseif canEnterData and string.len(displayString) == 2 then
-            countdownTimer = 7
+            --reset timer upon any keypress
+            if (pwrMode == 2 or pwrMode == 3) then
+                returnTimer = 7
+            else
+                countdownTimer = 7
+            end
             displayString = displayString..key
         elseif canEnterData and string.len(displayString) == 3 then
-            countdownTimer = 7
+            --reset timer upon any keypress
+            if (pwrMode == 2 or pwrMode == 3) then
+                returnTimer = 7
+            else
+                countdownTimer = 7
+            end
             if tonumber(key) == 0 or tonumber(key) == 2 or tonumber(key) == 5 or tonumber(key) == 7 then
                 displayString = displayString..key
             end
         elseif canEnterData and string.len(displayString) == 4 then
-            countdownTimer = 7
+            --reset timer upon any keypress
+            if (pwrMode == 2 or pwrMode == 3) then
+                returnTimer = 7
+            else
+                countdownTimer = 7
+            end
             if tonumber(displayString:sub(4)) == 0 or tonumber(displayString:sub(4)) == 5 then
                 if tonumber(key) == 0 then
                     displayString = displayString..key
@@ -294,7 +336,12 @@ function loadSC(key)
                 end
             end
         elseif canEnterData and string.len(displayString) == 5 and key == "ENT" then
-            countdownTimer = 7
+            --reset timer upon any keypress
+            if (pwrMode == 2 or pwrMode == 3) then
+                returnTimer = 7
+            else
+                countdownTimer = 7
+            end
             canEnterData = false
             presets[presetMode] = tonumber(displayString * 1e-3)
             updatePresetMode()
