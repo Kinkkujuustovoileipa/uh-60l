@@ -12,6 +12,7 @@ After reading this readme, [click here to download the latest version from the r
 - In the mission editor, make sure the Historical Filter is disabled
 ## Changelog
 ### 1.3.2 - Hotfix
+#### Bugs/Corrections
 - Radios now works again with SRS
 ### 1.3
 #### Feature Changes
