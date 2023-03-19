@@ -63,6 +63,8 @@ dev:listen_command(Keys.arc186FreqSelectorDec)
 dev:listen_command(Keys.arc186PresetSelectorDec)
 dev:listen_command(Keys.arc186ModeSelectorDec)
 
+local ARC186paramFreq = get_param_handle("ARC186param")
+
 function SetCommand(command,value)
     if command == device_commands.arc186Volume then
         volume = value
@@ -214,6 +216,7 @@ function update()
     
     if frequency ~= oldFreq then
         radioDevice:set_frequency(frequency)
+	ARC186paramFreq:set(frequency)
         --print_message_to_user(frequency)
         oldFreq = frequency
     end
