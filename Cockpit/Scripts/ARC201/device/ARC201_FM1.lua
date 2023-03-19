@@ -65,6 +65,8 @@ dev:listen_command(Keys.fm1PresetSelectorInc)
 dev:listen_command(Keys.fm1PresetSelectorDec)
 dev:listen_command(Keys.fm1PresetSelectorCycle)
 
+local FM1paramFreq = get_param_handle("ARC201FM1param")
+
 --[[
 dev:listen_command(Keys.fm1PwrSelectorInc)
 dev:listen_command(Keys.fm1PwrSelectorDec)
@@ -184,6 +186,7 @@ function enterNewFreq()
     if newFreq >= 30e6 and newFreq <= 87.975e6 then
         manualFreq = newFreq
         radioDevice:set_frequency(manualFreq)
+	FM1paramFreq:set(manualFreq)
         canEnterData = false
     end
 end
@@ -205,6 +208,7 @@ function updatePresetMode()
         displayString = tostring(presets[presetMode] * 1e3)
         --printsec(presets[presetMode] * 1e6)
         radioDevice:set_frequency(presets[presetMode] * 1e6)
+	FM1paramFreq:set(presets[presetMode] * 1e6)
     elseif presetMode == 7 then
         paramMode:set(0)
     else
@@ -213,6 +217,7 @@ function updatePresetMode()
         end
         displayString = tostring(manualFreq / 1e3)
         radioDevice:set_frequency(manualFreq)
+	FM1paramFreq:set(manualFreq)
         --printsec(manualFreq)
     end
 end
