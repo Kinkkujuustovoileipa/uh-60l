@@ -89,6 +89,7 @@ dev:listen_command(Keys.fm1fm2ModeSelectorDec)
 dev:listen_command(Keys.fm1fm2ModeSelectorCycle)
 ]]
 
+local FM1paramFreq = get_param_handle("ARC201FM1param")
 
 function SetCommand(command,value)
 
@@ -473,6 +474,7 @@ function updatePresetMode() -- tune the radio based on the preset selected, and 
     end
     --printsec(presets[presetMode] * 1e6)
     radioDevice:set_frequency(presets[presetMode] * 1e6)
+    FM1paramFreq:set(presets[presetMode] * 1e6)
     --paramFreq:set(presets[presetMode] * 1e6)
     --print_message_to_user(presets[presetMode] * 1e6)
     --print_message_to_user(radioDevice:get_frequency())
