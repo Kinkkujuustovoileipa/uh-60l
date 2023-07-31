@@ -96,13 +96,13 @@ function post_initialize()
         paramVSIPitch:set(sensor_data:getPitch() + paramAHRUPitchError:get())
         paramVSIRoll:set(sensor_data:getRoll() + paramAHRURollError:get())
         paramVSISlip:set(sensor_data:getAngleOfSlide() * radian_to_degree)
-        local aircraftHeading = 360 - (sensor_data:getHeading() * radian_to_degree)
+        local aircraftHeading = 360 - (sensor_data:getMagneticHeading() * radian_to_degree)
         paramHSICompass:set(formatCompassDir(aircraftHeading + paramAHRUHeadingError:get()))
     elseif birth == "GROUND_COLD" then
         paramVSIPitch:set(sensor_data:getPitch() + paramAHRUPitchError:get())
         paramVSIRoll:set(sensor_data:getRoll() + paramAHRURollError:get())
         paramVSISlip:set(sensor_data:getAngleOfSlide() * radian_to_degree)
-        local aircraftHeading = 360 - (sensor_data:getHeading() * radian_to_degree)
+        local aircraftHeading = 360 - (sensor_data:getMagneticHeading() * radian_to_degree)
         paramHSICompass:set(formatCompassDir(aircraftHeading + paramAHRUHeadingError:get()))
     end
 end
