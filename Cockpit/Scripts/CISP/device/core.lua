@@ -612,7 +612,7 @@ end
 function updateCore()
     -- HSI Compass Dir
     if ahruPower then
-        aircraftHeading = (sensor_data:getMagneticHeading() * radian_to_degree)
+        aircraftHeading = (sensor_data:getMagneticHeading() * radian_to_degree % 360)
         --moveCompass(paramHSICompass, formatCompassDir(aircraftHeading + paramAHRUHeadingError:get()), 30, update_time_step)
         paramHSICompass:set(aircraftHeading + paramAHRUHeadingError:get())
     end
