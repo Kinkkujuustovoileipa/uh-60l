@@ -22,6 +22,11 @@ local hundreds = 0
 local tens = 0
 local ones = 0
 local tenths = 0
+local toneTest = 0
+local powerInt = 0
+
+local lastFrequency = -1
+local radioDevice
 
 dev:listen_command(device_commands.arn149Preset)
 dev:listen_command(device_commands.arn149ToneTest)
@@ -33,9 +38,19 @@ dev:listen_command(device_commands.arn149tens)
 dev:listen_command(device_commands.arn149ones)
 dev:listen_command(device_commands.arn149tenths)
 
+dev:listen_command(Keys.arn149PresetCycle)
+--dev:listen_command(Keys.arn149ToneTestCycle)
+dev:listen_command(Keys.arn149PowerCycle)
+dev:listen_command(Keys.arn149thousandsCycle)
+dev:listen_command(Keys.arn149hundredsCycle)
+dev:listen_command(Keys.arn149tensCycle)
+dev:listen_command(Keys.arn149onesCycle)
+dev:listen_command(Keys.arn149tenthsCycle)
+
+
 function post_initialize()
-    local cispDevice = GetDevice(devices.CISP)
     local birth = LockOn_Options.init_conditions.birth_place
+    radioDevice = GetDevice(devices.ADF_RADIO)
 
     if birth=="GROUND_HOT" or birth=="AIR_HOT" then
         dev:performClickableAction(device_commands.arn149Power, 1, false)
@@ -50,9 +65,12 @@ function SetCommand(command,value)
     if command == device_commands.arn149Preset then
         presetMode = round(value * 2)
     elseif command == device_commands.arn149ToneTest then
+        toneTest = value
     elseif command == device_commands.arn149Volume then
         volume = value
     elseif command == device_commands.arn149Power then
+        --print_message_to_user(value)
+        powerInt = value
         if round(value * 2) > 0 then
             power = true
         else
@@ -74,6 +92,124 @@ function SetCommand(command,value)
         ones = round(value * 10)
     elseif command == device_commands.arn149tenths then
         tenths = round(value * 10)
+    elseif command == Keys.arn149PresetCycle then
+        if value > 0 then -- increase
+            local tempNumber = clamp(presetMode - 1, 0, 2)
+            tempNumber = tempNumber / 2
+            dev:performClickableAction(device_commands.arn149Preset, tempNumber, false)
+        elseif value < 0 then -- decrease
+            local tempNumber = clamp(presetMode + 1, 0, 2)
+            tempNumber = tempNumber / 2
+            dev:performClickableAction(device_commands.arn149Preset, tempNumber, false)
+        else -- value is 0, then cycle
+            local tempNumber = presetMode - 1
+            if tempNumber < 0 then tempNumber = 2 end
+            tempNumber = tempNumber / 2
+            dev:performClickableAction(device_commands.arn149Preset, tempNumber, false)
+        end
+        --[[
+    elseif command == Keys.arn149ToneTestCycle then
+        --print_message_to_user("arn149ToneTestCycle")
+        if value > 0 then -- increase
+            local tempNumber = clamp(toneTest + 1, -1, 1)
+            dev:performClickableAction(device_commands.arn149ToneTest, tempNumber, false)
+        elseif value < 0 then -- decrease
+            local tempNumber = clamp(toneTest - 1, -1, 1)
+            dev:performClickableAction(device_commands.arn149ToneTest, tempNumber, false)
+        else -- value is 0, then cycle
+            local tempNumber = toneTest + 1
+            if tempNumber > 1 then tempNumber = -1 end
+            dev:performClickableAction(device_commands.arn149ToneTest, tempNumber, false)
+        end
+        ]]
+    elseif command == Keys.arn149PowerCycle then
+        --print_message_to_user("arn149PowerCycle")
+        if value > 0 then -- increase
+            local tempNumber = clamp(powerInt + 0.5, 0, 1)
+            dev:performClickableAction(device_commands.arn149Power, tempNumber, false)
+        elseif value < 0 then -- decrease
+            local tempNumber = clamp(powerInt - 0.5, 0, 1)
+            dev:performClickableAction(device_commands.arn149Power, tempNumber, false)
+        else -- value is 0, then cycle
+            local tempNumber = powerInt + 0.5
+            if tempNumber > 1 then tempNumber = 0 end
+            dev:performClickableAction(device_commands.arn149Power, tempNumber, false)
+        end
+    elseif command == Keys.arn149thousandsCycle then
+        if value > 0 then -- increase
+            local tempNumber = clamp(thousands + 1, 0, 2)
+            tempNumber = tempNumber / 2
+            dev:performClickableAction(device_commands.arn149thousands, tempNumber, false)
+        elseif value < 0 then -- decrease
+            local tempNumber = clamp(thousands - 1, 0, 2)
+            tempNumber = tempNumber / 2
+            dev:performClickableAction(device_commands.arn149thousands, tempNumber, false)
+        else -- value is 0, then cycle
+            local tempNumber = thousands + 1
+            if tempNumber > 2 then tempNumber = 0 end
+            tempNumber = tempNumber / 2
+            dev:performClickableAction(device_commands.arn149thousands, tempNumber, false)
+        end
+    elseif command == Keys.arn149hundredsCycle then -- working
+        if value > 0 then -- increase
+            local tempNumber = clamp(hundreds + 1, 0, 9)
+            tempNumber = tempNumber / 10
+            dev:performClickableAction(device_commands.arn149hundreds, tempNumber, false)
+        elseif value < 0 then -- decrease
+            local tempNumber = clamp(hundreds - 1, 0, 9)
+            tempNumber = tempNumber / 10
+            dev:performClickableAction(device_commands.arn149hundreds, tempNumber, false)
+        else -- value is 0, then cycle
+            local tempNumber = hundreds + 1
+            if tempNumber > 9 then tempNumber = 0 end
+            tempNumber = tempNumber / 10
+            dev:performClickableAction(device_commands.arn149hundreds, tempNumber, false)
+        end
+    elseif command == Keys.arn149tensCycle then 
+        if value > 0 then -- increase
+            local tempNumber = clamp(tens + 1, 0, 9)
+            tempNumber = tempNumber / 10
+            dev:performClickableAction(device_commands.arn149tens, tempNumber, false)
+        elseif value < 0 then -- decrease
+            local tempNumber = clamp(tens - 1, 0, 9)
+            tempNumber = tempNumber / 10
+            dev:performClickableAction(device_commands.arn149tens, tempNumber, false)
+        else -- value is 0, then cycle
+            local tempNumber = tens + 1
+            if tempNumber > 9 then tempNumber = 0 end
+            tempNumber = tempNumber / 10
+            dev:performClickableAction(device_commands.arn149tens, tempNumber, false)
+        end
+    elseif command == Keys.arn149onesCycle then
+        if value > 0 then -- increase
+            local tempNumber = clamp(ones + 1, 0, 9)
+            tempNumber = tempNumber / 10
+            dev:performClickableAction(device_commands.arn149ones, tempNumber, false)
+        elseif value < 0 then -- decrease
+            local tempNumber = clamp(ones - 1, 0, 9)
+            tempNumber = tempNumber / 10
+            dev:performClickableAction(device_commands.arn149ones, tempNumber, false)
+        else -- value is 0, then cycle
+            local tempNumber = ones + 1
+            if tempNumber > 9 then tempNumber = 0 end
+            tempNumber = tempNumber / 10
+            dev:performClickableAction(device_commands.arn149ones, tempNumber, false)
+        end
+    elseif command == Keys.arn149tenthsCycle then
+        if value > 0 then -- increase
+            local tempNumber = clamp(tenths + 1, 0, 9)
+            tempNumber = tempNumber / 10
+            dev:performClickableAction(device_commands.arn149tenths, tempNumber, false)
+        elseif value < 0 then -- decrease
+            local tempNumber = clamp(tenths - 1, 0, 9)
+            tempNumber = tempNumber / 10
+            dev:performClickableAction(device_commands.arn149tenths, tempNumber, false)
+        else -- value is 0, then cycle
+            local tempNumber = tenths + 1
+            if tempNumber > 9 then tempNumber = 0 end
+            tempNumber = tempNumber / 10
+            dev:performClickableAction(device_commands.arn149tenths, tempNumber, false)
+        end
     end
 end
 
@@ -93,7 +229,12 @@ function update()
         volume = 0
     end
 
-    paramARN149Freq:set(frequency)
+    if frequency ~= lastFrequency then
+        paramARN149Freq:set(frequency)
+        radioDevice:set_frequency(frequency)
+        lastFrequency = frequency
+        --print_message_to_user(frequency)
+    end
 end
 
 need_to_be_closed = false

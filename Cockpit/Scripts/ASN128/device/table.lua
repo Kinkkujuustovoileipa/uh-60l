@@ -143,8 +143,9 @@ data =
                     end
                 else
                     local lat,long = unFormatLatString(wpPos1,wpPos2)
+                    print_message_to_user("lat: "..lat.." long: "..long)
                     local posX, posY = Terrain.convertLatLonToMeters(lat,long)
-                    --print_message_to_user("Validate LL input: "..posX.." "..posY)
+                    print_message_to_user("Validate LL input: "..posX.." "..posY)
                     if posX ~= 0 and posZ ~= 0 then
                         result =  true
                     end

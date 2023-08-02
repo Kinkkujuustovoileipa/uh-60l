@@ -35,11 +35,11 @@ main_damper_coeff 							= 100.0
 main_wheel_moment_of_inertia 				= 2.65
 
 wheel_static_friction_factor_COMMON 		= 0.75
-wheel_side_friction_factor_COMMON 			= 1--0.6
-wheel_roll_friction_factor_COMMON 			= 0.04
-wheel_glide_friction_factor_COMMON 			= 0.15 --this needs to be low to go from standstill to moving smoothly
+wheel_side_friction_factor_COMMON 			= 0.6--0.6
+wheel_roll_friction_factor_COMMON 			= 0.1--0.04
+wheel_glide_friction_factor_COMMON 			= 0.5--0.15 --this needs to be low to go from standstill to moving smoothly
 
-brake_moment_main 							= 5e12--1e12 --5500.0
+brake_moment_main 							= 5000--5e12--1e12 --5500.0
 
 wheel_radius_factor 						= 1.0
 
@@ -111,7 +111,7 @@ suspension =
 		--arg_post = 0,
 		arg_amortizer 							= 1,
 		arg_wheel_rotation 						= 101,
-		arg_wheel_yaw 							= 2,
+		arg_wheel_yaw 							= 1000,
 		collision_shell_name					= "WHEEL_F",
     },
 

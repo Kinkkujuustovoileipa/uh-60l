@@ -85,32 +85,43 @@ end
 function multiposition_switch(hint_,device_,command_,arg_,count_,delta_,inversed_,min_,animation_speed_,cycled_)
     local	min_   = min_ or 0
 	local	delta_ = delta_ or 0.5
-
 	local	inversed = 1
+
 	if	inversed_ then
 		inversed = -1
 	end
+
 	local	animation_speed_ = animation_speed_ or anim_speed_default
 	local	cycled = true
+
 	if cycled_ ~= nil then
 	   cycled = cycled_
 	end
-	return  {
-				class 		= {class_type.TUMB,class_type.TUMB},
-				hint  		= hint_,
-				device 		= device_,
-				action 		= {command_,command_},
-				arg 	  	= {arg_,arg_},
-				arg_value 	= {-delta_ * inversed,delta_ * inversed},
-				arg_lim   	= {{min_, min_ + delta_ * (count_ -1)},
-							   {min_, min_ + delta_ * (count_ -1)}},
-				updatable 	= true,
-				use_OBB 	= true,
-				cycle       = cycled,
-				animated		= {true,true},
-			    animation_speed	= {animation_speed_,animation_speed_},
-				sound			= {{SOUND_SW2}}
-			}
+
+	return 
+	{
+		class 		= {class_type.TUMB,class_type.TUMB},
+		hint  		= hint_,
+		device 		= device_,
+		action 		= {command_,command_},
+		arg 	  	= {arg_,arg_},
+		arg_value 	= {-delta_ * inversed,delta_ * inversed},
+		arg_lim   	= {{min_, min_ + delta_ * (count_ -1)},
+						{min_, min_ + delta_ * (count_ -1)}},
+		updatable 	= true,
+		use_OBB 	= true,
+		cycle       = cycled,
+		animated		= {true,true},
+		animation_speed	= {animation_speed_,animation_speed_},
+		sound			= {{SOUND_SW2}}
+	}
+end
+
+function wiper_selector(hint_,device_,command_,arg_,count_,delta_,inversed_,min_,animation_speed_,cycled_)
+	local	element = multiposition_switch(hint_,device_,command_,arg_,count_,delta_,inversed_,min_,animation_speed_,cycled_)
+	element.stop_action = {command_, nil}
+	element.stop_value 	= {0.0, nil}
+	return  element
 end
 
 function multiposition_switch3(hint_,device_,command_,arg_,count_,delta_,inversed_,min_,animation_speed_,cycled_)

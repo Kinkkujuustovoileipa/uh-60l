@@ -16,7 +16,7 @@ local paramArmedLight		= get_param_handle("M130_ARMED_LIGHT")
 
 local hasPower = false
 local chaffDisplayCount = device:get_chaff_count()
-local flareDisplayCount = 0
+local flareDisplayCount = device:get_flare_count()
 local cmArmed = false
 local chaffDispenseMode = 0
 
@@ -26,8 +26,15 @@ device:listen_command(device_commands.cmChaffCounterDial)
 device:listen_command(device_commands.cmArmSwitch)
 device:listen_command(device_commands.cmProgramDial)
 device:listen_command(device_commands.cmChaffDispense)
+device:listen_command(device_commands.cmFlareDispense)
 device:listen_command(Keys.dispenseChaffDown)
 device:listen_command(Keys.dispenseChaffUp)
+device:listen_command(Keys.dispenseFlareDown)
+device:listen_command(Keys.dispenseFlareUp)
+device:listen_command(Keys.cmProgramDial_AXIS)
+device:listen_command(Keys.cmProgramDialInc)
+device:listen_command(Keys.cmProgramDialDec)
+device:listen_command(Keys.cmProgramDialCycle)
 
 function SetCommand(command,value)
     if command == device_commands.cmArmSwitch then
@@ -42,13 +49,39 @@ function SetCommand(command,value)
 		if flareDisplayCount > 99 then flareDisplayCount = 99 end
 	elseif command == device_commands.cmChaffDispense then
 		if hasPower and chaffDisplayCount > 0 and device:get_chaff_count() > 0 and cmArmed and value > 0 then
-			device:drop_chaff()
+			device:drop_chaff(1, 0)
 			chaffDisplayCount = chaffDisplayCount - 1
 		end
 	elseif command == Keys.dispenseChaffDown then
 		device:performClickableAction(device_commands.cmChaffDispense,1,true)
 	elseif command == Keys.dispenseChaffUp then
 		device:performClickableAction(device_commands.cmChaffDispense,0,true)
+	elseif command == device_commands.cmFlareDispense then
+		if hasPower and flareDisplayCount > 1 and device:get_flare_count() > 1 and cmArmed and value > 0 then
+			device:drop_flare(1, 1)
+			device:drop_flare(1, 2)
+			flareDisplayCount = flareDisplayCount - 2
+		end
+	elseif command == Keys.dispenseFlareDown then
+		device:performClickableAction(device_commands.cmFlareDispense,1,true)
+	elseif command == Keys.dispenseFlareUp then
+		device:performClickableAction(device_commands.cmFlareDispense,0,true)
+	elseif command == device_commands.cmProgramDial then
+		chaffDispenseMode = value
+		device:performClickableAction(device_commands.cmFlareDispense,chaffDispenseMode,true)
+	elseif command == Keys.cmProgramDial_AXIS then
+		local normalisedValue = ( ( value + 1 ) / 2 ) * 1.0 -- normalised {-1 to 1} to {0 - 1.0}
+        device:performClickableAction(device_commands.cmProgramDial, normalisedValue, false)
+	elseif command == Keys.cmProgramDialInc and chaffDispenseMode < 1 then --put limiter here
+		chaffDispenseMode = clamp(chaffDispenseMode + 0.5, 0, 1)
+		device:performClickableAction(device_commands.cmProgramDial,chaffDispenseMode,true)
+	elseif command == Keys.cmProgramDialDec and chaffDispenseMode > 0 then
+		chaffDispenseMode = clamp(chaffDispenseMode - 0.5, 0, 1)
+		device:performClickableAction(device_commands.cmProgramDial,chaffDispenseMode,true)
+	elseif command == Keys.cmProgramDialCycle then
+		chaffDispenseMode = chaffDispenseMode + 0.5
+		if chaffDispenseMode > 1 then chaffDispenseMode = 0 end
+		device:performClickableAction(device_commands.cmProgramDial,chaffDispenseMode,true)
 	end
 end
 

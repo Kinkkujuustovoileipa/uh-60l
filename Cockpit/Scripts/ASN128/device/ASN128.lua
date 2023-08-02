@@ -136,6 +136,10 @@ end
 
 dev:listen_command(device_commands.SelectMode)
 dev:listen_command(device_commands.SelectDisplay)
+dev:listen_command(Keys.SelectModeInc)
+dev:listen_command(Keys.SelectModeDec)
+dev:listen_command(Keys.SelectDisplayInc)
+dev:listen_command(Keys.SelectDisplayDec)
 dev:listen_command(device_commands.SelectBtnKybd)
 dev:listen_command(device_commands.SelectBtnLtrLeft)
 dev:listen_command(device_commands.SelectBtnLtrMid) 
@@ -159,11 +163,18 @@ dev:listen_command(device_commands.SelectBtnEnt)
 
 function SetCommand(command,value)
     -- TODO: power requirement
-
     if command == device_commands.SelectMode then
         selectMode(value)
+    elseif command == Keys.SelectModeInc and modeIndex < 5 then
+        dev:performClickableAction(device_commands.SelectMode, modeIndex/100 + 0.01, false)
+    elseif command == Keys.SelectModeDec and modeIndex > 0 then
+        dev:performClickableAction(device_commands.SelectMode, modeIndex/100 - 0.01, false)
     elseif command == device_commands.SelectDisplay then
         selectDisplay(value)
+    elseif command == Keys.SelectDisplayInc and displayIndex < 60 then
+        dev:performClickableAction(device_commands.SelectDisplay, displayIndex/1000 + 0.01, false)
+    elseif command == Keys.SelectDisplayDec and displayIndex > 1 then
+        dev:performClickableAction(device_commands.SelectDisplay, displayIndex/1000 - 0.01, false)
     else
         buttonHandler(command, value)
     end
@@ -677,7 +688,7 @@ function updateWind()
         windSpeedHandle:set("SP: "..formatPrecedingZeros(math.floor(windSpeed * msToKph), 3).."kph")
     end
 
-    windDirHandle:set("DIR: "..formatPrecedingZeros(formatCompassDir(math.floor(windDir)), 3).."°")
+    windDirHandle:set("DIR: "..formatPrecedingZeros(formatCompassDir(math.floor(windDir) - 180), 3).."°")
 end
 
 function updateDateTime()

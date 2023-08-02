@@ -22,6 +22,7 @@ paramVSICollectiveCmdBar = get_param_handle("COPILOT_VSI_COLLECTIVE_CMD_BAR")
 paramVSITurnRateInd = get_param_handle("COPILOT_VSI_TURN_RATE_IND")
 paramVSITrackErrorInd = get_param_handle("COPILOT_VSI_TRACK_ERROR_IND")
 paramVSIGlideSlopeInd = get_param_handle("COPILOT_VSI_GLIDE_SLOPE_IND")
+paramVSISlipIndicator = get_param_handle("COPILOT_VSI_SLIP_IND")
 
 -- VSI FLAGS
 paramVSICMDFlag = get_param_handle("COPILOT_VSI_CMD_FLAG")
@@ -79,6 +80,19 @@ dev:listen_command(device_commands.CopilotCRSHDGToggle)
 dev:listen_command(device_commands.CopilotVERTGYROToggle)
 dev:listen_command(device_commands.CopilotBRG2Toggle)
 
+dev:listen_command(Keys.PilotCISHdgCycle)
+dev:listen_command(Keys.PilotCISNavCycle)
+dev:listen_command(Keys.PilotCISAltCycle)
+
+dev:listen_command(Keys.CopilotNavGPSCycle)
+dev:listen_command(Keys.CopilotNavVORILSCycle)
+dev:listen_command(Keys.CopilotNavBACKCRSCycle)
+dev:listen_command(Keys.CopilotNavFMHOMECycle)
+dev:listen_command(Keys.CopilotTURNRATECycle)
+dev:listen_command(Keys.CopilotCRSHDGCycle)
+dev:listen_command(Keys.CopilotVERTGYROCycle)
+dev:listen_command(Keys.CopilotBRG2Cycle)
+
 -- HSI
 dev:listen_command(device_commands.copilotHSIHdgSet)
 dev:listen_command(device_commands.copilotHSICrsSet)
@@ -86,8 +100,19 @@ dev:listen_command(device_commands.copilotHSICrsSet)
 cpltHeading = 0
 cpltCourse = 0
 
+local CopilotNavGPSTracker	    = 0
+local CopilotNavVORILSTracker	= 0
+local CopilotNavBACKCRSTracker  = 0
+local CopilotNavFMHOMETracker	= 0
+local CopilotTURNRATETracker	= 0
+local CopilotCRSHDGTracker	    = 0
+local CopilotVERTGYROTracker	= 0
+local CopilotBRG2Tracker		= 0
+
 modeSelPower = false
 ahruPower = false
+
+mission = nil
 
 function post_initialize()
     local birth = LockOn_Options.init_conditions.birth_place
@@ -105,6 +130,8 @@ function post_initialize()
         local aircraftHeading = 360 - (sensor_data:getHeading() * radian_to_degree)
         paramHSICompass:set(formatCompassDir(aircraftHeading + paramAHRUHeadingError:get()))
     end
+
+    load_tempmission_file()
 end
 
 function SetCommand(command,value)
@@ -147,6 +174,12 @@ function SetCommand(command,value)
             else
                 dplrGpsModeOn = false
             end
+            if value ~= CopilotNavGPSTracker then
+                CopilotNavGPSTracker = 1 - CopilotNavGPSTracker
+            end
+        elseif command == Keys.CopilotNavGPSCycle then
+            CopilotNavGPSTracker = 1 - CopilotNavGPSTracker
+            dev:performClickableAction(device_commands.CopilotNavGPSToggle, CopilotNavGPSTracker, true)
         elseif command == device_commands.CopilotNavVORILSToggle then
             if vorModeOn or ilsModeOn then
                 vorModeOn = false
@@ -171,43 +204,84 @@ function SetCommand(command,value)
                     pilotAirspeedHold = sensor_data:getIndicatedAirSpeed()
                 end
             end
+            if value ~= CopilotNavVORILSTracker then
+                CopilotNavVORILSTracker = 1 - CopilotNavVORILSTracker
+            end
+        elseif command == Keys.CopilotNavVORILSCycle then
+            CopilotNavVORILSTracker = 1 - CopilotNavVORILSTracker
+            dev:performClickableAction(device_commands.CopilotNavVORILSToggle, CopilotNavVORILSTracker, true)
         elseif command == device_commands.CopilotNavBACKCRSToggle then
             if value > 0 then
                 backCrsModeOn = true
             else
                 backCrsModeOn = false
             end
+
+            if value ~= CopilotNavBACKCRSTracker then
+                CopilotNavBACKCRSTracker = 1 - CopilotNavBACKCRSTracker
+            end
+        elseif command == Keys.CopilotNavBACKCRSCycle then
+            CopilotNavBACKCRSTracker = 1 - CopilotNavBACKCRSTracker
+            dev:performClickableAction(device_commands.CopilotNavBACKCRSToggle, CopilotNavBACKCRSTracker, true)
         elseif command == device_commands.CopilotNavFMHOMEToggle then
-            if value > 0 then
+            if (not fmHomeModeOn) and validFMSignal then
                 fmHomeModeOn = true
             else
                 fmHomeModeOn = false
             end
+            if value ~= CopilotNavFMHOMETracker then
+                CopilotNavFMHOMETracker = 1 - CopilotNavFMHOMETracker
+            end
+        elseif command == Keys.CopilotNavFMHOMECycle then
+            CopilotNavFMHOMETracker = 1 - CopilotNavFMHOMETracker
+            dev:performClickableAction(device_commands.CopilotNavFMHOMEToggle, CopilotNavFMHOMETracker, true)
         elseif command == device_commands.CopilotTURNRATEToggle then
             if value > 0 then
                 turnRateIsAlt = true
             else
                 turnRateIsAlt = false
             end
-        elseif command == device_commands.CopilotCRSHDGToggle then
-            if value > 0 then
-                crsHdgIsCplt = true
-            else
-                crsHdgIsCplt = false
+            if value ~= CopilotTURNRATETracker then
+                CopilotTURNRATETracker = 1 - CopilotTURNRATETracker
             end
-            dev:performClickableAction(device_commands.PilotCRSHDGToggle,value,true)
+        elseif command == Keys.CopilotTURNRATECycle then
+            CopilotTURNRATETracker = 1 - CopilotTURNRATETracker
+            dev:performClickableAction(device_commands.CopilotTURNRATEToggle, CopilotTURNRATETracker, true)
+        elseif command == device_commands.CopilotCRSHDGToggle then
+            paramCISPSource:set(value)
+
+            if value ~= CopilotCRSHDGTracker then
+                CopilotCRSHDGTracker = 1 - CopilotCRSHDGTracker
+            end
+        elseif command == Keys.CopilotCRSHDGCycle then
+            CopilotCRSHDGTracker = 1 - CopilotCRSHDGTracker
+            dev:performClickableAction(device_commands.CopilotCRSHDGToggle, CopilotCRSHDGTracker, true)
         elseif command == device_commands.CopilotVERTGYROToggle then
             if value > 0 then
                 vertGyroIsAlt = true
             else
                 vertGyroIsAlt = false
             end
+
+            if value ~= CopilotVERTGYROTracker then
+                CopilotVERTGYROTracker = 1 - CopilotVERTGYROTracker
+            end
+        elseif command == Keys.CopilotVERTGYROCycle then
+            CopilotVERTGYROTracker = 1 - CopilotVERTGYROTracker
+            dev:performClickableAction(device_commands.CopilotVERTGYROToggle, CopilotVERTGYROTracker, true)
         elseif command == device_commands.CopilotBRG2Toggle then
             if brg2IsVOR then
                 brg2IsVOR = false
             else
                 brg2IsVOR = true
             end
+
+            if value ~= CopilotBRG2Tracker then
+                CopilotBRG2Tracker = 1 - CopilotBRG2Tracker
+            end
+        elseif command == Keys.CopilotBRG2Cycle then
+            CopilotBRG2Tracker = 1 - CopilotBRG2Tracker
+            dev:performClickableAction(device_commands.CopilotBRG2Toggle, CopilotBRG2Tracker, true)
         end
     end
     if command == device_commands.copilotHSIHdgSet then

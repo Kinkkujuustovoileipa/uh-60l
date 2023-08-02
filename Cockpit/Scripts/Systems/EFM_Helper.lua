@@ -10,7 +10,6 @@ local update_rate = .01
 make_default_activity(update_rate)
 local dev = GetSelf()
 local efm_data_bus = get_efm_data_bus()
-local SHOW_CONTROLS  = get_param_handle("SHOW_CONTROLS")
 --local option_doorsRemove = get_plugin_option_value("UH-60L","doorsRemove","local")
 
 local brakesOn = false
@@ -23,8 +22,16 @@ local paramParkingBrakeAdvisory = get_param_handle("CAP_PARKINGBRAKEON")
 local lastWheelBrakeValue = 0
 local parkingBrakeOnly = false
 
+local optionUnsprungCyclic = get_plugin_option_value("UH-60L", "aimingMarkRemove", "local")
+local paramUnsprungCyclic = get_param_handle("USE_UNSPRUNG_CYCLIC")
+
+local optionPedalTrim = get_plugin_option_value("UH-60L", "pedalTrimOption", "local")
+local paramPedalTrim = get_param_handle("USE_PEDAL_TRIM")
+
+--local optionPedalTrim = get_plugin_option_value("UH-60L", "pedalTrimOption", "local")
+--local paramPedalTrim = get_param_handle("USE_PEDAL_TRIM")
+
 function post_initialize()
-	SHOW_CONTROLS:set(0)
     local birth = LockOn_Options.init_conditions.birth_place
     if birth=="AIR_HOT" or birth=="GROUND_HOT" then
 		dev:performClickableAction(EFM_commands.batterySwitch,1,true)
@@ -54,14 +61,46 @@ function post_initialize()
 	dispatch_action(nil, EFM_commands.setRefuelProbeState, optionFuelProbe)
 	set_aircraft_draw_argument_value(22, optionFuelProbe)
 
-	local optionUnsprungCyclic = get_plugin_option_value("UH-60L", "UNSPRUNG_CYCLIC", "local")
-	dispatch_action(nil, EFM_commands.useUnsprungCyclic, optionUnsprungCyclic)
+	if optionUnsprungCyclic == true then
+		paramUnsprungCyclic:set(1)
+	else
+		paramUnsprungCyclic:set(0)
+	end
+
+	if optionPedalTrim == true then
+		paramPedalTrim:set(1)
+	else
+		paramPedalTrim:set(0)
+	end
+	--paramPedalTrim:set(optionPedalTrim)
 	--print_message_to_user(tostring(optionUnsprungCyclic))
 end
 
+dev:listen_command(Keys.BattSwitchOn)
+dev:listen_command(Keys.BattSwitchOff)
+dev:listen_command(Keys.gen1SwitchOn)
+dev:listen_command(Keys.gen1SwitchOff)
+dev:listen_command(Keys.gen1SwitchTest)
+dev:listen_command(Keys.gen2SwitchOn)
+dev:listen_command(Keys.gen2SwitchOff)
+dev:listen_command(Keys.gen2SwitchTest)
+dev:listen_command(Keys.extPwrSwitchOn)
+dev:listen_command(Keys.extPwrSwitchOff)
+dev:listen_command(Keys.extPwrSwitchReset)
+dev:listen_command(Keys.apuGenSwitchOn)
+dev:listen_command(Keys.apuGenSwitchOff)
+dev:listen_command(Keys.apuGenSwitchTest)
+dev:listen_command(Keys.switchFuelPumpPrime)
+dev:listen_command(Keys.switchFuelPumpOff)
+dev:listen_command(Keys.switchFuelPumpApuBoost)
+dev:listen_command(Keys.switchAirSourceApu)
+dev:listen_command(Keys.switchAirSourceOff)
+dev:listen_command(Keys.switchAirSourceEngine)
+dev:listen_command(Keys.switchAPUOn)
+dev:listen_command(Keys.switchAPUOff)
+
 dev:listen_command(Keys.BattSwitch)
 dev:listen_command(Keys.ExtPwrSwitch)
-dev:listen_command(Keys.showControlInd)
 dev:listen_command(device_commands.parkingBrake)
 dev:listen_command(EFM_commands.wheelbrake)
 
@@ -86,8 +125,6 @@ function SetCommand(command,value)
 			dev:performClickableAction(EFM_commands.batterySwitch,-1,true)
 			dispatch_action(nil,EFM_commands.batterySwitch,-1)
 		end
-	elseif command == Keys.showControlInd then
-		SHOW_CONTROLS:set(1-SHOW_CONTROLS:get())
 	elseif command == device_commands.parkingBrake then
 		if value > 0 then
 			parkingBrakeUp = true
@@ -100,6 +137,79 @@ function SetCommand(command,value)
 		else
 			parkingBrakeSet = false
 		end
+
+	elseif command == Keys.apuGenSwitchOn then
+		dev:performClickableAction(EFM_commands.apuGenSwitch2,1,true)
+		dispatch_action(nil,EFM_commands.apuGenSwitch2,1)
+		--print_message_to_user("apuGenSwitchOn")
+	elseif command == Keys.apuGenSwitchOff then
+		dev:performClickableAction(EFM_commands.apuGenSwitch2,0,true)
+		dispatch_action(nil,EFM_commands.apuGenSwitch2,1)
+		--print_message_to_user("apuGenSwitchOff")
+	elseif command == Keys.gen1SwitchOn then
+		dev:performClickableAction(EFM_commands.gen1Switch2,1,true)
+		dispatch_action(nil,EFM_commands.gen1Switch2,1)
+		--print_message_to_user("gen1SwitchOn")
+	elseif command == Keys.gen1SwitchOff then
+		dev:performClickableAction(EFM_commands.gen1Switch2,0,true)
+		dispatch_action(nil,EFM_commands.gen1Switch2,1)
+		--print_message_to_user("gen1SwitchOff")
+	elseif command == Keys.gen2SwitchOn then
+		dev:performClickableAction(EFM_commands.gen2Switch2,1,true)
+		dispatch_action(nil,EFM_commands.gen2Switch2,1)
+		--print_message_to_user("gen2SwitchOn")
+	elseif command == Keys.gen2SwitchOff then
+		dev:performClickableAction(EFM_commands.gen2Switch2,0,true)
+		dispatch_action(nil,EFM_commands.gen2Switch2,1)
+		--print_message_to_user("gen2SwitchOff")
+	elseif command == Keys.switchAPUOn then
+		dev:performClickableAction(EFM_commands.switchAPU,1,true)
+		dispatch_action(nil,EFM_commands.switchAPU,1)
+		--print_message_to_user("switchAPUOn")
+	elseif command == Keys.switchAPUOff then
+		dev:performClickableAction(EFM_commands.switchAPU,0,true)
+		dispatch_action(nil,EFM_commands.switchAPU,0)
+		--print_message_to_user("switchAPUOff")
+	elseif command == Keys.switchFuelPumpApuBoost then
+		dev:performClickableAction(EFM_commands.switchFuelPump,-1,true)
+		dispatch_action(nil,EFM_commands.switchFuelPump,-1)
+		--print_message_to_user("switchFuelPumpApuBoost")
+	elseif command == Keys.switchFuelPumpOff then
+		dev:performClickableAction(EFM_commands.switchFuelPump,0,true)
+		dispatch_action(nil,EFM_commands.switchFuelPump,0)
+		--print_message_to_user("switchFuelPumpOff")
+	elseif command == Keys.switchFuelPumpPrime then
+		dev:performClickableAction(EFM_commands.switchFuelPump,1,true)
+		dispatch_action(nil,EFM_commands.switchFuelPump,1)
+		--print_message_to_user("switchFuelPumpPrime")
+	elseif command == Keys.switchAirSourceEngine then
+		dev:performClickableAction(EFM_commands.switchAirSource,-1,true)
+		dispatch_action(nil,EFM_commands.switchAirSource,-1)
+		--print_message_to_user("switchAirSourceEngine")
+	elseif command == Keys.switchAirSourceOff then
+		dev:performClickableAction(EFM_commands.switchAirSource,0,true)
+		dispatch_action(nil,EFM_commands.switchAirSource,0)
+		--print_message_to_user("switchAirSourceOff")
+	elseif command == Keys.switchAirSourceApu then
+		dev:performClickableAction(EFM_commands.switchAirSource,1,true)
+		dispatch_action(nil,EFM_commands.switchAirSource,1)
+		--print_message_to_user("switchAirSourceApu")
+	elseif command == Keys.BattSwitchOff then
+		dev:performClickableAction(EFM_commands.batterySwitch,0,true)
+		dispatch_action(nil,EFM_commands.batterySwitch,0)
+		--print_message_to_user("BattSwitchOff")
+	elseif command == Keys.BattSwitchOn then
+		dev:performClickableAction(EFM_commands.batterySwitch,1,true)
+		dispatch_action(nil,EFM_commands.batterySwitch,1)
+		--print_message_to_user("BattSwitchOn")
+	elseif command == Keys.extPwrSwitchOff then -- TODO: there might be some switch logic missing here
+		dev:performClickableAction(EFM_commands.extPwrSwitch2,0,true)
+		dispatch_action(nil,EFM_commands.extPwrSwitch2,0)
+		--print_message_to_user("BattSwitchOff")
+	elseif command == Keys.extPwrSwitchOn then -- TODO: there might be some switch logic missing here
+		dev:performClickableAction(EFM_commands.extPwrSwitch2,1,true)
+		dispatch_action(nil,EFM_commands.extPwrSwitch2,1)
+		--print_message_to_user("BattSwitchOn")
 	end
 end
 

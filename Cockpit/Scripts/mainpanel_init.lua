@@ -3,8 +3,8 @@ draw_pilot					 = true
 
 seat_points = 
 {
-	[1] = {point = {3.0 - 2.971, -0.35 + 0.55,  0.666045},},
-	[2] = {point = {3.0 - 2.971, -0.35 + 0.55,  -0.666045},},
+	[1] = {point = {3.0 - 2.971 + 0.05, -0.35 + 0.55 - 0.05,  0.666045 - 0.05},},
+	[2] = {point = {3.0 - 2.971 + 0.05, -0.35 + 0.55 - 0.05,  -0.666045 + 0.1},},
 	[3] = {point = {1.85, -0.45, -0.626045, absolute_position = true }, vAngle = 0, hAngle = 90,},
 	[4] = {point = {1.85, -0.45, 0.626045, absolute_position = true }, vAngle = 0, hAngle = -90,},
 }
@@ -29,11 +29,12 @@ end
 -- FAT passed directly from FM
 freeAirTemp = addParamController(1, "FAT_GAUGE", {-70,-60,-50,-40,-30,-20,-10,0,10,20,30,40,50}, {-1,-0.85,-0.70,-0.53,-0.37,-0.21,-0.4,0.13,0.29,0.47,0.64,0.81,1})
 
-IASneedle							= CreateGauge()
+IASneedle							= CreateGauge("parameter")
 IASneedle.arg_number				= 100
-IASneedle.input						= {0,10.2889,25.7222,51.4444,64.3055,77.1667,102.889,128.611} -- knots to m/s
+IASneedle.input						= {0,20,50,100,125,150,200,250}--{0,10.2889,25.7222,51.4444,64.3055,77.1667,102.889,128.611} -- knots to m/s
 IASneedle.output					= {0,0.05,0.15,0.4,0.5,0.6,0.8,1}
-IASneedle.controller				= controllers.base_gauge_IndicatedAirSpeed --m/s
+IASneedle.parameter_name			= "IAS"
+--IASneedle.controller				= --controllers.base_gauge_IndicatedAirSpeed --m/s
 
 VVneedle							= CreateGauge()
 VVneedle.arg_number					= 103
@@ -300,7 +301,7 @@ copilotHSIDistFlag.parameter_name	= "COPILOT_HSI_DISTFLAG"
 -- PILOT AN/APN-209 RADAR ALTIMETER
 apn209PilotAltNeedle					= CreateGauge("parameter")
 apn209PilotAltNeedle.arg_number		    = 173
-apn209PilotAltNeedle.input			    = {0, 100, 200, 500, 1000, 1500, 1510}
+apn209PilotAltNeedle.input			    = {0, 100, 200, 500, 1000, 1500, 1550}
 apn209PilotAltNeedle.output			    = {0, 0.25, 0.5, 0.65, 0.8, 0.95, 1}
 apn209PilotAltNeedle.parameter_name	    = "PILOT_APN209_NEEDLE"
 
@@ -361,7 +362,7 @@ apn209PilotFlag.parameter_name	= "PILOT_APN209_FLAG"
 -- COPILOT AN/APN-209 RADAR ALTIMETER
 apn209CopilotAltNeedle					= CreateGauge("parameter")
 apn209CopilotAltNeedle.arg_number		= 186
-apn209CopilotAltNeedle.input			= {0, 100, 200, 500, 1000, 1500, 1510}
+apn209CopilotAltNeedle.input			= {0, 100, 200, 500, 1000, 1500, 1550}
 apn209CopilotAltNeedle.output			= {0, 0.25, 0.5, 0.65, 0.8, 0.95, 1}
 apn209CopilotAltNeedle.parameter_name	= "COPILOT_APN209_NEEDLE"
 
@@ -636,7 +637,7 @@ pltVSISlip								= CreateGauge("parameter")
 pltVSISlip.arg_number					= 422
 pltVSISlip.input						= {-1, 1}
 pltVSISlip.output						= {-1, 1}
-pltVSISlip.parameter_name				= "AVS7_SLIP"
+pltVSISlip.parameter_name				= "PILOT_VSI_SLIP_IND"
 
 pltVSIRollCmdBar					    = CreateGauge("parameter")
 pltVSIRollCmdBar.arg_number		    	= 423
@@ -715,7 +716,7 @@ cpltVSISlip								= CreateGauge("parameter")
 cpltVSISlip.arg_number					= 435
 cpltVSISlip.input						= {-1, 1}
 cpltVSISlip.output						= {-1, 1}
-cpltVSISlip.parameter_name				= "AVS7_SLIP"
+cpltVSISlip.parameter_name				= "COPILOT_VSI_SLIP_IND"
 
 cpltVSIADIRollCmdBar					= CreateGauge("parameter")
 cpltVSIADIRollCmdBar.arg_number		    = 436

@@ -34,7 +34,7 @@ base.element_params  = {"DEBUG_VISIBILITY"}
 base.controllers     = {{"parameter_in_range",0,0.9,1.1}}
 Add(base)
 
-local pitchX = -0.5
+local pitchX = -0.3
 local pitchY = -0.2
 local rollX = pitchX
 local rollY = 0
@@ -116,54 +116,55 @@ addTextBlock({airspeedX, airspeedY - yDiff * 13,  0},  {"Raw Roll Input: %f"},  
 addTextBlock({airspeedX, airspeedY - yDiff * 14,  0},  {"Raw Pedal Input: %f"},      {"paramDebugRawPedal"})
 addTextBlock({airspeedX, airspeedY - yDiff * 15,  0},  {"Pitch Trim: %f"},           {"paramDebugPitchTrim"})
 addTextBlock({airspeedX, airspeedY - yDiff * 16,  0},  {"Roll Trim: %f"},            {"paramDebugRollTrim"})
-addTextBlock({airspeedX, airspeedY - yDiff * 17,  0},  {"FPS Roll State: %f"},       {"paramDebugFPSRollOn"})
-addTextBlock({airspeedX, airspeedY - yDiff * 18,  0},  {"FPS Pitch State: %f"},      {"paramDebugFPSPitchOn"})
+addTextBlock({airspeedX, airspeedY - yDiff * 17,  0},  {"FPS Roll State: %f"},       {"ROLL_AFC"})
+addTextBlock({airspeedX, airspeedY - yDiff * 18,  0},  {"FPS Pitch State: %f"},      {"PITCH_AFC"})
 addTextBlock({airspeedX, airspeedY - yDiff * 19,  0},  {"Refuel Probe State: %f"},   {"paramDebugProbeState"})
 addTextBlock({airspeedX, airspeedY - yDiff * 20,  0},  {"G Force: %f"},              {"paramDebugG"})
 addTextBlock({airspeedX, airspeedY - yDiff * 21,  0},  {"Blade Slap Normal: %f"},              {"paramDebugBladeSlap"})
 addTextBlock({airspeedX, airspeedY - yDiff * 22,  0},  {"Blade Slap G: %f"},              {"paramDebugBladeSlapG"})
 addTextBlock({airspeedX, airspeedY - yDiff * 23,  0},  {"Angle of Slide: %f"},              {"paramDebugSlide"})
 
+addTextBlock({airspeedX, airspeedY - yDiff * 24,  0},  {"E1 Fuel Flow: %f lbs/hr"},  {"E1_FUEL_FLOW"})
+addTextBlock({airspeedX, airspeedY - yDiff * 25,  0},  {"E2 Fuel Flow: %f lbs/hr"},  {"E2_FUEL_FLOW"})
+addTextBlock({airspeedX, airspeedY - yDiff * 26,  0},  {"Cruise Torque Req: %f"},  {"DEBUG_CRUISE_TRQ"})
+
 
 
 
 local airspeedY = 0.2
 
-addTextBlock({airspeedX + 0.5, airspeedY,                 0},  {"Xu: %f"},     {"paramDebugAeroXu"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff,         0},  {"Xu: %f"},     {"paramDebugAeroXu"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 2,     0},  {"Xv: %f"},     {"paramDebugAeroXv"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 3,     0},  {"Xw: %f"},     {"paramDebugAeroXw"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 4,     0},  {"Xp: %f"},     {"paramDebugAeroXp"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 5,     0},  {"Xq: %f"},     {"paramDebugAeroXq"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 6,     0},  {"Xr: %f"},     {"paramDebugAeroXr"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 7,     0},  {"Xda: %f"},     {"paramDebugAeroXda"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 8,     0},  {"Xdb: %f"},     {"paramDebugAeroXdb"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 9,     0},  {"Xdc: %f"},     {"paramDebugAeroXdc"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 10,    0},  {"Xdp: %f"},     {"paramDebugAeroXdp"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff,         0},  {"Xu: %f"},     {"paramDebugAeroXu"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 2,     0},  {"Xv: %f"},     {"paramDebugAeroXv"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 3,     0},  {"Xw: %f"},     {"paramDebugAeroXw"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 4,     0},  {"Xp: %f"},     {"paramDebugAeroXp"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 5,     0},  {"Xq: %f"},     {"paramDebugAeroXq"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 6,     0},  {"Xr: %f"},     {"paramDebugAeroXr"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 7,     0},  {"Xda: %f"},     {"paramDebugAeroXda"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 8,     0},  {"Xdb: %f"},     {"paramDebugAeroXdb"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 9,     0},  {"Xdc: %f"},     {"paramDebugAeroXdc"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 10,    0},  {"Xdp: %f"},     {"paramDebugAeroXdp"})
 
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 12,     0},  {"Yu: %f"},     {"paramDebugAeroYu"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 13,     0},  {"Yu: %f"},     {"paramDebugAeroYu"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 14,     0},  {"Yv: %f"},     {"paramDebugAeroYv"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 15,     0},  {"Yw: %f"},     {"paramDebugAeroYw"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 16,     0},  {"Yp: %f"},     {"paramDebugAeroYp"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 17,     0},  {"Yq: %f"},     {"paramDebugAeroYq"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 18,     0},  {"Yr: %f"},     {"paramDebugAeroYr"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 19,     0},  {"Yda: %f"},     {"paramDebugAeroYda"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 20,     0},  {"Ydb: %f"},     {"paramDebugAeroYdb"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 21,     0},  {"Ydc: %f"},     {"paramDebugAeroYdc"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 22,     0},  {"Ydp: %f"},      {"paramDebugAeroYdp"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 13,     0},  {"Yu: %f"},     {"paramDebugAeroYu"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 14,     0},  {"Yv: %f"},     {"paramDebugAeroYv"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 15,     0},  {"Yw: %f"},     {"paramDebugAeroYw"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 16,     0},  {"Yp: %f"},     {"paramDebugAeroYp"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 17,     0},  {"Yq: %f"},     {"paramDebugAeroYq"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 18,     0},  {"Yr: %f"},     {"paramDebugAeroYr"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 19,     0},  {"Yda: %f"},     {"paramDebugAeroYda"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 20,     0},  {"Ydb: %f"},     {"paramDebugAeroYdb"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 21,     0},  {"Ydc: %f"},     {"paramDebugAeroYdc"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 22,     0},  {"Ydp: %f"},      {"paramDebugAeroYdp"})
 
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 24,     0},  {"Zu: %f"},     {"paramDebugAeroZu"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 25,     0},  {"Zu: %f"},     {"paramDebugAeroZu"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 26,     0},  {"Zv: %f"},     {"paramDebugAeroZv"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 27,     0},  {"Zw: %f"},     {"paramDebugAeroZw"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 28,     0},  {"Zp: %f"},     {"paramDebugAeroZp"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 29,     0},  {"Zq: %f"},     {"paramDebugAeroZq"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 30,     0},  {"Zr: %f"},     {"paramDebugAeroZr"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 31,     0},  {"Zda: %f"},     {"paramDebugAeroZda"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 32,     0},  {"Zdb: %f"},     {"paramDebugAeroZdb"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 33,     0},  {"Zdc: %f"},     {"paramDebugAeroZdc"})
-addTextBlock({airspeedX + 0.5, airspeedY - yDiff * 34,     0},  {"Zdp: %f"},     {"paramDebugAeroZdp"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 25,     0},  {"Zu: %f"},     {"paramDebugAeroZu"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 26,     0},  {"Zv: %f"},     {"paramDebugAeroZv"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 27,     0},  {"Zw: %f"},     {"paramDebugAeroZw"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 28,     0},  {"Zp: %f"},     {"paramDebugAeroZp"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 29,     0},  {"Zq: %f"},     {"paramDebugAeroZq"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 30,     0},  {"Zr: %f"},     {"paramDebugAeroZr"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 31,     0},  {"Zda: %f"},     {"paramDebugAeroZda"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 32,     0},  {"Zdb: %f"},     {"paramDebugAeroZdb"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 33,     0},  {"Zdc: %f"},     {"paramDebugAeroZdc"})
+addTextBlock({airspeedX + 0.3, airspeedY - yDiff * 34,     0},  {"Zdp: %f"},     {"paramDebugAeroZdp"})
 
 
 

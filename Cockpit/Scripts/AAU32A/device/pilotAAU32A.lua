@@ -16,7 +16,15 @@ paramBaroSetxxNx = get_param_handle("PILOT_BAROALT_ADJ_xxNx") -- 3rd digit, 0-10
 paramBaroSetxxxN = get_param_handle("PILOT_BAROALT_ADJ_xxxN") -- 4th digit, 0-10 input
 paramEncoderFlag = get_param_handle("PILOT_BAROALT_ENCODER_FLAG") -- 4th digit, 0-10 input
 
+dev:listen_command(Keys.pilotBarometricScaleSet_AXIS)
+dev:listen_command(Keys.pilotBarometricScaleSetInc)
+dev:listen_command(Keys.pilotBarometricScaleSetDec)
+
 baroScaleSetCmd = device_commands.pilotBarometricScaleSet
+baroScaleSetCmd_Axis = Keys.pilotBarometricScaleSet_AXIS
+baroScaleSetCmdInc = Keys.pilotBarometricScaleSetInc
+baroScaleSetCmdDec = Keys.pilotBarometricScaleSetDec
+
 
 dofile(LockOn_Options.script_path.."AAU32A/device/altimeterCore.lua")
 

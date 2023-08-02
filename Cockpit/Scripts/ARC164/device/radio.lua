@@ -1,6 +1,6 @@
 dofile(LockOn_Options.common_script_path..'Radio.lua')
 dofile(LockOn_Options.common_script_path.."mission_prepare.lua")
-
+dofile(LockOn_Options.script_path.."EFM_Data_Bus.lua")
 dofile(LockOn_Options.script_path.."devices.lua")
 dofile(LockOn_Options.script_path.."command_defs.lua")
 dofile(LockOn_Options.script_path.."utils.lua")
@@ -9,7 +9,7 @@ local dev 	    = GetSelf()
 
 local update_time_step = 1
 device_timer_dt = update_time_step
-
+local efm_data_bus = get_efm_data_bus()
 innerNoise = getInnerNoise(2.5E-6, 10.0)
 frequency_accuracy = 500.0
 band_width = 12E3
@@ -35,6 +35,9 @@ GUI =
 function post_initialize()
   dev:set_frequency(261E6)
   dev:set_modulation(MODULATION_AM)
+
+  str_ptr = string.sub(tostring(dev.link),10)
+  efm_data_bus.fm_setRadioPTR(str_ptr)
 end
 
 need_to_be_closed = false

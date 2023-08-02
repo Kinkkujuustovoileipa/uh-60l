@@ -1,4 +1,5 @@
 -- Utility functions/classes
+dofile(LockOn_Options.common_script_path.."tools.lua")
 sensor_data = get_base_data()
 Terrain = require('terrain')
 weather = require('Weather')
@@ -858,5 +859,124 @@ function printsec(str)
   if get_absolute_model_time() - lastTime > 1 then
     print_message_to_user(str)
     lastTime = get_absolute_model_time()
+  end
+end
+
+-- A4 functions
+local mdir      = lfs.tempdir()
+local cfile     = lfs.writedir()..'Data\\h60TempMission.lua'
+local userPath  = lfs.writedir()..'Data\\'
+
+function scandir(directory)
+	local i, t = 0, {}
+	for file in lfs.dir(directory) do
+		if string.match(file, "~mis") then
+			i = i + 1
+			t[i] = directory .. file
+		end
+	end
+	return t
+end
+
+function findMissionFile(fileList)
+	local correctFile = 0
+	local newest = 0
+	local file_attr
+
+	for fileNumber, filepath in pairs(fileList) do
+	
+    if correctFile == 0 then
+      file = io.open(filepath, "r") 
+    
+      local fLine = file:read()
+      
+      if string.match(fLine, "mission") then
+        file_attr = lfs.attributes(filepath)
+        if file_attr.modification > newest then
+          correctFile = filepath
+          newest = file_attr.modification
+        end
+      end
+      if file then
+      file:close()
+      end
+    end
+	end
+	return correctFile
+end
+
+function copyFile(fpath, cpath)
+	infile = io.open(fpath, "r")
+	instr = infile:read("*a")
+	infile:close()
+
+	outfile = io.open(cpath, "w+")
+	outfile:write(instr)
+	outfile:close()
+end
+
+
+function load_tempmission_file()
+
+	local fList = scandir(mdir)
+	local rf 	= findMissionFile(fList)
+	copyFile(rf, cfile)
+  
+	dofile(userPath..'h60TempMission.lua')
+
+	log.info("Temp mission file loaded")
+end
+-- end of A4 functions
+
+function getMissionBeacons(mission)
+  local beacons = {}
+
+  if mission then
+    local triggers = mission.trigrules
+    for k,v in pairs(triggers) do
+      if v.actions then
+        for i,j in pairs(v.actions) do
+          if j.frequency and j.zone then
+            local freq = j.frequency * 1e6
+            local zoneID = j.zone
+            
+            for a,b in pairs(mission.triggers.zones) do
+              if b.zoneId == zoneID then
+                table.insert(beacons, {frequency = freq, position = {b.x, 0, b.y}})
+              end
+            end
+          end
+        end
+      end
+    end
+  else
+    return {}
+  end
+  return beacons
+end
+
+function drawGrid(x2, y2, z2, columns, rows, parent)
+  for i = 0,columns do
+    local x = x2 + i * 0.002
+    local y = y2
+    local w = columns * 0.002
+    local h = rows * 0.002
+    local lineWidth = 0.0003
+
+    local columnLine 			 = CreateElement "ceMeshPoly"
+    columnLine.name 			 = create_guid_string()
+    columnLine.vertices 		 = {{x, 0}, {x, 0 + h}, {x + lineWidth, y + h}, {x + lineWidth, y}}
+    columnLine.indices 		 = {0,1,2,2,3,0}
+    columnLine.init_pos		 = {0,0,z2}
+    columnLine.init_rot		 = 0
+    if i % 10 == 0 then
+      columnLine.material		 = MakeMaterial(nil,{255,0,0,255})
+    else
+      columnLine.material		 = MakeMaterial(nil,{64,224,208,255})
+    end
+    columnLine.h_clip_relation = h_clip_relations.REWRITE_LEVEL
+    columnLine.level			 = 6
+    columnLine.parent_element  = parent.name
+    Add(columnLine)
   end
 end

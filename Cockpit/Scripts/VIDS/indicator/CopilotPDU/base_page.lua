@@ -5,8 +5,8 @@ SetScale(METERS)
 local greenColor = {0,255,0,220}
 local yellowColor = {255,255,0,220}
 local redColor = {255,0,0,220}
-local font7segment = MakeFont({used_DXUnicodeFontData = "font7segment"}, greenColor)
-local center = calculateIndicatorCenterDash({-0.404,-0.617,2.5425}) -- {L/R,U/D,forward/back}
+local h60_font_7seg = MakeFont({used_DXUnicodeFontData = "h60_font_7seg"}, greenColor)
+local center = calculateIndicatorCenterDash({-0.349,-0.623,2.602}) -- {L/R,U/D,forward/back}
 local rotation = {0, 0, dashRotation} -- main panel rotation roughly 22deg
 
 verts = {}
@@ -36,14 +36,14 @@ Add(base)
 -------------------------------------------------------------------------------------------
 -- ENG1 TRQ TEXT
 -------------------------------------------------------------------------------------------
-local _posY = 0.001
+local _posY = -0.0106
 local _posZ = -0.007
 
 local eng1TrqText           = CreateElement "ceStringPoly"
 eng1TrqText.name            = create_guid_string()
-eng1TrqText.material        = font7segment
+eng1TrqText.material        = h60_font_7seg
 eng1TrqText.alignment       = "CenterCenter"
-eng1TrqText.init_pos		= {0.018, _posY, _posZ} -- L/R, D/U, F/B
+eng1TrqText.init_pos		= {0.015, _posY, _posZ} -- L/R, D/U, F/B
 eng1TrqText.stringdefs      = {0.007,0.77*0.007, 0, 0} -- {size vertical, horizontal, 0, 0}
 eng1TrqText.formats         = {"%3.0f"}
 eng1TrqText.element_params  = {"PDU_CPLT_E1_TRQ"}
@@ -58,9 +58,9 @@ Add(eng1TrqText)
 -------------------------------------------------------------------------------------------
 local eng2TrqText           = CreateElement "ceStringPoly"
 eng2TrqText.name            = create_guid_string()
-eng2TrqText.material        = font7segment
+eng2TrqText.material        = h60_font_7seg
 eng2TrqText.alignment       = "CenterCenter"
-eng2TrqText.init_pos		= {0.036, _posY, _posZ}
+eng2TrqText.init_pos		= {0.033, _posY, _posZ}
 eng2TrqText.stringdefs      = {0.007,0.77*0.007, 0, 0} -- {size vertical, horizontal, 0, 0}
 eng2TrqText.formats         = {"%3.0f"}
 eng2TrqText.element_params  = {"PDU_CPLT_E2_TRQ"}
@@ -72,7 +72,7 @@ Add(eng2TrqText)
 
 
 local Xsize = 0.002
-local Ysize = Xsize*0.595
+local Ysize = Xsize*0.59
 local numSegments = 40
 function addSegment(element, color)
 	element.vertices	   	= {{-Xsize , Ysize},
@@ -87,33 +87,13 @@ function addSegment(element, color)
 	Add(element)
 end
 
-local testXsize = 0.01
-local testYsize = testXsize
-local test		       = CreateElement "ceMeshPoly"
-local color	            = redColor
-test.name		 	   = "test"
-test.init_pos	 	   = { 0, 0, 0}
-test.vertices	   	= {{-testXsize , testYsize},
-							   { testXsize , testYsize},
-							   { testXsize ,-testYsize},
-							   {-testXsize ,-testYsize}}
-							   test.indices	   		= {0,1,2,2,3,0}
-test.material    	= MakeMaterial(nil,color)
-test.h_clip_relation = h_clip_relations.REWRITE_LEVEL
-test.level 			= 6
-test.parent_element 	= base.name
-Add(test)
-
-
-
-
 -------------------------------------------------------------------------------------------
 -- ENG1 RPM
 -------------------------------------------------------------------------------------------
-local _posX = -0.03
-local _posY = -0.137
-local _posZ = -0.0045---0.00399
-local _ySpacing = 0.0018
+local _posX = -0.025
+local _posY = -0.134
+local _posZ = -0.0055
+local _ySpacing = 0.0015
 
 local _i = 0
 -- E1RPM 0 to 70
@@ -207,7 +187,7 @@ end
 -------------------------------------------------------------------------------------------
 -- ROTOR RPM
 -------------------------------------------------------------------------------------------
-local _posX = -0.0219
+local _posX = -0.018
 
 local _i = 0
 -- RRPM 0 to 70
@@ -301,7 +281,7 @@ end
 -------------------------------------------------------------------------------------------
 -- ENG2 RPM
 -------------------------------------------------------------------------------------------
-local _posX = -0.014
+local _posX = -0.011
 
 local _i = 0
 -- E2RPM 0 to 70
@@ -397,8 +377,8 @@ end
 -------------------------------------------------------------------------------------------
 
 local Xsize = 0.002
-local Ysize = Xsize*0.63
-local _ySpacing = 0.0017
+local Ysize = Xsize*0.563
+local _ySpacing = 0.0015
 local numSegments = 40
 function addSegment(element, color)
 	element.vertices	   	= {{-Xsize , Ysize},
@@ -415,7 +395,7 @@ end
 
 
 local _posX = 0.0255
-local _posY = -0.104
+local _posY = -0.1045
 local _i = 0
 
 for x = 0, 145, 5 do

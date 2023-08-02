@@ -19,15 +19,18 @@ local hasPower = false
 local acknowledgedFaults = {}
 local currentFaults = {}
 
+local paramDimmerEnabled = get_param_handle("LIGHTED_SWITCHES_DIMMER_ENABLED")
+
 function post_initialize()
+    paramDimmerEnabled:set(0)
 	local dev = GetSelf()
     local birth = LockOn_Options.init_conditions.birth_place	
     if birth=="GROUND_HOT" or birth=="AIR_HOT" then 			  
     elseif birth=="GROUND_COLD" then
     end
     
-    dev:performClickableAction(device_commands.CAPLampBrightness,1,true)
-    dispatch_action(nil,device_commands.CAPLampBrightness,1)
+    --dev:performClickableAction(device_commands.CAPLampBrightness,1,true)
+    --dispatch_action(nil,device_commands.CAPLampBrightness,1)
 end
 
 dev:listen_command(device_commands.CAPLampTest)
@@ -42,14 +45,16 @@ function SetCommand(command,value)
             override = false
             brightness = 0.5
         end
-        --print_message_to_user(value)
     elseif command == device_commands.CAPLampBrightness then
-        --print_message_to_user(value)
         if value > 0 then
-            brightness = 0.75
+            paramDimmerEnabled:set(1 - paramDimmerEnabled:get())
         end
     elseif command == device_commands.CAPMasterCautionReset then
-        acknowledgedFaults = currentFaults
+        --print_message_to_user("acknowledge")
+        acknowledgedFaults = {}
+        for k,v in pairs(currentFaults) do
+            table.insert(acknowledgedFaults, v)
+        end
         mcHandle:set(0)
     end
 end
@@ -82,7 +87,7 @@ function update()
                     end
 
                     --handle master caution light
-                    if (param:get() == 1) then
+                    if (param:get() > 0) then
                         local fault = v.param
                         local faultAcknowledged = false
                         for k,v in pairs(acknowledgedFaults) do
@@ -95,7 +100,30 @@ function update()
                             mcHandle:set(1)
                         end
 
-                        table.insert(currentFaults, fault)
+                        local faultPresent = false
+                        for i,j in pairs(currentFaults) do
+                            if j == v.param then
+                                faultPresent = true
+                            end
+                        end
+                        if faultPresent == false then
+                            table.insert(currentFaults, fault)
+                        end
+                    else
+                        -- if the error is no longer present, it should be removed from the acknowledged faults table
+                        -- current faults should be a small table so this shouldn't affect performance
+                        for i,j in pairs(currentFaults) do
+                            if j == v.param then
+                                table.remove(currentFaults, i)
+                            end
+                        end
+
+                        for i,j in pairs(acknowledgedFaults) do
+                            if j == v.param then
+                                table.remove(acknowledgedFaults, i)
+                            end
+                        end
+                        --printsec(Dump(acknowledgedFaults))
                     end
                 end
             end

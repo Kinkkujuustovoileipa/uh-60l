@@ -25,6 +25,12 @@ dev:listen_command(Keys.e1PCL)
 dev:listen_command(Keys.e2PCL)
 dev:listen_command(Keys.bothPCLs)
 
+dev:listen_command(Keys.engFSSBoth)
+dev:listen_command(Keys.setEngControlBoth)
+dev:listen_command(Keys.eng1FSS_AXIS)
+dev:listen_command(Keys.eng2FSS_AXIS)
+dev:listen_command(Keys.engFSSBoth_AXIS)
+
 function post_initialize()
     e1clickableDetent = get_clickable_element_reference("PNT-042")
     e2clickableDetent = get_clickable_element_reference("PNT-043")
@@ -99,20 +105,37 @@ function SetCommand(command,value)
         dispatch_action(nil,EFM_commands.eng2Starter,value)
     elseif command == Keys.e1PCL then
         if e1ControlClickable then
-		    dev:performClickableAction(device_commands.setEng1Control,1 - (value + 1) / 2,true)
+		    dev:performClickableAction(device_commands.setEng1Control, 1 - (value + 1) / 2,true)
         end
     elseif command == Keys.e2PCL then
         if e2ControlClickable then
-		    dev:performClickableAction(device_commands.setEng2Control,1 - (value + 1) / 2,true)
+		    dev:performClickableAction(device_commands.setEng2Control, 1 - (value + 1) / 2,true)
         end
     elseif command == Keys.bothPCLs then
         if e1ControlClickable then
-		    dev:performClickableAction(device_commands.setEng1Control,1 - (value + 1) / 2,true)
+		    dev:performClickableAction(device_commands.setEng1Control, 1 - (value + 1) / 2,true)
         end
 
         if e2ControlClickable then
-		    dev:performClickableAction(device_commands.setEng2Control,1 - (value + 1) / 2,true)
+		    dev:performClickableAction(device_commands.setEng2Control, 1 - (value + 1) / 2,true)
         end
+    elseif command == Keys.engFSSBoth then
+        dev:performClickableAction(device_commands.eng1FSS,value,true)
+		dev:performClickableAction(device_commands.eng2FSS,value,true)
+    elseif command == Keys.setEngControlBoth then
+        dev:performClickableAction(device_commands.setEng2Control, value, true)
+        dev:performClickableAction(device_commands.setEng1Control, value, true)
+    elseif command == Keys.eng1FSS_AXIS then
+        local normalisedValue = ( ( value + 1 ) / 2 ) * 1.0 -- normalised {-1 to 1} to {0 - 1.0}
+        dev:performClickableAction(device_commands.eng1FSS, normalisedValue, false)
+    elseif command == Keys.eng2FSS_AXIS then
+        local normalisedValue = ( ( value + 1 ) / 2 ) * 1.0 -- normalised {-1 to 1} to {0 - 1.0}
+        dev:performClickableAction(device_commands.eng2FSS, normalisedValue, false)
+    elseif command == Keys.engFSSBoth_AXIS then
+        local normalisedValue = ( ( value + 1 ) / 2 ) * 1.0 -- normalised {-1 to 1} to {0 - 1.0}
+        dev:performClickableAction(device_commands.eng1FSS, normalisedValue, false)
+        local normalisedValue = ( ( value + 1 ) / 2 ) * 1.0 -- normalised {-1 to 1} to {0 - 1.0}
+        dev:performClickableAction(device_commands.eng2FSS, normalisedValue, false)
     end
 end
 

@@ -572,7 +572,7 @@ slipCircle.name 			= "slipCircle"
 slipCircle.material 		= hudMaterial
 slipCircle.h_clip_relation	= h_clip_relations.compare
 slipCircle.parent_element 	= base.name
-slipCircle.element_params	= {"AVS7_BRIGHTNESS", "AVS7_SLIP"}
+slipCircle.element_params	= {"AVS7_BRIGHTNESS", "PILOT_VSI_SLIP_IND"}
 slipCircle.controllers 		= {{"opacity_using_parameter",0}, {"move_left_right_using_parameter", 1, 0.2, -0.2}}
 set_circle	(slipCircle, 0.045 * 0.6, 0.05 * 0.6, 360, 32)
 Add(slipCircle)

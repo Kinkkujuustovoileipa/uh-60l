@@ -54,6 +54,24 @@ dev:listen_command(device_commands.fm2BtnFreq)
 dev:listen_command(device_commands.fm2BtnErfOfst)
 dev:listen_command(device_commands.fm2BtnTime)
 
+dev:listen_command(Keys.fm2FunctionSelectorInc)
+dev:listen_command(Keys.fm2FunctionSelectorDec)
+dev:listen_command(Keys.fm2FunctionSelectorCycle)
+dev:listen_command(Keys.fm2PresetSelectorInc)
+dev:listen_command(Keys.fm2PresetSelectorDec)
+dev:listen_command(Keys.fm2PresetSelectorCycle)
+
+local FM2paramFreq = get_param_handle("ARC201FM2param")
+
+--[[
+dev:listen_command(Keys.fm2PwrSelectorInc)
+dev:listen_command(Keys.fm2PwrSelectorDec)
+dev:listen_command(Keys.fm2PwrSelectorCycle)
+dev:listen_command(Keys.fm2ModeSelectorInc)
+dev:listen_command(Keys.fm2ModeSelectorDec)
+dev:listen_command(Keys.fm2ModeSelectorCycle)
+]]
+
 function SetCommand(command,value)
 
     if command == device_commands.fm2FunctionSelector then
@@ -70,9 +88,30 @@ function SetCommand(command,value)
                 updatePresetMode()
             end
         end
+    elseif command == Keys.fm2FunctionSelectorInc and pwrMode < 8 then
+        --print_message_to_user(pwrMode) -- results in whole digits 0 to 8
+        dev:performClickableAction(device_commands.fm2FunctionSelector, pwrMode / 100 + 0.01, false)
+    elseif command == Keys.fm2FunctionSelectorDec and pwrMode > 0 then
+        dev:performClickableAction(device_commands.fm2FunctionSelector, pwrMode / 100 - 0.01, false)
+    elseif command == Keys.fm2FunctionSelectorCycle then
+        pwrMode = pwrMode + 1
+        if pwrMode > 8 then
+            pwrMode = 0
+        end
+        dev:performClickableAction(device_commands.fm2FunctionSelector, pwrMode / 100, false)
     elseif command == device_commands.fm2PresetSelector then
         presetMode = round(value * 100)
         updatePresetMode()
+    elseif command == Keys.fm2PresetSelectorInc and presetMode < 7 then
+        dev:performClickableAction(device_commands.fm2PresetSelector, presetMode / 100 + 0.01, false)
+    elseif command == Keys.fm2PresetSelectorDec and presetMode > 0 then
+        dev:performClickableAction(device_commands.fm2PresetSelector, presetMode / 100 - 0.01, false)
+    elseif command == Keys.fm2PresetSelectorCycle then
+        presetMode = presetMode + 1
+        if presetMode > 7 then
+            presetMode = 0
+        end
+        dev:performClickableAction(device_commands.fm2PresetSelector, presetMode / 100, false)
     else
         if value > 0 then
             if command == device_commands.fm2Btn1 then
@@ -140,6 +179,7 @@ function enterNewFreq()
     if newFreq >= 30e6 and newFreq <= 87.975e6 then
         manualFreq = newFreq
         radioDevice:set_frequency(manualFreq)
+	FM2paramFreq:set(manualFreq)
         canEnterData = false
     end
 end
@@ -152,6 +192,7 @@ function updatePresetMode()
         canEnterData = false
         displayString = tostring(presets[presetMode] * 1e3)
         radioDevice:set_frequency(presets[presetMode] * 1e6)
+	FM2paramFreq:set(presets[presetMode] * 1e6)
     elseif presetMode == 7 then
         paramMode:set(0)
     else
@@ -160,6 +201,7 @@ function updatePresetMode()
         end
         displayString = tostring(manualFreq / 1e3)
         radioDevice:set_frequency(manualFreq)
+	FM2paramFreq:set(manualFreq)
     end
 end
 

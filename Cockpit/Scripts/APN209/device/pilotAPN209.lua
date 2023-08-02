@@ -21,6 +21,13 @@ paramFlag = get_param_handle("PILOT_APN209_FLAG")
 
 dev:listen_command(device_commands.apn209PilotLoSet)
 dev:listen_command(device_commands.apn209PilotHiSet)
+dev:listen_command(Keys.apn209PilotLoSetInc)
+dev:listen_command(Keys.apn209PilotLoSetDec)
+dev:listen_command(Keys.apn209PilotHiSetInc)
+dev:listen_command(Keys.apn209PilotHiSetDec)
+
+dev:listen_command(Keys.apn209PilotLoSet_AXIS)
+dev:listen_command(Keys.apn209PilotHiSet_AXIS)
 
 radarAltitude = 0
 lowAlt = -30
@@ -34,6 +41,34 @@ function SetCommand(command,value)
     elseif command == device_commands.apn209PilotHiSet then
         if hiAlt > 200 then value = value * 5 end
         hiAlt = clamp(hiAlt + value, 0, 1500)
+    elseif command == Keys.apn209PilotLoSetInc and lowAlt < 1500 then
+        dev:performClickableAction(device_commands.apn209PilotLoSet, 2.0, false)
+    elseif command == Keys.apn209PilotLoSetDec and lowAlt > -30 then
+        dev:performClickableAction(device_commands.apn209PilotLoSet, -2.0, false)
+    elseif command == Keys.apn209PilotHiSetInc and  hiAlt < 1500 then
+        dev:performClickableAction(device_commands.apn209PilotHiSet, 2.0, false)
+    elseif command == Keys.apn209PilotHiSetDec and hiAlt > -30 then
+        dev:performClickableAction(device_commands.apn209PilotHiSet, -2.0, false)
+    elseif command == Keys.apn209PilotLoSet_AXIS then
+        value = value + 1 -- makes all numbers positive, max of 2, min of 1
+        if value < 1.5 then 
+            -- linear from 0 to 200 using axis range 0 - 1.5
+            value = 153 * value - 30
+        else
+            -- linear from 200 to 1500 using axis range 1.5 - 2.0
+            value = 2600 * value - 3700
+        end
+        lowAlt = clamp(value, -30, 1500)
+    elseif command == Keys.apn209PilotHiSet_AXIS then
+        value = value + 1 -- makes all numbers positive, max of 2, min of 1
+        if value < 1.5 then 
+            -- linear from 0 to 200 using axis range 0 - 1.5
+            value = 153 * value - 30
+        else
+            -- linear from 200 to 1500 using axis range 1.5 - 2.0
+            value = 2600 * value - 3700
+        end
+        hiAlt = clamp(value, -30, 1500)
     end
 end
 

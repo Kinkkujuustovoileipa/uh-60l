@@ -38,10 +38,21 @@ function post_initialize()
         Sound_Player(sndhost_cockpit, "DC_power", "SND_CONT_DC", SOUND_CONTINUOUS),
         Sound_Player(sndhost_cockpit, "AC_power", "SND_CONT_AC", SOUND_CONTINUOUS),
         
-        -- Engine & XMSN
-        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorEngineStarter", "SND_INST_ENG_STARTER", SOUND_ONCE),
-        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorEngineCombustion", "SND_INST_ENG_COMBUST", SOUND_ONCE),
-        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorEngineStarterCont", "SND_CONT_ENG_STARTER_IDLE", SOUND_CONTINUOUS, nil, nil, 1.0, 2.0 / device_timer_dt),
+        -- Engine 1
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorEngine1Starter", "SND_INST_ENG1_STARTER", SOUND_ONCE),
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorEngine1Combustion", "SND_INST_ENG1_COMBUST", SOUND_ONCE),
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorEngine1Shutdown", "SND_INST_ENG1_SHUTDOWN", SOUND_ONCE),
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorEngine1ShutdownShort", "SND_INST_ENG1_SHUTDOWN_SHORT", SOUND_ONCE),
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorEngine1StarterCont", "SND_CONT_ENG1_STARTER_IDLE", SOUND_CONTINUOUS, nil, nil, 1.0, 2.0 / device_timer_dt),
+
+        -- Engine 2
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorEngine2Starter", "SND_INST_ENG2_STARTER", SOUND_ONCE),
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorEngine2Combustion", "SND_INST_ENG2_COMBUST", SOUND_ONCE),
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorEngine2Shutdown", "SND_INST_ENG2_SHUTDOWN", SOUND_ONCE),
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorEngine2ShutdownShort", "SND_INST_ENG2_SHUTDOWN_SHORT", SOUND_ONCE),
+        Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorEngine2StarterCont", "SND_CONT_ENG2_STARTER_IDLE", SOUND_CONTINUOUS, nil, nil, 1.0, 2.0 / device_timer_dt),
+
+        -- XMSN
         Sound_Player(sndhost_cockpit, "Aircrafts/Engines/UH-60L/uh60l_InteriorRotorIdle", "SND_CONT_XMSN_IDLE", SOUND_CONTINUOUS),
         Sound_Player(sndhost_aircraft, "Aircrafts/Engines/UH-60L/uh60l_BladeSlap", "SND_ALWS_BLADE_SLAP", SOUND_ALWAYS, 0, nil, 1.0, 2.0 / device_timer_dt, "RRPM" ),
 
@@ -91,6 +102,7 @@ function post_initialize()
 end
 
 function update()
+    --printsec(get_param_handle("SND_INST_ENG_STARTER"):get())
     for index, sound in pairs(sounds) do
         sound:update()
     end

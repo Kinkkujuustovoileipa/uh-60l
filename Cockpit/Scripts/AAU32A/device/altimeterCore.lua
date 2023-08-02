@@ -3,6 +3,7 @@ local ALT_PRESSURE_MAX = 30.99 -- in Hg
 local ALT_PRESSURE_MIN = 28.10 -- in Hg
 local ALT_PRESSURE_STD = 29.92 -- in Hg
 local baroScaleSetting = ALT_PRESSURE_STD
+local baroScaleSettingRate = 0.002
 
 paramAlt10000:set(0.0)
 paramAlt1000:set(0.0)
@@ -28,10 +29,30 @@ function SetCommand(command,value)
 		elseif baroScaleSetting < ALT_PRESSURE_MIN then
 			baroScaleSetting = ALT_PRESSURE_MIN
 		end
-
-        --print_message_to_user(value)
-        --dispatch_action(nil,EFM_commands.dampenValue, value)
-	end
+    elseif command == baroScaleSetCmd_Axis then
+        value = value + 1
+        baroScaleSetting = (value * 1.45 + 28.10)
+        if baroScaleSetting > ALT_PRESSURE_MAX then
+			baroScaleSetting = ALT_PRESSURE_MAX
+		elseif baroScaleSetting < ALT_PRESSURE_MIN then
+			baroScaleSetting = ALT_PRESSURE_MIN
+		end
+    elseif command == baroScaleSetCmdInc then
+        --print_message_to_user(baroScaleSetting)
+        baroScaleSetting = baroScaleSetting + baroScaleSettingRate
+		if baroScaleSetting > ALT_PRESSURE_MAX then
+			baroScaleSetting = ALT_PRESSURE_MAX
+		elseif baroScaleSetting < ALT_PRESSURE_MIN then
+			baroScaleSetting = ALT_PRESSURE_MIN
+		end
+    elseif command == baroScaleSetCmdDec then
+    baroScaleSetting = baroScaleSetting - baroScaleSettingRate
+        if baroScaleSetting > ALT_PRESSURE_MAX then
+        baroScaleSetting = ALT_PRESSURE_MAX
+        elseif baroScaleSetting < ALT_PRESSURE_MIN then
+            baroScaleSetting = ALT_PRESSURE_MIN
+        end
+    end
 end
 
 function update_altimeter(powerState)

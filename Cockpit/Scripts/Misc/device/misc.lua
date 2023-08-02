@@ -31,9 +31,12 @@ local doorRGnrState = 0
 local doorLCargoState = 0
 local doorRCargoState = 0
 
+local paramControlsIndicator  = get_param_handle("SHOW_CONTROLS")
+
 -- Canopy handling
 dev:listen_command(Keys.toggleDoors)
 dev:listen_command(device_commands.miscTailWheelLock)
+dev:listen_command(Keys.miscTailWheelLockToggle)
 dev:listen_command(device_commands.doorCplt)
 dev:listen_command(device_commands.doorPlt)
 dev:listen_command(device_commands.doorLGnr)
@@ -45,9 +48,18 @@ dev:listen_command(Keys.toggleLeftCargoDoor)
 dev:listen_command(Keys.toggleRightCargoDoor)
 dev:listen_command(Keys.toggleLeftGunnerDoor)
 dev:listen_command(Keys.toggleRightGunnerDoor)
+dev:listen_command(Keys.toggleDoorsOpen)
+dev:listen_command(Keys.toggleDoorsClose)
+
+dev:listen_command(Keys.wiperSelectorInc)
+dev:listen_command(Keys.wiperSelectorDec)
+dev:listen_command(Keys.wiperSelectorCycle)
 
 -- Wipers
 dev:listen_command(device_commands.wiperSelector)
+
+-- Controls Indicator
+dev:listen_command(Keys.showControlInd)
 
 function post_initialize()
     tailWheelLockedState = 0
@@ -66,12 +78,34 @@ function SetCommand(command,value)
         if paramCB_TAILWHEELLOCK:get() > 0 then
             tailWheelLockTarget = 1 - tailWheelLocked
         end
+    elseif command == Keys.miscTailWheelLockToggle then
+        if paramCB_TAILWHEELLOCK:get() > 0 then
+            tailWheelLockTarget = 1 - tailWheelLocked
+        end
     elseif command == device_commands.wiperSelector then
-		wiperMode = round(value * 3)
+		wiperMode = round((value + 0.5) * 2)
+        print_message_to_user(wiperMode)
+    elseif command == Keys.wiperSelectorInc then
+        local sentValue = wiperMode / 3
+        dev:performClickableAction(device_commands.wiperSelector, clamp(sentValue + 0.33, 0, 1), true)
+    elseif command == Keys.wiperSelectorDec then
+        local sentValue = wiperMode / 3
+        dev:performClickableAction(device_commands.wiperSelector, clamp(sentValue - 0.33, 0, 1), true)
+    elseif command == Keys.wiperSelectorCycle then
+        local sentValue = wiperMode / 3
+        sentValue = sentValue + 0.333
+        if sentValue > 1 then
+            sentValue = 0
+        end
+        dev:performClickableAction(device_commands.wiperSelector, sentValue , true)
     elseif command == Keys.toggleDoors then
 		if canopyTargetState <= 1 then
 			canopyTargetState = 1 - canopyTargetState
 		end
+    elseif command == Keys.toggleDoorsOpen then
+        canopyTargetState = 1
+    elseif command == Keys.toggleDoorsClose then
+        canopyTargetState = 0
     elseif command == device_commands.doorCplt then
         doorCpltTgt = 1 - doorCpltTgt
     elseif command == device_commands.doorLGnr then
@@ -92,6 +126,8 @@ function SetCommand(command,value)
         doorLGnrTgt = 1 - doorLGnrTgt
     elseif command == Keys.toggleRightGunnerDoor then
         doorRGnrTgt = 1 - doorRGnrTgt
+    elseif command == Keys.showControlInd then
+		paramControlsIndicator:set(1 - paramControlsIndicator:get())
     end
 end
 
@@ -129,6 +165,7 @@ function update()
             tailWheelLockedState = tailWheelLockTarget
             tailWheelLocked = tailWheelLockTarget
         end
+        --print_message_to_user(get_aircraft_draw_argument_value(2))
 
         --print_message_to_user(tailWheelLockedState)
         dispatch_action(nil, EFM_commands.lockTailWheel, tailWheelLocked)
@@ -195,6 +232,11 @@ function update()
     get_param_handle("R_GNR_DOOR_GLASS"):set(get_aircraft_draw_argument_value(404))
     get_param_handle("L_CARGO_DOOR_GLASS"):set(get_aircraft_draw_argument_value(401))
     get_param_handle("R_CARGO_DOOR_GLASS"):set(get_aircraft_draw_argument_value(402))
+
+    -- Castering wheel fix from JNelson
+    local nose_wheel_pos = get_aircraft_draw_argument_value(1000)
+    local post_nose_wheel_post = nose_wheel_pos * math.sqrt(2) / math.pi
+    set_aircraft_draw_argument_value(2, post_nose_wheel_post)
 end
 
 need_to_be_closed = false
