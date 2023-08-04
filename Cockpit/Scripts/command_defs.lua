@@ -143,6 +143,7 @@ Keys =
 	fm1FunctionSelectorInc		= counter(),
 	fm1FunctionSelectorDec		= counter(),
 	fm1FunctionSelectorCycle	= counter(),
+	fm1SRSrx			= 20101, -- must be fixed known value for SRS scanning integration
 
 	-- FM Radios 201 FM2
 	fm2PresetSelectorInc		= counter(),
@@ -151,6 +152,7 @@ Keys =
 	fm2FunctionSelectorInc		= counter(),
 	fm2FunctionSelectorDec		= counter(),
 	fm2FunctionSelectorCycle	= counter(),
+	fm2SRSrx			= 20102, -- must be fixed known value for SRS scanning integration
 
 	--[[
 	fm1PwrSelectorInc			= counter(),
