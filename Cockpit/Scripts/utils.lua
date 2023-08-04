@@ -656,6 +656,14 @@ function formatPrecedingUnderscores(str, len)
   return str
 end
 
+function formatTrailingUnderscores(str, len)
+  while string.len(str) < len do
+      str = str.."_"
+  end
+
+  return str
+end
+
 function formatCompassDir(dir)
   if dir > 360 then
       dir = dir - 360
