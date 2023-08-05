@@ -1,0 +1,10 @@
+wave = {
+    "Effects/ARC201/250ms600hzBeep.wav"
+    }
+
+inner_radius = 1
+outer_radius = 4
+gain = 0.5
+detached = true
+
+listmode = RANDOM
