@@ -18,7 +18,7 @@ local paramMode = get_param_handle("ARC201_FM2_MODE")
 local FM2paramModulation = get_param_handle("ARC201_FM2_MODULATION")
 local FM2paramFreq = get_param_handle("ARC201FM2param")
 
-local scanRate = 0.3 -- seconds between changing frequencies while scanning, lower (faster) is more realistic but must be high enough for SRS to change and detect a transmissions
+local scanRate = 0.4 -- seconds between changing frequencies while scanning, lower (faster) is more realistic but must be high enough for SRS to change and detect a transmissions
 
 local displayString = "30000"
 local manualFreq = 30e6
