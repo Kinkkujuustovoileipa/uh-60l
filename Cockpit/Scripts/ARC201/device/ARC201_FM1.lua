@@ -132,8 +132,19 @@ function SetCommand(command,value)
             isScanMode = false
             setFrequency(0)
             canEnterData = false
-            paramDisplayFreq:set("".."@")
-            paramMode:set(0) -- turns off display
+            paramDisplayFreq:set("     ".."@")
+            if pwrMode == 0 or pwrMode == 8 then
+                paramMode:set(0) -- turns off display
+                checkBlink = false
+                checkBlinkWithDelay = false
+            end
+            
+            if pwrMode == 7 then
+                paramMode:set(1)
+                startZeroize()
+            elseif pwrMode == 8 then
+                zeroizeNow()
+            end
             --print_message_to_user("set freq to 0")
         else
             paramMode:set(1) -- turns on display
@@ -994,6 +1005,8 @@ function updateDisplay() -- refresh the values on the display according to the c
         adjustedText = displayString
     elseif displayMode == "scanCLR" then
         adjustedText = "CLR "..tostring(scanCurrent)
+    elseif displayMode == "zeroized" then
+        adjustedText = "Good "
     end
     
     if hasPower then
@@ -1151,7 +1164,27 @@ function setFrequency(newFrequency)
 	paramFreq:set(newFrequency) -- set freq for FM Homing
     --print_message_to_user(FM1paramFreq:get())
 end
-	
+
+
+function zeroizeNow()
+    presets[0] = 30
+    
+    local i = 0
+    while (i < 16) do
+        i = i + 1
+        presets[i] = 0
+    end
+end
+
+
+function startZeroize()
+    blinkWithDelay(0.5)
+    displayMode = "zeroized"
+    displayTimeoutEnable = false
+    returnTimeoutEnable = false
+    zeroizeNow()
+end
+
 
 function update()
     updateNetworkArgs(GetSelf())
