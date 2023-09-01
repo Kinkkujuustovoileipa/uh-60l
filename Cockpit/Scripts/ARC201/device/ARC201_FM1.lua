@@ -129,6 +129,7 @@ function SetCommand(command,value)
     if command == device_commands.fm1FunctionSelector then
         pwrMode = round(value * 100)
         if pwrMode == 0 or pwrMode == 7 or pwrMode == 8 then -- Function selector = off or zeroize or stow
+            isScanMode = false
             setFrequency(0)
             canEnterData = false
             paramDisplayFreq:set("".."@")
@@ -138,6 +139,7 @@ function SetCommand(command,value)
             paramMode:set(1) -- turns on display
 
             if pwrMode == 1 then
+                isScanMode = false
                 startSelfTest = true
             elseif pwrMode == 2 or pwrMode == 3 or pwrMode == 5 then -- Function selector = SQ or SQ OFF or LD
                 setDisplayMode("funcKnob")
