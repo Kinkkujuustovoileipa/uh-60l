@@ -47,6 +47,8 @@ glideSlopeBeaconDistance = -1
 ilsDirection = -1
 gsBeaconAlt = 0
 
+distDrumDisplay = 0
+
 -- 'Sub Modes'
 dplrGpsModeOn = false
 vorModeOn = false
@@ -285,12 +287,27 @@ function updateNo1Pointer()
         moveGauge(paramHSIDistFlag, 0, flagMoveSpeed, update_time_step)
         
         local dist = paramGPSDist:get()
+	
+        -- Check the difference between the currently displayed range and the waypoint range
+        -- If it's more than a slight change, increment the displayed distance a bit.
+        -- This gives drum movement animation while allowing the drums to
+        -- instantly snap position between 0 and 9.
+        -- moveGauge animation speed is set extremely high (100x greater), effectively unused.
+        -- If difference between displayed range and waypoint range is small, lock the display
+        -- to the waypoint range.
+
+        if math.abs(dist - distDrumDisplay) > 2 * update_time_step then
+            distDrumDisplay = distDrumDisplay + (2 * update_time_step * sign(dist - distDrumDisplay))
+        else
+            distDrumDisplay = dist
+        end
+
         moveGauge(paramHSIDistFlag, 0, flagMoveSpeed, update_time_step)
 
-        moveGauge(paramHSIDistDrum1, jumpwheel(dist * 10, 4), 2, update_time_step)
-        moveGauge(paramHSIDistDrum2, jumpwheel(dist * 10, 3), 2, update_time_step)
-        moveGauge(paramHSIDistDrum3, jumpwheel(dist * 10, 2), 2, update_time_step)
-        moveGauge(paramHSIDistDrum4, jumpwheel(dist * 10, 1), 2, update_time_step)
+        moveGauge(paramHSIDistDrum1, jumpwheel(distDrumDisplay * 10, 4), 200, update_time_step)
+        moveGauge(paramHSIDistDrum2, jumpwheel(distDrumDisplay * 10, 3), 200, update_time_step)
+        moveGauge(paramHSIDistDrum3, jumpwheel(distDrumDisplay * 10, 2), 200, update_time_step)
+        moveGauge(paramHSIDistDrum4, jumpwheel(distDrumDisplay * 10, 1), 200, update_time_step)
     else
         moveGauge(paramHSIDistFlag, 1, flagMoveSpeed, update_time_step)
     end
