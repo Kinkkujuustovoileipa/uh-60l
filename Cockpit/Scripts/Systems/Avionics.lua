@@ -36,7 +36,7 @@ paramMagCompBank:set(0)
 paramMagCompPitch:set(0)
 
 function post_initialize()
-	current_hdg:set(360-(sensor_data.getMagneticHeading()*radian_to_degree))
+	current_hdg:set(sensor_data.getMagneticHeading()*radian_to_degree % 360)
 
 	local dev = GetSelf()
     local birth = LockOn_Options.init_conditions.birth_place	
@@ -69,7 +69,7 @@ end
 
 function update()
 	updateNetworkArgs(GetSelf())
-	current_hdg:set(360-(sensor_data.getHeading()*radian_to_degree))
+	current_hdg:set(sensor_data.getMagneticHeading()*radian_to_degree % 360)
 	TOT1:set(sensor_data.getEngineRightTemperatureBeforeTurbine())
 	TOT2:set(sensor_data.getEngineLeftTemperatureBeforeTurbine())
 	N1RPM1:set(sensor_data.getEngineRightRPM())
