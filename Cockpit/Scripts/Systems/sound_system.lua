@@ -58,7 +58,7 @@ function post_initialize()
 
         -- APR-39
         Sound_Player(sndhost_cockpit, "APR39/acquisition", "SND_INST_APR39_ACQUISITION", SOUND_ONCE),
-        Sound_Player(sndhost_cockpit, "APR39/ap39failure", "SND_INST_APR39_FAILURE", SOUND_ONCE),
+        Sound_Player(sndhost_cockpit, "APR39/apr39failure", "SND_INST_APR39_FAILURE", SOUND_ONCE),
         Sound_Player(sndhost_cockpit, "APR39/apr39operational", "SND_INST_APR39_OPERATIONAL", SOUND_ONCE),
         Sound_Player(sndhost_cockpit, "APR39/apr39powerup", "SND_INST_APR39_POWERUP", SOUND_ONCE),
         Sound_Player(sndhost_cockpit, "APR39/eight", "SND_INST_APR39_EIGHT", SOUND_ONCE),
