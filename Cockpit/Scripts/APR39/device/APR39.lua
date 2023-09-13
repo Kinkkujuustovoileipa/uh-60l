@@ -201,21 +201,21 @@ end
 
 function getSAMType(samData)
 	local samType
-	if samData.unit_type_sym:get() == "a8" then
+	if samData.unit_type_sym:get() == "8a" then
 		samType = "eight2"
-	elseif samData.unit_type_sym:get() == "a10" then
+	elseif samData.unit_type_sym:get() == "10a" then
 		samType = "ten2"
-	elseif samData.unit_type_sym:get() == "a11" then
+	elseif samData.unit_type_sym:get() == "11a" then
 		samType = "eleven2"
-	elseif samData.unit_type_sym:get() == "a6" then
+	elseif samData.unit_type_sym:get() == "6a" then
 		samType = "six2"
-	elseif samData.unit_type_sym:get() == "a5" then
+	elseif samData.unit_type_sym:get() == "5a" then
 		samType = "five2"
-	elseif samData.unit_type_sym:get() == "a4" then
+	elseif samData.unit_type_sym:get() == "4a" then
 		samType = "four2"
-	elseif samData.unit_type_sym:get() == "a3" then
+	elseif samData.unit_type_sym:get() == "3a" then
 		samType = "three2"
-	elseif samData.unit_type_sym:get() == "a2" then
+	elseif samData.unit_type_sym:get() == "2a" then
 		samType = "two2"
 	elseif samData.unit_type_sym:get() == "B" then
 		samType = "zu"
