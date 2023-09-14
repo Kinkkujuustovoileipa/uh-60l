@@ -128,7 +128,7 @@ wordlist =
 		param = "SND_INST_APR39_ACQUISITION"
 	},
 	[2] = {
-		name = "ap39failure",
+		name = "apr39failure",
 		length = 2,
 		param = "SND_INST_APR39_FAILURE"
 	},
