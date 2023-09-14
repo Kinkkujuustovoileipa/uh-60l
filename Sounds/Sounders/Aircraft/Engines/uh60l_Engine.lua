@@ -1,5 +1,4 @@
 dofile("uh60l_Tools.lua")
-dofile("Curve.lua")
 
 offsets = {
 	core	= 0,
