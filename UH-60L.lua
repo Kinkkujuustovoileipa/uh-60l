@@ -410,7 +410,7 @@ UH60L =
 			can_be_playable  = true,
 			role = "instructor",
 			role_display_name = _("Copilot"),
-			canopy_arg           = 38, 
+			canopy_arg           = 400, 
 		},
 		[3] =
 		{	ejection_seat_name	=	0,
@@ -421,7 +421,7 @@ UH60L =
 			can_be_playable  = true,
 			role = "lgunner",
 			role_display_name = _("Left Gunner"),
-			canopy_arg           = 38, 
+			canopy_arg           = 401, 
 		},
 		[4] =
 		{	ejection_seat_name	=	0,
@@ -432,7 +432,7 @@ UH60L =
 			can_be_playable  = true,
 			role = "rgunner",
 			role_display_name = _("Right Gunner"),
-			canopy_arg           = 38, 
+			canopy_arg           = 402, 
 		},
 	},
 
