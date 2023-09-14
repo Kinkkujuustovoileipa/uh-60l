@@ -1,4 +1,4 @@
-dofile("Tools.lua")
+dofile("uh60l_Tools.lua")
 
 offsets = {
 	core	= 0,
