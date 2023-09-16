@@ -366,7 +366,7 @@ function setDisplayMode(key) -- logic to set displayMode based on key presses or
         displayMode = "loadFH"
         countdownTimer = 7
         updatePresetMode()
-    elseif pwrMode == 5 and rcvMode == 3 and key == "ENT" and not (canEnterData) then
+    elseif pwrMode == 5 and rcvMode == 3 and key == "ENT" and displayMode == "FHWorkingMemory_HF" and not (canEnterData) then
         displayMode = "storeFHWorkingMemory"
     elseif (pwrMode == 2 or pwrMode == 3) and (rcvMode == 2 or rcvMode == 3) and key == "ENT" and presetMode == 7 then
         displayMode = "startScan"
@@ -600,13 +600,13 @@ end
 
 function clearFH(key)
     if key == "CLR" then
-        displayString = "CLR "
+        displayString = "CLr "
         canEnterData = true
         displayTimeoutEnable = true
         countdownTimer = 7
     elseif (tonumber(key) >= 1 and tonumber(key) <= 6) and tonumber(key) ~= presetMode and canEnterData then
         countdownTimer = 7
-        displayString = "CLR "..key
+        displayString = "CLr "..key
         --print_message_to_user(displayString)
         presets[tonumber(key) + 10] = 0
         blinkWithDelay(0.5,0.25) -- wait 0.5 seconds, then turn the display off for 0.25 seconds
@@ -619,12 +619,12 @@ end
 
 function recallFHWorkingMemory(key)
     if key == "0" then
-        displayString = "Hid "
+        displayString = "HLd "
         canEnterData = true
         displayTimeoutEnable = true
         countdownTimer = 7
     elseif (tonumber(key) >= 1 and tonumber(key) <= 6) and canEnterData then
-        displayString = "Hid "..key
+        displayString = "HLd "..key
         blinkWithDelay(0.5,0.25,"FHWorkingMemory_HF") -- wait 0.5 seconds, then turn the display off for 0.25 seconds, then switch to the next displaymode
         soundWithDelay(0.25,"SND_INST_ARC201FM2_250MS600HZBEEP") -- wait 0.25 seconds then play the sound
         FHWorkingMemory = presets[tonumber(key) + 10]
@@ -655,7 +655,7 @@ end
 
 function setScanPriority(key)
     if key == "ENT" then
-        displayString = "SCAN"
+        displayString = "SCAn"
         returnTimeoutEnable = true
         returnTimer = 7
         canEnterData = true
@@ -949,7 +949,7 @@ function updateDisplay() -- refresh the values on the display according to the c
         adjustedText = displayString
     elseif displayMode == "loadSC" or displayMode == "displaySC" then
         if (rcvMode == 2 or rcvMode == 3) and presetMode == 0 and not (presets[presetMode] == 0) then
-            adjustedText = " Cold"
+            adjustedText = " CoLd"
         else
             adjustedText = formatTrailingUnderscores(displayString, 5)
             --print_message_to_user(presets[presetMode])
@@ -982,7 +982,7 @@ function updateDisplay() -- refresh the values on the display according to the c
     elseif displayMode == "startScan" then
         adjustedText = formatTrailingUnderscores(displayString,5)
     elseif displayMode == "scanMode" then
-        adjustedText = "SCAN"..tostring(scanPriority)
+        adjustedText = "SCAn"..tostring(scanPriority)
     elseif displayMode == "scanRX" then
         if scanPriorityNext == true then
             adjustedText = formatPrecedingSpaces("CH "..tostring(scanCurrent),5)
@@ -992,7 +992,7 @@ function updateDisplay() -- refresh the values on the display according to the c
     elseif displayMode == "scanFreq" then
         adjustedText = displayString
     elseif displayMode == "scanCLR" then
-        adjustedText = "CLR "..tostring(scanCurrent)
+        adjustedText = "CLr "..tostring(scanCurrent)
     elseif displayMode == "zeroized" then
         adjustedText = "Good "
     end
