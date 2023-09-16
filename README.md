@@ -11,6 +11,38 @@ After reading this readme, [click here to download the latest version from the r
 - If you use SRS, copy and paste the “DCS-SimpleRadioStandalone.lua” file to “C:\Users\###\Saved Games\DCS\Mods\Services\DCS-SRS\Scripts\” - BACK UP THE ORIGINAL!
 - In the mission editor, make sure the Historical Filter is disabled
 ## Changelog
+### 1.4
+#### Bugs/Corrections
+- ASN-128B would decrement from waypoint 0 to waypoint 69 - credit: Sniporbob
+- ASN-128B would always edit the waypoint being navigated to instead of the waypoint selected to edit - credit: Sniporbob
+- ARC-186 MAN and PRE mode would not match the position of the AM/FM/MAN/PRE switch - credit: Sniporbob
+- Key binding for formation light decrease had invalid logic preventing use - credit: Tanuki44
+- Situation where key binding for Stabilator Auto - ON and Stabilator Auto - OFF could have inverted functionality - credit: Sniporbob
+- HSI course deviation bar only worked flying towards VOR, not away - credit: Sniporbob
+- HSI km readout digits could all turn independently of each other - credit: Sniporbob
+- HSI km readout digits would spin backwards when crossing from 9 to 0 - credit: Sniporbob
+- HSI displayed true north instead of magnetic north - credit: twanmal
+- Ground crew would only talk to the pilot through the pilot's door instead of other open doors - credit: Sniporbob
+- Typo in APR39 sound file names caused errors to appear in DCS log file - credit: Sniporbob
+- APR39 was not properly classifying and calling out SAM threats with their SA number - credit: Lynx13D
+- Filename conflict caused certain Combined Arms and WWII Asset Pack vehicle sounds to be absent - credit: DD_Friar and DD_Sid
+- Exterior noises were only heard when the Pilot door was open - credit: Sniporbob
+Complete ARC-201 Overhaul - credit: Sniporbob
+- ARC-201 MAN preset could be changed by simply pressing the CLR key
+- ARC-201 display would remain on when function switch set to LD
+- ARC-201 frequency input was not left justified
+- ARC-201 allowed input of invalid frequencies
+- ARC-201 was willing to wait forever for user to input a frequency
+#### New Features
+- ARC-201 Self Test function (decorative only, does not check for damage)
+- ARC-201 editable single channel presets
+- ARC-201 single channel offset feature
+- ARC-201 Zeroize and Stow functions (be careful!)
+- ARC-201 SINCGARS frequency hopping mode, enabled by choosing FH or FM-M (SRS compatible)
+- ARC-201 hopset clearing, loading hopset from preset into working memory, storing to preset, and editing NET ID
+- ARC-201 sound effects (beep for self test and for certain hopset manipulations)
+- ARC-201 full implementation of single channel preset scanning and all relevant commands** (SRS compatible)
+**NOTE: Scanning feature REQUIRES use of the UH-60's "SRS PTT" key binding as well as selecting which radio the player desires to transmit on via ICP panel knob. The SRS key bindings should NOT be used to control the radio. Failure to use the in-cockpit controls will result in broken and unintelligible transmissions on any radio actively utilizing the scan feature.
 ### 1.3.2 - Hotfix
 #### Bugs/Corrections
 - Radios now works again with SRS
