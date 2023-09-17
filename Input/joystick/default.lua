@@ -16,6 +16,9 @@ join(res.keyCommands, {
         invertY = false,
     },
 ]]	
+		 -- Parking Brake
+		{down = device_commands.parkingBrake, up = device_commands.parkingBrake, cockpit_device_id = devices.EFM_HELPER, value_down = 1.0, value_up = 0.0, name = _('Parking Brake'), category = _('General')},
+
 		-- Autostart
 		{combos = {{key = 'Home',	reformers = {'LWin'}}},	down = Keys.iCommandEnginesStart, name = _('Auto Start UH60'),	category = _('Cheat')},
 	
