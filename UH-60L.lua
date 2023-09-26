@@ -849,8 +849,26 @@ UH60L =
             },
 			channels =
 			{
-				[1] = { name = _("AN/ARC-186 Channel 1"),	default = 124.000}, --, connect = true}, -- default
-				[2] = { name = _("AN/ARC-186 Channel 2"),	default = 127.500}, --, connect = true}, -- default
+				[1] = { name = _("AN/ARC-186 Channel 1"),	default = 138.000}, --, connect = true}, -- default
+				[2] = { name = _("AN/ARC-186 Channel 2"),	default = 121.500}, --, connect = true}, -- default
+				[3] = { name = _("AN/ARC-186 Channel 3"),	default = 127.000}, 
+				[4] = { name = _("AN/ARC-186 Channel 4"),	default = 127.500}, 
+				[5] = { name = _("AN/ARC-186 Channel 5"),	default = 130.000}, 
+				[6] = { name = _("AN/ARC-186 Channel 6"),	default = 133.000}, 
+				[7] = { name = _("AN/ARC-186 Channel 7"),	default = 133.500}, 
+				[8] = { name = _("AN/ARC-186 Channel 8"),	default = 135.000}, 
+				[9] = { name = _("AN/ARC-186 Channel 9"),	default = 136.000}, 
+				[10] = { name = _("AN/ARC-186 Channel 10"),	default = 139.000}, 
+				[11] = { name = _("AN/ARC-186 Channel 11"),	default = 151.000},	
+				[12] = { name = _("AN/ARC-186 Channel 12"),	default = 118.500},	
+				[13] = { name = _("AN/ARC-186 Channel 13"),	default = 118.100},	
+				[14] = { name = _("AN/ARC-186 Channel 14"),	default = 118.900},	
+				[15] = { name = _("AN/ARC-186 Channel 15"),	default = 118.400},	
+				[16] = { name = _("AN/ARC-186 Channel 16"),	default = 118.450},	
+				[17] = { name = _("AN/ARC-186 Channel 17"),	default = 134.000},	
+				[18] = { name = _("AN/ARC-186 Channel 18"),	default = 134.500},	
+				[19] = { name = _("AN/ARC-186 Channel 19"),	default = 137.000},	
+				[20] = { name = _("AN/ARC-186 Channel 20"),	default = 137.500},	
 			},
         },
 		[4] =
