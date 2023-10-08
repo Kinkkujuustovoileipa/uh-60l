@@ -662,7 +662,8 @@ function addTOOWaypoint()
     local selfX,selfY,selfZ = sensor_data.getSelfCoordinates()
     local wpIndex = getNextEmptyWaypoint(90)
     local wpName = "TOO "..(wpIndex - 89)
-    addWaypoint(waypointData, wpIndex, wpName, selfX, selfZ)
+    -- selfY might be wrong, get ground alt?
+    addWaypoint(wpIndex, wpName, selfX, selfZ, selfY)
 end
 
 function updateSelectedWpLine()
