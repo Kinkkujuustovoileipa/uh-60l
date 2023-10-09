@@ -105,6 +105,7 @@ local endStepEnabled = false
 local wpSequence = {}
 local flightPlanType = 0
 local currLeg = 1
+local currToo = 0
 
 -- CISP
 local paramGPSBearing = get_param_handle("CISP_GPS_BEARING")
@@ -663,19 +664,32 @@ function addTOOWaypoint()
     local wpIndex = getNextEmptyWaypoint(waypoints, 91)
     local alt = formatYCoord(selfY, modeIndex)
 
-    if (wpIndex == -1) then
-        -- TODO: track last updated, overwrite oldest
-        print_message_to_user("no empty TOO waypoint found, overwriting previous")
-    else
-        print_message_to_user("empty TOO wpt found at "..wpIndex)
-        local wpName = "TOO"..formatPrecedingZeros(tostring(wpIndex-90), 2)
+    local wpName = ""
 
-        print_message_to_user("adding too: "..wpIndex..", "..wpName..", "..selfX..", "..selfZ..", "..alt)
-        waypoints[wpIndex].name = wpName
-        waypoints[wpIndex].x = selfX
-        waypoints[wpIndex].y = selfZ
-        waypoints[wpIndex].alt = alt
+    if (wpIndex == -1) then
+        -- print_message_to_user("no empty TOO waypoint found, overwriting previous")
+
+        -- print_message_to_user("currentTOO: "..currToo)
+        if (currToo == 100) then
+            currToo = 91
+        else
+            currToo = currToo + 1
+        end
+
+        wpName = "TOO"..formatPrecedingZeros(tostring(currToo-90), 2)
+        -- print_message_to_user("overwriting too: "..currToo..", "..wpName..", "..selfX..", "..selfZ..", "..alt)
+        wpIndex = currToo
+    else
+        -- print_message_to_user("empty TOO wpt found at "..wpIndex)
+        wpName = "TOO"..formatPrecedingZeros(tostring(wpIndex-90), 2)
+        currToo = wpIndex
     end
+
+    -- print_message_to_user("adding wpt: "..wpIndex..", "..wpName..", "..selfX..", "..selfZ..", "..alt)
+    waypoints[wpIndex].name = wpName
+    waypoints[wpIndex].x = selfX
+    waypoints[wpIndex].y = selfZ
+    waypoints[wpIndex].alt = alt
 end
 
 function updateSelectedWpLine()

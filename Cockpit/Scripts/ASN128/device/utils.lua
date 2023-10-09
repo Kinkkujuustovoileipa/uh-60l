@@ -120,7 +120,7 @@ end
 function getNextEmptyWaypoint(waypointData, startIndex)
     for i = startIndex, 100 do
         local data = waypointData[i]
-        print_message_to_user("wpt: "..data.number..", "..data.name..", "..data.x..", "..data.y..", "..data.alt)
+        -- print_message_to_user("wpt: "..data.number..", "..data.name..", "..data.x..", "..data.y..", "..data.alt)
         if (data.x == "" or data.y == "") then
             return i
         end
@@ -129,7 +129,7 @@ function getNextEmptyWaypoint(waypointData, startIndex)
 end
 
 function addWaypoint(num, wpName, xPos, yPos, alt)
-    print_message_to_user("adding wpt: "..num..", "..wpName..", "..xPos..", "..yPos..", "..alt)
+    -- print_message_to_user("adding wpt: "..num..", "..wpName..", "..xPos..", "..yPos..", "..alt)
     table.insert(waypoints, {number = num, name = wpName, x = xPos, y = yPos, alt = alt})
 end
 
