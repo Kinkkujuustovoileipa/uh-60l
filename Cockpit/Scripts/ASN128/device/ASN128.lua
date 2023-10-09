@@ -660,10 +660,22 @@ end
 
 function addTOOWaypoint()
     local selfX,selfY,selfZ = sensor_data.getSelfCoordinates()
-    local wpIndex = getNextEmptyWaypoint(90)
-    local wpName = "TOO "..(wpIndex - 89)
-    -- selfY might be wrong, get ground alt?
-    addWaypoint(wpIndex, wpName, selfX, selfZ, selfY)
+    local wpIndex = getNextEmptyWaypoint(waypoints, 91)
+    local alt = formatYCoord(selfY, modeIndex)
+
+    if (wpIndex == -1) then
+        -- TODO: track last updated, overwrite oldest
+        print_message_to_user("no empty TOO waypoint found, overwriting previous")
+    else
+        print_message_to_user("empty TOO wpt found at "..wpIndex)
+        local wpName = "TOO"..formatPrecedingZeros(tostring(wpIndex-90), 2)
+
+        print_message_to_user("adding too: "..wpIndex..", "..wpName..", "..selfX..", "..selfZ..", "..alt)
+        waypoints[wpIndex].name = wpName
+        waypoints[wpIndex].x = selfX
+        waypoints[wpIndex].y = selfZ
+        waypoints[wpIndex].alt = alt
+    end
 end
 
 function updateSelectedWpLine()
