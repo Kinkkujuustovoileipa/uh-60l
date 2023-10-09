@@ -235,7 +235,7 @@ function buttonFunctions(command)
     if (command == device_commands.SelectBtnInc) then
         if (kybdModeEnabled == false) then
             if displayIndex == 50 or displayIndex == 51 then
-                if (currTGTWP < 70) then
+                if (currTGTWP < 100) then
                     currTGTWP = currTGTWP + 1
                 else
                     currTGTWP = 1
@@ -259,7 +259,7 @@ function buttonFunctions(command)
                 if (currTGTWP > 1) then
                     currTGTWP = currTGTWP - 1
                 else
-                    currTGTWP = 70
+                    currTGTWP = 100
                 end
 
                 if data.pages[displayIndex] then
@@ -305,8 +305,11 @@ function buttonFunctions(command)
             end
         end
     elseif command == device_commands.SelectBtnKybd then
-        inputArray = {}
-        setKybdMode()
+        -- only allow editing 0-69
+        if (currTGTWP <= 70) then
+            inputArray = {}
+            setKybdMode()
+        end
     end
 end
 
@@ -663,13 +666,10 @@ function addTOOWaypoint()
     local selfX,selfY,selfZ = sensor_data.getSelfCoordinates()
     local wpIndex = getNextEmptyWaypoint(waypoints, 91)
     local alt = formatYCoord(selfY, modeIndex)
-
     local wpName = ""
 
     if (wpIndex == -1) then
-        -- print_message_to_user("no empty TOO waypoint found, overwriting previous")
-
-        -- print_message_to_user("currentTOO: "..currToo)
+        -- ran out of space, loop and overwrite
         if (currToo == 100) then
             currToo = 91
         else
@@ -677,19 +677,24 @@ function addTOOWaypoint()
         end
 
         wpName = "TOO"..formatPrecedingZeros(tostring(currToo-90), 2)
-        -- print_message_to_user("overwriting too: "..currToo..", "..wpName..", "..selfX..", "..selfZ..", "..alt)
         wpIndex = currToo
     else
-        -- print_message_to_user("empty TOO wpt found at "..wpIndex)
+        -- free space
         wpName = "TOO"..formatPrecedingZeros(tostring(wpIndex-90), 2)
         currToo = wpIndex
     end
 
-    -- print_message_to_user("adding wpt: "..wpIndex..", "..wpName..", "..selfX..", "..selfZ..", "..alt)
     waypoints[wpIndex].name = wpName
     waypoints[wpIndex].x = selfX
     waypoints[wpIndex].y = selfZ
     waypoints[wpIndex].alt = alt
+
+    refreshScreen()
+end
+
+function refreshScreen()
+    data.pages[displayIndex].getStoredData()
+    initVisibilityArgs()
 end
 
 function updateSelectedWpLine()
