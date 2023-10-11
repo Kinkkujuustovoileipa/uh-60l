@@ -7,7 +7,6 @@ waypointData = get_mission_route()
 waypoints = {}
 currWP = 1
 currTGTWP = 1
-currHardcodedWP = 91
 inputArray = {}
 
 INPUT_ALLOWANCE_TIME = 1 -- time user has after pressing input button to press another

@@ -105,7 +105,7 @@ local endStepEnabled = false
 local wpSequence = {}
 local flightPlanType = 0
 local currLeg = 1
-local currToo = 0
+local currToo = 90
 
 -- CISP
 local paramGPSBearing = get_param_handle("CISP_GPS_BEARING")
@@ -650,7 +650,7 @@ function initWaypoints()
             alt = waypointData[i].alt
 
             if (waypointData[i].name) then
-                wpName = string.sub(string.upper(waypointData[i].name),1,5)
+                wpName = string.sub(string.upper(waypointData[i].name),1,13)
             else
                 wpName = "MIZ "..i-1
             end
@@ -698,8 +698,9 @@ function refreshScreen()
 end
 
 function updateSelectedWpLine()
-    local text =  waypoints[currWP].number..":"..waypoints[currWP].name
-    local epeSysText = " 030MG"..currHardcodedWP-1
+    local shortName = string.sub(waypoints[currWP].name),1,5)
+    local text =  waypoints[currWP].number..":"..shortName
+    local epeSysText = " 030MG"..currToo-1
     local len = 16 - string.len(text)
     text = text..formatPrecedingSpaces(epeSysText, len)
  
