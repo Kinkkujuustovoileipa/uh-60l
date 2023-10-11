@@ -698,7 +698,8 @@ function refreshScreen()
 end
 
 function updateSelectedWpLine()
-    local shortName = string.sub(waypoints[currWP].name),1,5)
+    local wpName = waypoints[currWP].name
+    local shortName = string.sub(wpName,1,5)
     local text =  waypoints[currWP].number..":"..shortName
     local epeSysText = " 030MG"..currToo-1
     local len = 16 - string.len(text)
