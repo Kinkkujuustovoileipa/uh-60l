@@ -668,8 +668,6 @@ function addTOOWaypoint()
     local wpIndex = getNextEmptyWaypoint(waypoints, 91)
     local alt = formatYCoord(selfY, modeIndex)
     local wpName = ""
-    print_message_to_user("wpIndex: "..wpIndex)
-    print_message_to_user("currToo: "..currToo)
 
     if (wpIndex == -1) then
         wpName = "TGT"..formatPrecedingZeros(tostring(currToo-89), 2)
@@ -691,8 +689,6 @@ function addTOOWaypoint()
         end
     end
 
-    print_message_to_user("wpIndex: "..wpIndex)
-    print_message_to_user("currToo: "..currToo)
     waypoints[wpIndex+1].name = wpName
     waypoints[wpIndex+1].x = selfX
     waypoints[wpIndex+1].y = selfZ
