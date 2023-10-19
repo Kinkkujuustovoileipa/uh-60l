@@ -120,7 +120,7 @@ function getNextEmptyWaypoint(waypointData, startIndex)
     for i = startIndex, 100 do
         local data = waypointData[i]
         if (data.x == "" or data.y == "") then
-            return i
+            return tonumber(data.number)
         end
     end
     return -1

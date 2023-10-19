@@ -306,7 +306,7 @@ function buttonFunctions(command)
         end
     elseif command == device_commands.SelectBtnKybd then
         -- only allow editing 0-69
-        if (currTGTWP <= 70) then
+        if (currTGTWP <= 70 or currTGTWP > 90) then
             inputArray = {}
             setKybdMode()
         end
@@ -657,6 +657,7 @@ function initWaypoints()
         end
 
         addWaypoint(num, wpName, xPos, yPos, alt)
+        --print_message_to_user("wpt added: "..num..", "..wpName)
         --default sequence using mission wp seq
         --table.insert(wpSequence, i)
     end
@@ -667,28 +668,37 @@ function addTOOWaypoint()
     local wpIndex = getNextEmptyWaypoint(waypoints, 91)
     local alt = formatYCoord(selfY, modeIndex)
     local wpName = ""
+    print_message_to_user("wpIndex: "..wpIndex)
+    print_message_to_user("currToo: "..currToo)
 
     if (wpIndex == -1) then
+        wpName = "TGT"..formatPrecedingZeros(tostring(currToo-89), 2)
+        wpIndex = currToo
+
         -- ran out of space, loop and overwrite
-        if (currToo == 100) then
-            currToo = 91
+        if (currToo >= 99) then
+            currToo = 90
         else
             currToo = currToo + 1
         end
-
-        wpName = "TOO"..formatPrecedingZeros(tostring(currToo-90), 2)
-        wpIndex = currToo
     else
         -- free space
-        wpName = "TOO"..formatPrecedingZeros(tostring(wpIndex-90), 2)
-        currToo = wpIndex
+        wpName = "TGT"..formatPrecedingZeros(tostring(wpIndex-89), 2)
+        if (wpIndex == 99) then
+            currToo = 90
+        else
+            currToo = wpIndex+1
+        end
     end
 
-    waypoints[wpIndex].name = wpName
-    waypoints[wpIndex].x = selfX
-    waypoints[wpIndex].y = selfZ
-    waypoints[wpIndex].alt = alt
+    print_message_to_user("wpIndex: "..wpIndex)
+    print_message_to_user("currToo: "..currToo)
+    waypoints[wpIndex+1].name = wpName
+    waypoints[wpIndex+1].x = selfX
+    waypoints[wpIndex+1].y = selfZ
+    waypoints[wpIndex+1].alt = alt
 
+    updateSelectedWpLine()
     refreshScreen()
 end
 
@@ -701,10 +711,10 @@ function updateSelectedWpLine()
     local wpName = waypoints[currWP].name
     local shortName = string.sub(wpName,1,5)
     local text =  waypoints[currWP].number..":"..shortName
-    local epeSysText = " 030MG"..currToo-1
+    local epeSysText = " 030MG"..currToo
     local len = 16 - string.len(text)
     text = text..formatPrecedingSpaces(epeSysText, len)
- 
+
     topLineHandle:set(text)
 end
 
