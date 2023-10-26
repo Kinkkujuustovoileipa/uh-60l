@@ -115,22 +115,11 @@ ahruPower = false
 mission = nil
 
 function post_initialize()
-    local birth = LockOn_Options.init_conditions.birth_place
-    
-    if birth == "GROUND_HOT" or birth == "AIR_HOT" then
-        paramVSIPitch:set(sensor_data:getPitch() + paramAHRUPitchError:get())
-        paramVSIRoll:set(sensor_data:getRoll() + paramAHRURollError:get())
-        paramVSISlip:set(sensor_data:getAngleOfSlide() * radian_to_degree)
-        local aircraftHeading = 360 - (sensor_data:getHeading() * radian_to_degree)
-        paramHSICompass:set(formatCompassDir(aircraftHeading + paramAHRUHeadingError:get()))
-    elseif birth == "GROUND_COLD" then
-        paramVSIPitch:set(sensor_data:getPitch() + paramAHRUPitchError:get())
-        paramVSIRoll:set(sensor_data:getRoll() + paramAHRURollError:get())
-        paramVSISlip:set(sensor_data:getAngleOfSlide() * radian_to_degree)
-        local aircraftHeading = 360 - (sensor_data:getHeading() * radian_to_degree)
-        paramHSICompass:set(formatCompassDir(aircraftHeading + paramAHRUHeadingError:get()))
-    end
-
+    local aircraftHeading = 360 - (sensor_data:getMagneticHeading() * radian_to_degree)
+    paramVSIPitch:set(sensor_data:getPitch() + paramAHRUPitchError:get())
+    paramVSIRoll:set(sensor_data:getRoll() + paramAHRURollError:get())
+    paramVSISlip:set(sensor_data:getAngleOfSlide() * radian_to_degree)
+    paramHSICompass:set(formatCompassDir(aircraftHeading + paramAHRUHeadingError:get()))
     load_tempmission_file()
 end
 
