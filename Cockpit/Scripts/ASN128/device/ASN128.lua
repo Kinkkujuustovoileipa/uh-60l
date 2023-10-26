@@ -739,16 +739,14 @@ function updatePresentPosition()
 
     paramGroundSpeed:set(gs)
 
-    trackAngle = formatCompassDir(360 - math.deg(sensor_data:getHeading()) + math.deg(math.atan2(gsZ, gsX)))
+    -- TODO: check this?
+    trackAngle = formatCompassDir(360 - math.deg(sensor_data:getMagneticHeading()) + math.deg(math.atan(gsZ, gsX)))
     paramTrackAngle:set(trackAngle)
     trackAngleHandle:set("TK:"..formatPrecedingZeros(round(trackAngle), 3).."°")
 end
 
 function updateMagVar()
-    local magHeading = sensor_data.getMagneticHeading()
-    local heading = sensor_data.getHeading()
-    local magVar = math.floor(magHeading - heading)
-
+    local magVar = getDeclination()
     magVarHandle:set("V: "..magVar)
 end
 
@@ -758,14 +756,16 @@ function updateWPInfo()
 
     local rangeKm  = "---"
     local rangeNm  = "---"
-    local bearing  = "---"
     local timeHour = "--"
     local timeMin  = "--"
 
     if (Xcoord and Ycoord) then
         local selfX,selfY,selfZ = sensor_data.getSelfCoordinates()
-        bearing = formatCompassDir(round(math.deg(math.atan2((Ycoord-selfZ),(Xcoord-selfX)))))
-        bearingToNextWP = bearing
+        local magVar = getDeclination()
+
+        local relAngle = math.atan2((Ycoord-selfZ),(Xcoord-selfX))
+        local northRelBearing = math.deg(relAngle)+magVar
+        bearingToNextWP = formatCompassDir(northRelBearing)
         rangeKm = math.sqrt((Xcoord - selfX)^2 + (Ycoord - selfZ)^2) / 1000
         rangeNm = rangeKm * kmToNm
 
@@ -777,9 +777,8 @@ function updateWPInfo()
         -- Update the AN/AVS-7 with dist and brg info
         avs7wpBrgHandle:set(bearingToNextWP)
         avs7wpDistHandle:set(clamp(rangeKm, 0, 999.9))
-        local relBearing = getShortestCompassPath(bearingToNextWP, (360 - (sensor_data.getHeading() * radian_to_degree)))
-        local wpIndPos = clamp(relBearing / 60, -1, 1)
-        --print_message_to_user("Bearing: "..relBearing..": IndPos: "..wpIndPos)
+        local relBearing = getShortestCompassPath(bearingToNextWP, getAircraftHeading())
+        local wpIndPos = clamp((relBearing) / 60, -1, 1)
         avs7wpIndHandle:set(wpIndPos)
 
         -- Update CISP with dist and brg info
@@ -823,9 +822,9 @@ function updateWPInfo()
     end
     
     if (modeIndex == 4) then
-        legDistHandle:set(formatPrecedingZeros(rangeNm, 3).." nm "..formatPrecedingZeros(bearing, 3).."°")
+        legDistHandle:set(formatPrecedingZeros(rangeNm, 3).." nm "..formatPrecedingZeros(bearingToNextWP, 3).."°")
     elseif (modeIndex == 3) then
-        legDistHandle:set(formatPrecedingZeros(rangeKm, 3).." km "..formatPrecedingZeros(bearing, 3).."°")
+        legDistHandle:set(formatPrecedingZeros(rangeKm, 3).." km "..formatPrecedingZeros(bearingToNextWP, 3).."°")
     end
 
     legTimeHandle:set( timeHour.."h "..timeMin.."min")
@@ -833,10 +832,10 @@ end
 
 function updateCourseDisplay()
     local isTo = false
-    local relBearing = getShortestCompassPath(bearingToNextWP, (360 - (sensor_data.getHeading() * radian_to_degree)))
+    local relBearing = getRelativeBearing(bearingToNextWP)
     local toFrStr = "\\/"
 
-    if relBearing < 90 and relBearing > -90 then
+    if -90 < relBearing and relBearing < 90 then
         toFrStr = "/\\"
         avs7wpToHandle:set(1)
         avs7wpFromHandle:set(0)
