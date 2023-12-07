@@ -7,7 +7,6 @@ weather = require('Weather')
 radian_to_degree = 57.2957795
 meters_to_feet = 3.2808399
 msToFpm = meters_to_feet * 60
-radian_to_degree = 57.2957795
 KG_TO_POUNDS = 2.20462
 msToKts = 1.94384
 msToKph = 3.6
@@ -39,7 +38,12 @@ end
 -- print(round(107.75, 1))      : 107.8
 function round(num, idp)
     local mult = 10^(idp or 0)
-    return math.floor(num * mult + 0.5) / mult
+    if num < 0 then
+        -- e.g. -1.5 -> -2.0, not 1
+        return math.floor(num * mult - 0.5) / mult
+    else
+        return math.floor(num * mult + 0.5) / mult
+    end
 end
 
 function clamp(value, minimum, maximum)
@@ -664,14 +668,12 @@ function formatTrailingUnderscores(str, len)
   return str
 end
 
+-- Turn a relative bearing into a compass heading
 function formatCompassDir(dir)
-  if dir > 360 then
-      dir = dir - 360
-  elseif dir < 0 then
-      dir = dir + 360
-  end
-
-  return dir
+    -- dir arrives as +/-180 from NORTH i.e. 360
+    local angle = 360+dir
+    local result = round(math.fmod(angle, 360))
+    return result
 end
 
 function getBearingToPosition(targetPos, ownPos)
@@ -987,4 +989,31 @@ function drawGrid(x2, y2, z2, columns, rows, parent)
     columnLine.parent_element  = parent.name
     Add(columnLine)
   end
+end
+
+-- Calculates magnetic variation using true and mag heading.
+function getDeclination()
+    local magHeading = sensor_data.getMagneticHeading()
+    -- weird fudge factor as regular heading was way off.
+    -- Maybe it's weird for helos?
+    local heading = 2*math.pi - sensor_data.getHeading()
+    local magVar = math.deg(magHeading-heading)
+    if magVar > 180 then
+        magVar = magVar - 360 - 0.5
+    else
+        magVar = magVar + 0.5
+    end
+    -- no math.round function, so use the floor+0.5 fudge
+    return math.floor(magVar)
+end
+
+function getAircraftHeading()
+    local aircraftMagHeading = math.deg(sensor_data.getMagneticHeading())
+    return round(aircraftMagHeading)
+end
+
+function getRelativeBearing(bearing)
+    local aircraftMagHeading = getAircraftHeading()
+    local path = getShortestCompassPath(bearing, aircraftMagHeading)
+    return path
 end

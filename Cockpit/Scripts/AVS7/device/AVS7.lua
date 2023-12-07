@@ -117,8 +117,8 @@ function update()
         handlePower:set(1)
 
         paramBaroAlt:set(clamp(sensor_data.getBarometricAltitude() * meters_to_feet, -1000, 20000))
-        paramHeading:set(360 - (sensor_data.getHeading() * radian_to_degree))
-    
+        paramHeading:set(getAircraftHeading())
+
         -- TODO TRQ box
     
         -- Bank angle indicator should flash >30deg
