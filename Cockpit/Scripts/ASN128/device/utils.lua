@@ -7,7 +7,6 @@ waypointData = get_mission_route()
 waypoints = {}
 currWP = 1
 currTGTWP = 1
-currHardcodedWP = 91
 inputArray = {}
 
 INPUT_ALLOWANCE_TIME = 1 -- time user has after pressing input button to press another
@@ -119,18 +118,26 @@ end
 -- starts at given index and returns next available wp slot that isn't already used
 function getNextEmptyWaypoint(waypointData, startIndex)
     for i = startIndex, 100 do
-        if (waypointData[i] == nil or waypointData[i] == '') then
-            --move on
-        else
-            return i
+        local data = waypointData[i]
+        if (data.x == "" or data.y == "") then
+            return tonumber(data.number)
         end
     end
-
-    return startIndex
+    return -1
 end
 
 function addWaypoint(num, wpName, xPos, yPos, alt)
     table.insert(waypoints, {number = num, name = wpName, x = xPos, y = yPos, alt = alt})
+end
+
+function formatYCoord(alt, modeIndex)
+    if (modeIndex == 3) then
+        -- MGRS
+        return math.floor(alt)
+    elseif (modeIndex == 4) then
+        -- LL
+        return math.floor(alt * meters_to_feet)
+    end
 end
 
 need_to_be_closed = false

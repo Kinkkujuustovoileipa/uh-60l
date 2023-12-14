@@ -105,6 +105,7 @@ local endStepEnabled = false
 local wpSequence = {}
 local flightPlanType = 0
 local currLeg = 1
+local currToo = 90
 
 -- CISP
 local paramGPSBearing = get_param_handle("CISP_GPS_BEARING")
@@ -234,7 +235,7 @@ function buttonFunctions(command)
     if (command == device_commands.SelectBtnInc) then
         if (kybdModeEnabled == false) then
             if displayIndex == 50 or displayIndex == 51 then
-                if (currTGTWP < 70) then
+                if (currTGTWP < 100) then
                     currTGTWP = currTGTWP + 1
                 else
                     currTGTWP = 1
@@ -258,7 +259,7 @@ function buttonFunctions(command)
                 if (currTGTWP > 1) then
                     currTGTWP = currTGTWP - 1
                 else
-                    currTGTWP = 70
+                    currTGTWP = 100
                 end
 
                 if data.pages[displayIndex] then
@@ -304,8 +305,11 @@ function buttonFunctions(command)
             end
         end
     elseif command == device_commands.SelectBtnKybd then
-        inputArray = {}
-        setKybdMode()
+        -- only allow editing 0-69
+        if (currTGTWP <= 70 or currTGTWP > 90) then
+            inputArray = {}
+            setKybdMode()
+        end
     end
 end
 
@@ -646,13 +650,14 @@ function initWaypoints()
             alt = waypointData[i].alt
 
             if (waypointData[i].name) then
-                wpName = string.sub(string.upper(waypointData[i].name),1,5)
+                wpName = string.sub(string.upper(waypointData[i].name),1,13)
             else
                 wpName = "MIZ "..i-1
             end
         end
 
         addWaypoint(num, wpName, xPos, yPos, alt)
+        --print_message_to_user("wpt added: "..num..", "..wpName)
         --default sequence using mission wp seq
         --table.insert(wpSequence, i)
     end
@@ -660,17 +665,52 @@ end
 
 function addTOOWaypoint()
     local selfX,selfY,selfZ = sensor_data.getSelfCoordinates()
-    local wpIndex = getNextEmptyWaypoint(90)
-    local wpName = "TOO "..(wpIndex - 89)
-    addWaypoint(waypointData, wpIndex, wpName, selfX, selfZ)
+    local wpIndex = getNextEmptyWaypoint(waypoints, 91)
+    local alt = formatYCoord(selfY, modeIndex)
+    local wpName = ""
+
+    if (wpIndex == -1) then
+        wpName = "TGT"..formatPrecedingZeros(tostring(currToo-89), 2)
+        wpIndex = currToo
+
+        -- ran out of space, loop and overwrite
+        if (currToo >= 99) then
+            currToo = 90
+        else
+            currToo = currToo + 1
+        end
+    else
+        -- free space
+        wpName = "TGT"..formatPrecedingZeros(tostring(wpIndex-89), 2)
+        if (wpIndex == 99) then
+            currToo = 90
+        else
+            currToo = wpIndex+1
+        end
+    end
+
+    waypoints[wpIndex+1].name = wpName
+    waypoints[wpIndex+1].x = selfX
+    waypoints[wpIndex+1].y = selfZ
+    waypoints[wpIndex+1].alt = alt
+
+    updateSelectedWpLine()
+    refreshScreen()
+end
+
+function refreshScreen()
+    data.pages[displayIndex].getStoredData()
+    initVisibilityArgs()
 end
 
 function updateSelectedWpLine()
-    local text =  waypoints[currWP].number..":"..waypoints[currWP].name
-    local epeSysText = " 030MG"..currHardcodedWP-1
+    local wpName = waypoints[currWP].name
+    local shortName = string.sub(wpName,1,5)
+    local text =  waypoints[currWP].number..":"..shortName
+    local epeSysText = " 030MG"..currToo
     local len = 16 - string.len(text)
     text = text..formatPrecedingSpaces(epeSysText, len)
- 
+
     topLineHandle:set(text)
 end
 
